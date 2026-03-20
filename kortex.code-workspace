@@ -35,23 +35,6 @@
         "username": "postgres",
         "group": "kortex",
       },
-      {
-        "pgOptions": {
-          "ssl": {
-            "rejectUnauthorized": false,
-            "ca": "",
-            "requestCert": true,
-          },
-        },
-        "previewLimit": 50,
-        "server": "kortex.one",
-        "port": 5432,
-        "driver": "PostgreSQL",
-        "name": "kortex-prod",
-        "group": "kortex",
-        "database": "kortex",
-        "username": "postgres",
-      },
     ],
     "conventionalCommits.scopes": ["blog", "client", "server", "website"],
   },
