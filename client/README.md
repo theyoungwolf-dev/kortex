@@ -1,17 +1,17 @@
-# 🧩 Revline Frontend
+# 🧩 Kortex Frontend
 
-This is the frontend of **Revline**, a Next.js-based web app for car enthusiasts and DIY mechanics. It powers the UI for both the hosted SaaS version and self-hosted installations.
+This is the frontend of **Kortex**, a Next.js-based web app for note taking and managing personal wiki. It powers the UI for both the hosted SaaS version and self-hosted installations.
 
 ## 🧑‍🎨 Tech Stack
 
-* **[Next.js](https://nextjs.org/)** – React framework for server-rendered apps
-* **[Tailwind CSS](https://tailwindcss.com/)** – Utility-first styling
-* **[HeroUI](https://heroui.dev/)** – Component toolkit used throughout
-* **[Apollo Client](https://www.apollographql.com/docs/react/)** – GraphQL queries and caching
-* **[GraphQL Code Generator](https://www.graphql-code-generator.com/)** – Type-safe queries/mutations
-* **[TipTap](https://tiptap.dev/)** – Rich-text editor, powered by [`shadcn-minimal-tiptap`](https://shadcn-minimal-tiptap.vercel.app/)
-* **[apollo-upload-client](https://github.com/jaydenseric/apollo-upload-client)** – Uploads via GraphQL mutations (e.g., profile pictures)
-* **[Auth.js](https://authjs.dev/)** - Authentication and session handling
+- **[Next.js](https://nextjs.org/)** – React framework for server-rendered apps
+- **[Tailwind CSS](https://tailwindcss.com/)** – Utility-first styling
+- **[HeroUI](https://heroui.dev/)** – Component toolkit used throughout
+- **[Apollo Client](https://www.apollographql.com/docs/react/)** – GraphQL queries and caching
+- **[GraphQL Code Generator](https://www.graphql-code-generator.com/)** – Type-safe queries/mutations
+- **[TipTap](https://tiptap.dev/)** – Rich-text editor, powered by [`shadcn-minimal-tiptap`](https://shadcn-minimal-tiptap.vercel.app/)
+- **[apollo-upload-client](https://github.com/jaydenseric/apollo-upload-client)** – Uploads via GraphQL mutations (e.g., profile pictures)
+- **[Auth.js](https://authjs.dev/)** - Authentication and session handling
 
 ## 📁 Folder Layout
 
@@ -73,8 +73,7 @@ The app will be available at: [http://localhost:3000](http://localhost:3000)
 
 ## 📡 Notes
 
-* Uploads like **profile images** go through the GraphQL API using `apollo-upload-client`
-* All large uploads (e.g., build media) use **S3 presigned URLs** via backend GraphQL resolvers
+- All uploads (e.g., page attachments) use **S3 presigned URLs** via backend GraphQL resolvers
 
 ## 🤝 Contributing
 

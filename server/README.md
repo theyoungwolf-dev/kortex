@@ -1,6 +1,6 @@
-# 🛠 Revline Backend
+# 🛠 Kortex Backend
 
-This is the backend of **Revline**, powering the GraphQL API, media proxying, Stripe integrations, and core business logic. Built in **Go**, it uses modern libraries like **Uber FX** for dependency injection, **Chi** for HTTP routing, and **Ent** as the ORM.
+This is the backend of **Kortex**, powering the GraphQL API, media proxying, Stripe integrations, and core business logic. Built in **Go**, it uses modern libraries like **Uber FX** for dependency injection, **Chi** for HTTP routing, and **Ent** as the ORM.
 
 ## ⚙️ Tech Stack
 
@@ -67,32 +67,32 @@ go run main.go
 
 The server will:
 
-* Start the Chi HTTP server via `httpfx`
-* Register routes from GraphQL, media, payments via FX modules
-* Expose GraphQL endpoint at `/graphql` and Playground at `/playground`
+- Start the Chi HTTP server via `httpfx`
+- Register routes from GraphQL, media, payments via FX modules
+- Expose GraphQL endpoint at `/graphql` and Playground at `/playground`
 
 ## 📦 Uploads & Media
 
-* **User-uploaded media**: uploaded directly to S3 via pre-signed URLs
-* **Public access**: proxied through `/media/:id` for caching and stable URLs
-* **Optimized delivery**: Enables use of `next/image` on the frontend
+- **User-uploaded media**: uploaded directly to S3 via pre-signed URLs
+- **Public access**: proxied through `/media/:id` for caching and stable URLs
+- **Optimized delivery**: Enables use of `next/image` on the frontend
 
 ## 🧾 Payments
 
-* Stripe integration via **webhooks**
-* Stripe Connect used to handle affiliate payments
+- Stripe integration via **webhooks**
+- Stripe Connect used to handle affiliate payments
 
 ## 🔐 Authentication
 
-* Auth is enforced via middleware in `auth/`
-* Current user extracted from context, used in GraphQL resolvers
+- Auth is enforced via middleware in `auth/`
+- Current user extracted from context, used in GraphQL resolvers
 
 ## 🧩 Modular Design (FX)
 
 Each module (GraphQL, HTTP, media, storage, etc.) registers itself into the global Uber FX container, making it easy to:
 
-* Add new features with scoped dependencies
-* Start/stop lifecycle components cleanly via `fx.Hook`
+- Add new features with scoped dependencies
+- Start/stop lifecycle components cleanly via `fx.Hook`
 
 ## 🤝 Contributing
 

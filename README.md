@@ -1,38 +1,40 @@
-# 🏁 Revline 1
+# 🧠 Kortex
 
-**Built for DIY Mechanics & Car Enthusiasts**
+**A high-concurrency, Notion-like hierarchical document management system.**
 
-Track your builds. Show off your rides. Stay ahead in your garage with the all-in-one app for car lovers.
+Kortex is an open-source workspace built to handle infinitely nested document trees and concurrent user editing. It focuses on zero-latency data integrity, leveraging a custom LexoRank mathematical sorting algorithm and a rigorous Graph ORM backend.
 
-## 🧰 Features
+## 🏗️ Architecture Spotlight
 
-Revline helps car enthusiasts take control of every aspect of their automotive journey:
+Building a hierarchical, drag-and-drop document system presents significant database scaling challenges. Kortex solves these through two core architectural pillars:
 
-- **Fuel Logs:** Track fill-ups, fuel efficiency, and cost over time.
-- **Maintenance & Service:** Log services, set reminders, and manage your garage like a pro.
-- **Odometer Tracking:** Automatically track mileage history across all your builds.
-- **Dyno Sessions:** Store torque & horsepower curves with RPM-based charts.
-- **Drag Logs:** Record your quarter-mile runs, 0-60s, and more.
-- **Media Gallery:** Upload and organize images/videos from builds, shows, and track days.
-- **Documents:** Securely store service receipts, build sheets, and PDFs.
+- **Zero-Latency Reordering (LexoRank):** Instead of using brittle integer-based sorting (which causes cascading database write-locks) or linked lists (which cause recursive query nightmares), Kortex utilizes a custom Base-62 cryptographic string sorting algorithm. Dragging a page instantly calculates a mathematical string "midpoint" between adjacent rows, allowing infinite concurrent inserts with $O(1)$ database writes.
+- **Graph-Based Hierarchy:** Relational hierarchies are managed via **[Ent](https://entgo.io/)**, a graph-based ORM. This allows for strict, statically typed parent/child edge relationships and efficient subgraph querying for nested document trees.
+
+## 🧰 Core Features
+
+- **Infinite Page Trees:** Create, nest, and organize collections and pages with no depth limits.
+- **Concurrent Drag-and-Drop:** Move pages anywhere in the hierarchy instantly without locking surrounding database rows.
+- **Rich Text Editing:** A deeply integrated, modular [TipTap](https://tiptap.dev/) (ProseMirror) editor supporting blocks, formatting, and embedded media.
+- **Optimistic UI:** The Next.js frontend utilizes optimistic cache updates via Apollo Client to make page sorting and creation feel completely local and instant.
+- **Media Management:** S3-compatible (MinIO) object storage for secure image and document embedding within the editor.
 
 ## 🎞️ Tech Stack
 
-| Frontend                                 | Backend                                 | Infrastructure   |
-| ---------------------------------------- | --------------------------------------- | ---------------- |
-| Next.js                                  | Go (Fx)                                 | Docker           |
-| Apollo Client                            | [GQLGen](https://gqlgen.com/) (GraphQL) | Postgres + MinIO |
-| [Tailwind CSS](https://tailwindcss.com/) | [Ent](https://entgo.io/) (ORM)          | Docker Compose   |
-| [HeroUI](https://www.heroui.com/)        |                                         |                  |
+| Frontend                                    | Backend                                 | Infrastructure |
+| ------------------------------------------- | --------------------------------------- | -------------- |
+| Next.js (React)                             | Go (Fx Dependency Injection)            | Docker         |
+| Apollo Client                               | [GQLGen](https://gqlgen.com/) (GraphQL) | Postgres       |
+| [TipTap](https://tiptap.dev/) / ProseMirror | [Ent](https://entgo.io/) (Graph ORM)    | MinIO (S3)     |
+| Tailwind CSS                                | Custom Base-62 LexoRank Engine          | Docker Compose |
 
-🧑‍💻 Repository Structure
+## 🧑‍💻 Repository Structure
 
 ```bash
-revline/
-├── client/ # Next.js frontend with Apollo Client
-├── server/ # Go backend using Fx, gqlgen, ent
-├── docker-compose.yml # Dev infra (Postgres, MinIO only)
-├── sample-docker-compose.yml # Self-hosting reference
+kortex/
+├── client/                     # Next.js frontend, Apollo GraphQL state, TipTap editor
+├── server/                     # Go backend, Fx modules, gqlgen resolvers, Ent schemas
+├── docker-compose.yml          # Dev infra (Postgres, MinIO)
 └── README.md
 ```
 
@@ -44,59 +46,39 @@ revline/
 - Node.js (v18+)
 - Go (v1.24+)
 
-### 1. Clone the Repository
+### 1. Start Infrastructure (Database & MinIO)
 
 ```bash
-git clone https://github.com/dan6erbond/revline.git
-cd revline
+git clone [https://github.com/theyoungwolf-dev/kortex.git](https://github.com/theyoungwolf-dev/kortex.git)
+cd kortex
+docker-compose up -d
 ```
 
-### 2. Start Infrastructure (Database & MinIO)
+This spins up:
 
-```bash
-docker-compose up
-```
-
-This starts:
-
-- Postgres (on port 5432)
-- MinIO (S3-compatible storage, port 9000)
+- Postgres (port 5432)
+- MinIO for object storage (port 9000)
 - MinIO Console (port 9001)
 
-### 3. Configure Backend
+### 2. Configure & Run Backend
 
-Create a `config.yaml` file in `server/` based on the example config.
-
-```bash
-cp server/config.example.yaml server/config.yaml
-```
-
-### 4. Run Backend
+Create a `config.yaml` file in `server/` based on the example config, then start the Go server.
 
 ```bash
 cd server
+cp config.example.yaml config.yaml # Update config.yaml
 go run main.go
 ```
 
-### 5. Configure Frontend
+### 3. Configure & Run Frontend
 
-Create a `.env.local` file in `client/`:
-
-```bash
-cp client/.env.example client/.env.local
-```
-
-### 6. Generate GraphQL Types (Frontend)
+Create a `.env.local` file in `client/` and generate the strict TypeScript GraphQL types.
 
 ```bash
-cd client
+cd ../client
+cp .env.example .env.local # Update .env.local
 npm install
 npm run codegen
-```
-
-### 7. Run Frontend
-
-```bash
 npm run dev
 ```
 
@@ -104,61 +86,27 @@ Access the app at http://localhost:3000
 
 ### 8. Access MinIO (for local media)
 
-Console: http://localhost:9001
-
-Access Key: `minioadmin`
-
-Secret Key: `minioadmin`
-
-## 🌐 Hosted App
-
-Use the hosted version of Revline at https://revline.one — the easiest way to get started and benefit from upcoming features like discovering and sharing builds with the community.
-
-Product Hunt: [Revline 1 - Track your build, not just your miles](https://www.producthunt.com/posts/revline-1)
-
-## 🏠 Self-Hosting
-
-Self-hosting is available for users who prefer to run Revline 1 independently. A commercial server license must be purchased to enable additional features from the [selfhosted page](https://revline.one/selfhosted). It provides the same feature set as the SaaS version and is valid for all users of the self-hosted instance.
-
-To set up:
-
-```bash
-docker-compose -f sample-docker-compose.yml up -d
-```
-
-For more information on self-hosting, see the [Self-Hosting Guide](https://revline.one/selfhosted).
-
-> 🔐 Update passwords and access keys before using in production.
-
-## 📥 Contributing
-
-We welcome contributions:
-
-1. Fork the repo
-2. Create a feature branch
-3. Submit a pull request
+- Console: http://localhost:9001
+- Access Key: `minioadmin`
+- Secret Key: `minioadmin`
 
 ## 🛠 Roadmap Highlights
 
-- **Build Logs**
-Track individual modifications, wraps, repairs, and installations over time — complete with media, notes, and costs.
-- **Public Profiles**
-Showcase your garage with public profiles for users and their cars. Includes build history, photo galleries, performance upgrades, planned mods, event history, and more.
-- **Verified Badges**
-Earn profile badges through event participation via partner integrations like VeloMeet.
-- **Notifications**
-Email and push notifications for service reminders, inspection dates, or fully custom alerts.
-- **Smart Scanning**
-AI-based OCR for scanning and parsing service receipts, dyno graphs, and track slips — making logging effortless.
-- **Community Features**
-Discover other builds, follow your favorite garages, and engage with a growing community of enthusiasts.
-
-
+- **Real-Time Collaboration**
+  Implementing WebSockets/Yjs for multiplayer cursor tracking and simultaneous block editing.
+- **Granular RBAC**
+  Role-based access control inherited recursively down the Ent graph edges (Workspace -> Folder -> Page).
+- **Block-Based Storage**
+  Migrating the TipTap JSON output into distinct database rows for block-level referencing and transclusion.
+- **Version History**
+  Implementing a Git-like version control system for pages, allowing users to view and revert changes over time.
+- **Inline Comments & Mentions**
+  Adding support for inline comments and user mentions within the editor, with real-time notifications.
+- **Public Sharing & Embedding**
+  Allowing users to share pages publicly via unique URLs and embed them on external sites.
+- **Mobile Optimization**
+  Building a responsive mobile interface with touch-friendly drag-and-drop and editor interactions.
 
 ## ⚖️ License
 
 AGPLv3 License — see [LICENSE](./LICENSE)
-
----
-
-Made with 🛠️ in the garage.
