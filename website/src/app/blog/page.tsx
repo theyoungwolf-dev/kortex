@@ -9,12 +9,9 @@ export default function Blog() {
       <section className="relative overflow-hidden bg-background text-white min-h-[90vh] px-4 sm:px-8 py-24">
         <div className="max-w-5xl mx-auto space-y-12">
           <div className="text-center space-y-4">
-            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight">
-              📚 The Revline Blog
-            </h1>
+            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight">📚 The Kortex Blog</h1>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              Tips, tools, and stories from the garage. Stay in the loop with
-              the Revline community.
+              Tips, tools, and stories from the garage. Stay in the loop with the Kortex community.
             </p>
           </div>
 

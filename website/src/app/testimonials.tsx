@@ -16,7 +16,7 @@ const reviews = [
   {
     name: "Samuel Duc",
     username: "@samm_duc",
-    body: "@Dan6erbond, absolutely love this concept. data is power for any car enthusiast—can't wait to see more builds.",
+    body: "@theyoungwolf-dev, absolutely love this concept. data is power for any car enthusiast—can't wait to see more builds.",
     img: "https://pbs.twimg.com/profile_images/1821927517076258816/78kMzL_h_400x400.jpg",
   },
   {
@@ -76,8 +76,8 @@ const reviews = [
       <>
         <p>the idea is amazing , the UI is killing me though</p>
         <p>
-          Pay $20 for a month of v0 premium and make yourself a nice and
-          intuitive UI, it goes a long way even in the MVP stage
+          Pay $20 for a month of v0 premium and make yourself a nice and intuitive UI, it goes a long way even in the
+          MVP stage
         </p>
       </>
     ),
@@ -106,30 +106,18 @@ const ReviewCard = ({
         // light styles
         "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
         // dark styles
-        "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
+        "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]",
       )}
     >
       <div className="flex flex-row items-center gap-2">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className="rounded-full"
-          width="32"
-          height="32"
-          alt={username}
-          src={img}
-        />
+        <img className="rounded-full" width="32" height="32" alt={username} src={img} />
         <div className="flex flex-col">
-          <figcaption className="text-sm font-medium dark:text-white">
-            {name ?? username}
-          </figcaption>
-          {name ? (
-            <p className="text-xs font-medium dark:text-white/40">{username}</p>
-          ) : null}
+          <figcaption className="text-sm font-medium dark:text-white">{name ?? username}</figcaption>
+          {name ? <p className="text-xs font-medium dark:text-white/40">{username}</p> : null}
         </div>
       </div>
-      <blockquote className="mt-2 text-sm dark:text-content4-foreground">
-        {body}
-      </blockquote>
+      <blockquote className="mt-2 text-sm dark:text-content4-foreground">{body}</blockquote>
     </figure>
   );
 };
@@ -138,12 +126,8 @@ export function Testimonials() {
   return (
     <section className="relative w-full flex flex-col items-center justify-center overflow-hidden py-20">
       <div className="mb-10 text-center">
-        <h2 className="text-3xl sm:text-4xl font-bold text-content4-foreground">
-          What Enthusiasts Are Saying
-        </h2>
-        <p className="mt-2 text-lg text-default-500">
-          Early users share their thoughts about Revline 1
-        </p>
+        <h2 className="text-3xl sm:text-4xl font-bold text-content4-foreground">What Enthusiasts Are Saying</h2>
+        <p className="mt-2 text-lg text-default-500">Early users share their thoughts about Kortex 1</p>
       </div>
       <Marquee pauseOnHover className="[--duration:20s]">
         {firstRow.map((review) => (
@@ -161,7 +145,7 @@ export function Testimonials() {
         <Button
           size="lg"
           as="a"
-          href="https://revline.one/app"
+          href="https://kortex.one/app"
           className="bg-white text-black hover:bg-gray-200 transition-colors flex items-center gap-2"
         >
           Go to App <ArrowRight className="w-4 h-4" />

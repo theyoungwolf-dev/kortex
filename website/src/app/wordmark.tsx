@@ -2,10 +2,7 @@ import Image from "next/image";
 import React from "react";
 import { cn } from "@heroui/react";
 
-export default function Wordmark({
-  className,
-  ...props
-}: React.ComponentProps<"svg">) {
+export default function Wordmark({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <>
       <svg
@@ -17,10 +14,7 @@ export default function Wordmark({
         className={cn("hidden sm:block w-24 md:w-32", className)}
         {...props}
       >
-        <path
-          d="M70.3221 26.2841V6.64773H72.6104V26.2841H70.3221Z"
-          fill="#F0FDFA"
-        />
+        <path d="M70.3221 26.2841V6.64773H72.6104V26.2841H70.3221Z" fill="#F0FDFA" />
         <path
           d="M71.4854 3.27273C71.0167 3.27273 70.6161 3.11506 70.2837 2.79972C69.9513 2.47585 69.7852 2.08807 69.7852 1.63636C69.7852 1.18466 69.9513 0.801138 70.2837 0.485797C70.6161 0.161932 71.0167 0 71.4854 0C71.9542 0 72.3548 0.161932 72.6871 0.485797C73.0195 0.801138 73.1857 1.18466 73.1857 1.63636C73.1857 2.08807 73.0195 2.47585 72.6871 2.79972C72.3548 3.11506 71.9542 3.27273 71.4854 3.27273Z"
           fill="#F0FDFA"
@@ -39,10 +33,7 @@ export default function Wordmark({
           d="M57.5476 6.64773L50.3757 26.2841H47.9467L40.7749 6.64773H43.2422L49.0717 23.2798H49.2507L55.0803 6.64773H57.5476Z"
           fill="#F0FDFA"
         />
-        <path
-          d="M64.2752 26.2841V0.102274H61.9996V26.2841H64.2752Z"
-          fill="#F0FDFA"
-        />
+        <path d="M64.2752 26.2841V0.102274H61.9996V26.2841H64.2752Z" fill="#F0FDFA" />
         <path
           d="M80.9041 26.2841V14.0114C80.9041 12.8693 81.1342 11.8849 81.5945 11.0582C82.0632 10.223 82.6982 9.58381 83.4993 9.14063C84.3004 8.69744 85.2166 8.47585 86.2479 8.47585C87.7564 8.47585 88.9581 8.9446 89.853 9.8821C90.7564 10.8196 91.2081 12.0938 91.2081 13.7045V26.2841H93.4837V13.5639C93.4837 12.0128 93.2024 10.7045 92.6399 9.63921C92.0859 8.57386 91.3061 7.76847 90.3004 7.22301C89.3033 6.66904 88.1442 6.39205 86.8232 6.39205C85.3828 6.39205 84.1726 6.69887 83.1925 7.3125C82.2209 7.91762 81.505 8.72301 81.0447 9.72869H80.8402V6.64773H78.6285V26.2841H80.9041Z"
           fill="#F0FDFA"
@@ -59,13 +50,7 @@ export default function Wordmark({
         />
       </svg>
 
-      <Image
-        src="/logo.png"
-        alt="Revline 1"
-        height={35}
-        width={35}
-        className={cn("block sm:hidden", className)}
-      />
+      <Image src="/logo.png" alt="Kortex 1" height={35} width={35} className={cn("block sm:hidden", className)} />
     </>
   );
 }

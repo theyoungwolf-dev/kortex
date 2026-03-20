@@ -8,8 +8,8 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/Dan6erbond/revline/auth"
-	"github.com/Dan6erbond/revline/ent"
+	"github.com/theyoungwolf-dev/kortex/auth"
+	"github.com/theyoungwolf-dev/kortex/ent"
 	"github.com/dustinkirkland/golang-petname"
 	stripe "github.com/stripe/stripe-go/v82"
 	"github.com/stripe/stripe-go/v82/account"

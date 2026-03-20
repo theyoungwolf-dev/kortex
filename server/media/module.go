@@ -1,7 +1,7 @@
 package media
 
 import (
-	"github.com/Dan6erbond/revline/httpfx"
+	"github.com/theyoungwolf-dev/kortex/httpfx"
 	"go.uber.org/fx"
 )
 

@@ -5,13 +5,13 @@ package ent
 import (
 	"time"
 
-	"github.com/Dan6erbond/revline/ent/dragresult"
-	"github.com/Dan6erbond/revline/ent/expense"
-	"github.com/Dan6erbond/revline/ent/fuelup"
-	"github.com/Dan6erbond/revline/ent/mod"
-	"github.com/Dan6erbond/revline/ent/profile"
-	"github.com/Dan6erbond/revline/ent/task"
-	"github.com/Dan6erbond/revline/ent/usersettings"
+	"github.com/theyoungwolf-dev/kortex/ent/dragresult"
+	"github.com/theyoungwolf-dev/kortex/ent/expense"
+	"github.com/theyoungwolf-dev/kortex/ent/fuelup"
+	"github.com/theyoungwolf-dev/kortex/ent/mod"
+	"github.com/theyoungwolf-dev/kortex/ent/profile"
+	"github.com/theyoungwolf-dev/kortex/ent/task"
+	"github.com/theyoungwolf-dev/kortex/ent/usersettings"
 	"github.com/google/uuid"
 )
 

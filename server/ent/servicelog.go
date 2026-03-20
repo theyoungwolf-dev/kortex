@@ -10,11 +10,11 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/Dan6erbond/revline/ent/car"
-	"github.com/Dan6erbond/revline/ent/expense"
-	"github.com/Dan6erbond/revline/ent/odometerreading"
-	"github.com/Dan6erbond/revline/ent/servicelog"
-	"github.com/Dan6erbond/revline/ent/serviceschedule"
+	"github.com/theyoungwolf-dev/kortex/ent/car"
+	"github.com/theyoungwolf-dev/kortex/ent/expense"
+	"github.com/theyoungwolf-dev/kortex/ent/odometerreading"
+	"github.com/theyoungwolf-dev/kortex/ent/servicelog"
+	"github.com/theyoungwolf-dev/kortex/ent/serviceschedule"
 	"github.com/google/uuid"
 )
 

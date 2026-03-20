@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/Dan6erbond/revline/ent/car"
-	"github.com/Dan6erbond/revline/ent/dragsession"
+	"github.com/theyoungwolf-dev/kortex/ent/car"
+	"github.com/theyoungwolf-dev/kortex/ent/dragsession"
 	"github.com/google/uuid"
 )
 

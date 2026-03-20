@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Dan6erbond/revline/ent/album"
-	"github.com/Dan6erbond/revline/ent/predicate"
+	"github.com/theyoungwolf-dev/kortex/ent/album"
+	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 )
 
 // AlbumDelete is the builder for deleting a Album entity.

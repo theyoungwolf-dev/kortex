@@ -10,9 +10,9 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Dan6erbond/revline/ent/album"
-	"github.com/Dan6erbond/revline/ent/car"
-	"github.com/Dan6erbond/revline/ent/media"
+	"github.com/theyoungwolf-dev/kortex/ent/album"
+	"github.com/theyoungwolf-dev/kortex/ent/car"
+	"github.com/theyoungwolf-dev/kortex/ent/media"
 	"github.com/google/uuid"
 )
 

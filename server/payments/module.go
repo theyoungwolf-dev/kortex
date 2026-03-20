@@ -1,8 +1,8 @@
 package payments
 
 import (
-	"github.com/Dan6erbond/revline/httpfx"
-	"github.com/Dan6erbond/revline/internal"
+	"github.com/theyoungwolf-dev/kortex/httpfx"
+	"github.com/theyoungwolf-dev/kortex/internal"
 	"github.com/stripe/stripe-go/v82"
 	"go.uber.org/fx"
 )

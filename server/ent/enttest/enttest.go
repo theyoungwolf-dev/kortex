@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"github.com/Dan6erbond/revline/ent"
+	"github.com/theyoungwolf-dev/kortex/ent"
 	// required by schema hooks.
-	_ "github.com/Dan6erbond/revline/ent/runtime"
+	_ "github.com/theyoungwolf-dev/kortex/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/Dan6erbond/revline/ent/migrate"
+	"github.com/theyoungwolf-dev/kortex/ent/migrate"
 )
 
 type (

@@ -1,12 +1,5 @@
 import { FragmentType, useFragment } from "@/gql";
-import {
-  Image,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@heroui/react";
+import { Image, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
 
 import { MediaItemFields } from "@/components/media/shared";
 import React from "react";
@@ -54,9 +47,7 @@ export default function ViewerModal({
             </ModalBody>
             <ModalFooter className="items-center justify-between">
               <p>{m?.description}</p>
-              <p className="dark:text-white">
-                Shared on Revline 1
-              </p>
+              <p className="dark:text-white">Shared on Kortex 1</p>
             </ModalFooter>
           </>
         )}

@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Dan6erbond/revline/ent/car"
-	"github.com/Dan6erbond/revline/ent/predicate"
+	"github.com/theyoungwolf-dev/kortex/ent/car"
+	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 )
 
 // CarDelete is the builder for deleting a Car entity.

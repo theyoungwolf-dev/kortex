@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Dan6erbond/revline/ent/mod"
-	"github.com/Dan6erbond/revline/ent/predicate"
+	"github.com/theyoungwolf-dev/kortex/ent/mod"
+	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 )
 
 // ModDelete is the builder for deleting a Mod entity.

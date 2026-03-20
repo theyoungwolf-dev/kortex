@@ -12,10 +12,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Dan6erbond/revline/ent/media"
-	"github.com/Dan6erbond/revline/ent/mod"
-	"github.com/Dan6erbond/revline/ent/modproductoption"
-	"github.com/Dan6erbond/revline/ent/predicate"
+	"github.com/theyoungwolf-dev/kortex/ent/media"
+	"github.com/theyoungwolf-dev/kortex/ent/mod"
+	"github.com/theyoungwolf-dev/kortex/ent/modproductoption"
+	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 	"github.com/google/uuid"
 )
 

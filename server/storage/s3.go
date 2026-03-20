@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"github.com/Dan6erbond/revline/internal"
+	"github.com/theyoungwolf-dev/kortex/internal"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"go.uber.org/zap"

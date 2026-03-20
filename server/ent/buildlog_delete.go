@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Dan6erbond/revline/ent/buildlog"
-	"github.com/Dan6erbond/revline/ent/predicate"
+	"github.com/theyoungwolf-dev/kortex/ent/buildlog"
+	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 )
 
 // BuildLogDelete is the builder for deleting a BuildLog entity.

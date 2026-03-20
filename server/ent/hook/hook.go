@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Dan6erbond/revline/ent"
+	"github.com/theyoungwolf-dev/kortex/ent"
 )
 
 // The AlbumFunc type is an adapter to allow the use of ordinary

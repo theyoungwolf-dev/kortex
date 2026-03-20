@@ -1,17 +1,17 @@
 {
   "folders": [
     {
-      "path": "."
+      "path": ".",
     },
     {
-      "path": "client"
+      "path": "client",
     },
     {
-      "path": "server"
+      "path": "server",
     },
     {
-      "path": "website"
-    }
+      "path": "website",
+    },
   ],
   "settings": {
     "sqltools.connections": [
@@ -21,43 +21,38 @@
         "port": 5432,
         "driver": "PostgreSQL",
         "name": "atlas",
-        "group": "revline",
+        "group": "kortex",
         "database": "atlas",
-        "username": "postgres"
+        "username": "postgres",
       },
       {
         "previewLimit": 50,
         "server": "localhost",
         "port": 5432,
         "driver": "PostgreSQL",
-        "name": "revline",
-        "database": "revline",
+        "name": "kortex",
+        "database": "kortex",
         "username": "postgres",
-        "group": "revline"
+        "group": "kortex",
       },
       {
         "pgOptions": {
           "ssl": {
             "rejectUnauthorized": false,
             "ca": "",
-            "requestCert": true
-          }
+            "requestCert": true,
+          },
         },
         "previewLimit": 50,
-        "server": "revline.one",
+        "server": "kortex.one",
         "port": 5432,
         "driver": "PostgreSQL",
-        "name": "revline-prod",
-        "group": "revline",
-        "database": "revline",
-        "username": "postgres"
-      }
+        "name": "kortex-prod",
+        "group": "kortex",
+        "database": "kortex",
+        "username": "postgres",
+      },
     ],
-    "conventionalCommits.scopes": [
-      "blog",
-      "client",
-      "server",
-      "website",
-    ]
-  }
+    "conventionalCommits.scopes": ["blog", "client", "server", "website"],
+  },
 }

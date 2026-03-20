@@ -1,25 +1,25 @@
 ---
 title: "Build Fast Think Less with Go, GQLGen, Ent and FX"
 publishedAt: "2025 05 26"
-summary: "See how I leveraged Go, GQLGen, Ent, and Uber FX to build Revline 1 fast, securely, and with minimal boilerplate—so I can focus on features that matter."
+summary: "See how I leveraged Go, GQLGen, Ent, and Uber FX to build Kortex 1 fast, securely, and with minimal boilerplate—so I can focus on features that matter."
 ---
 
-For Revline 1, my app for car enthusiasts and DIY mechanics, I needed to build quickly without sacrificing performance, security, or maintainability. Go provides the solid foundation, but pairing it with GQLGen, Ent, and Uber FX delivers real development velocity.
+For Kortex 1, my app for car enthusiasts and DIY mechanics, I needed to build quickly without sacrificing performance, security, or maintainability. Go provides the solid foundation, but pairing it with GQLGen, Ent, and Uber FX delivers real development velocity.
 
 This stack eliminates boilerplate and makes building a modular, production-grade GraphQL API almost effortless. Ent handles pagination, filtering, and schema-first models that plug right into GQLGen. FX handles dependency injection cleanly so I can swap out services and keep things testable and secure.
 
-This post covers how I use this setup in Revline 1 to ship features quickly and confidently, while staying focused on what matters most: building something I love.
+This post covers how I use this setup in Kortex 1 to ship features quickly and confidently, while staying focused on what matters most: building something I love.
 
 ## Dependency injection with Uber/FX
 
-At the core of Revline 1 is Uber's FX, a dependency injection framework that makes wiring up services automatic and painless. It leverages Go's interfaces to keep components modular and swappable, whether it is something low-level like the HTTP router or an environment-specific implementation like a `NotificationService` that sends push notifications in production and logs them in development.
+At the core of Kortex 1 is Uber's FX, a dependency injection framework that makes wiring up services automatic and painless. It leverages Go's interfaces to keep components modular and swappable, whether it is something low-level like the HTTP router or an environment-specific implementation like a `NotificationService` that sends push notifications in production and logs them in development.
 
 FX also provides built-in lifecycle hooks to cleanly start workers at boot and handle graceful shutdowns. Combined with Zap for structured logging, it gives clear visibility into how and when dependencies are initialized or torn down.
 
 To initialize our module with FX, we first have to initialize our Go module:
 
 ```sh
-go mod init github.com/dan6erbond/revline
+go mod init github.com/theyoungwolf-dev/kortex
 ```
 
 Then we'll write a simple `main.go` that creates the FX app and starts it:
@@ -108,7 +108,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Dan6erbond/revline/internal"
+	"github.com/theyoungwolf-dev/kortex/internal"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
@@ -263,7 +263,7 @@ func NewServer(resolver *graph.Resolver, entClient *ent.Client) NewServerResult 
   srv.Use(entgql.Transactioner{TxOpener: entClient})
 
 	return NewServerResult{Routes: []httpfx.Route{
-		PlaygroundHandlerFunc(playground.Handler("Revline", "/graphql")),
+		PlaygroundHandlerFunc(playground.Handler("Kortex", "/graphql")),
 		GraphqlHandlerFunc{srv},
 	}}
 }
@@ -277,7 +277,7 @@ Now we just have to create the `graphfx` module:
 package graphfx
 
 import (
-	"github.com/Dan6erbond/revline/graph"
+	"github.com/theyoungwolf-dev/kortex/graph"
 	"go.uber.org/fx"
 )
 
@@ -455,6 +455,6 @@ func (r *mutationResolver) CreateFuelUp(ctx context.Context, input ent.CreateFue
 
 ## Wrapping up
 
-To sum up, leveraging Ent to handle the heavy lifting of CRUD operations, combining it with GQLGen for a fully type-safe GraphQL API, and using Uber FX for lifecycle management and dependency injection allowed me to build Revline 1 quickly and reliably.
+To sum up, leveraging Ent to handle the heavy lifting of CRUD operations, combining it with GQLGen for a fully type-safe GraphQL API, and using Uber FX for lifecycle management and dependency injection allowed me to build Kortex 1 quickly and reliably.
 
 There's plenty more to explore—like implementing JWT authentication middleware with Zitadel, which we use in production—but that's material for another post. For now, this walkthrough demonstrates how you can build a solid, modular backend framework with minimal boilerplate, embracing 12-factor configuration, automatic dependency wiring, and the powerful synergy between Ent and GQLGen to accelerate development.

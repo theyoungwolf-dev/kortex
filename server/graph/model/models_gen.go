@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/Dan6erbond/revline/ent"
-	"github.com/Dan6erbond/revline/ent/subscription"
+	"github.com/theyoungwolf-dev/kortex/ent"
+	"github.com/theyoungwolf-dev/kortex/ent/subscription"
 )
 
 type CreateCheckoutSessionInput struct {

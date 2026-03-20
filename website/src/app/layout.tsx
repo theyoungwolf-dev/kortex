@@ -15,14 +15,10 @@ const inter = Inter({
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    metadataBase: new URL(
-      new URL(
-        (process.env.COOLIFY_URL ?? "http://localhost:3001").split(",")[0]
-      ).origin
-    ),
-    title: "Revline 1",
+    metadataBase: new URL(new URL((process.env.COOLIFY_URL ?? "http://localhost:3001").split(",")[0]).origin),
+    title: "Kortex 1",
     description:
-      "Revline is the ultimate app for car enthusiasts and DIY mechanics—track maintenance, log upgrades, and connect with your ride like never before.",
+      "Kortex is the ultimate app for car enthusiasts and DIY mechanics—track maintenance, log upgrades, and connect with your ride like never before.",
   };
 }
 
@@ -35,13 +31,9 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {process.env.NODE_ENV !== "development" && (
-          <Script
-            defer
-            src="https://cloud.umami.is/script.js"
-            data-website-id="64bc9887-3516-4a18-b0a9-bfff4281cb0b"
-          />
+          <Script defer src="https://cloud.umami.is/script.js" data-website-id="64bc9887-3516-4a18-b0a9-bfff4281cb0b" />
         )}
-        <meta name="apple-mobile-web-app-title" content="Revline 1" />
+        <meta name="apple-mobile-web-app-title" content="Kortex 1" />
       </head>
       <body className={`antialiased ${inter.className} dark`}>
         <Navbar />

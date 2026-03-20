@@ -35,10 +35,7 @@ const getCarBanner = graphql(`
   }
 `);
 
-export default function PublicCarLayout({
-  children,
-  ...props
-}: ComponentProps<"main">) {
+export default function PublicCarLayout({ children, ...props }: ComponentProps<"main">) {
   const router = useRouter();
   const href = useHref();
   const { basePath, serverUrl } = useConfig();
@@ -94,10 +91,7 @@ export default function PublicCarLayout({
           className="h-full w-full rounded-none object-cover"
           src={
             data?.car?.bannerImage?.id
-              ? new URL(
-                  `/media/${data.car.bannerImage.id}`,
-                  serverUrl
-                ).toString()
+              ? new URL(`/media/${data.car.bannerImage.id}`, serverUrl).toString()
               : href("/placeholder.png")
           }
           alt={data?.car?.name ?? "Car banner"}
@@ -135,20 +129,19 @@ export default function PublicCarLayout({
                         color="secondary"
                         variant="faded"
                         title="You're not logged in"
-                        description="Create an account or log in to manage your cars, get personalized tuning info, and access all Revline features."
+                        description="Create an account or log in to manage your cars, get personalized tuning info, and access all Kortex features."
                         endContent={
                           <div className="flex gap-2">
                             <Button
                               onPress={() =>
                                 signIn(
                                   Object.values(providers).length === 1 &&
-                                    Object.values(providers)[0].id !==
-                                      "credentials"
+                                    Object.values(providers)[0].id !== "credentials"
                                     ? Object.values(providers)[0].id
                                     : undefined,
                                   {
                                     redirectTo: router.asPath,
-                                  }
+                                  },
                                 )
                               }
                               color="primary"

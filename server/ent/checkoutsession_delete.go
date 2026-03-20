@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Dan6erbond/revline/ent/checkoutsession"
-	"github.com/Dan6erbond/revline/ent/predicate"
+	"github.com/theyoungwolf-dev/kortex/ent/checkoutsession"
+	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 )
 
 // CheckoutSessionDelete is the builder for deleting a CheckoutSession entity.

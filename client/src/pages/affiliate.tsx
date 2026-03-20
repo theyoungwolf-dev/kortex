@@ -75,16 +75,11 @@ export default function Affiliate() {
 
   const { data } = useQuery(getConnectAccountId);
 
-  const [mutateCreateConnectAccount, { loading: isCreatingConnectAccount }] =
-    useMutation(createConnectAccount);
+  const [mutateCreateConnectAccount, { loading: isCreatingConnectAccount }] = useMutation(createConnectAccount);
 
-  const [mutateLinkConnectAccount, { loading: isLinkingConnectAccount }] =
-    useMutation(linkConnectAccount);
+  const [mutateLinkConnectAccount, { loading: isLinkingConnectAccount }] = useMutation(linkConnectAccount);
 
-  const [
-    mutateCreateExpressLoginLink,
-    { loading: isCreatingExpressLoginLink },
-  ] = useMutation(createExpressLoginLink);
+  const [mutateCreateExpressLoginLink, { loading: isCreatingExpressLoginLink }] = useMutation(createExpressLoginLink);
 
   return (
     <>
@@ -96,20 +91,12 @@ export default function Affiliate() {
               <HandCoins className="size-6" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-content1-foreground">
-                Join the Revline Affiliate Program
-              </h1>
+              <h1 className="text-xl font-semibold text-content1-foreground">Join the Kortex Affiliate Program</h1>
               <p className="text-content2-foreground mt-1 max-w-xl">
-                Earn money by referring car enthusiasts and DIY mechanics to
-                Revline 1. Choose your model: get a{" "}
-                <span className="font-medium text-primary">
-                  20% commission for a full year
-                </span>{" "}
-                or a{" "}
-                <span className="font-medium text-primary">
-                  30% commission over 6 months
-                </span>{" "}
-                on their active subscriptions.
+                Earn money by referring car enthusiasts and DIY mechanics to Kortex 1. Choose your model: get a{" "}
+                <span className="font-medium text-primary">20% commission for a full year</span> or a{" "}
+                <span className="font-medium text-primary">30% commission over 6 months</span> on their active
+                subscriptions.
               </p>
             </div>
           </div>
@@ -118,16 +105,13 @@ export default function Affiliate() {
             <span>Partner with us and grow together</span>
           </div>
         </div>
-        {data?.me?.stripeAccountID &&
-        data.me.stripeAccountCapabilities.transfers === "active" ? (
+        {data?.me?.stripeAccountID && data.me.stripeAccountCapabilities.transfers === "active" ? (
           <div className="flex flex-col gap-4 md:gap-6">
             <div>
-              <h2 className="text-lg font-semibold text-content1-foreground mb-2">
-                Your affiliate account is active
-              </h2>
+              <h2 className="text-lg font-semibold text-content1-foreground mb-2">Your affiliate account is active</h2>
               <p className="text-content2-foreground mb-4">
-                You&apos;re set up to receive commissions. Use the button below
-                to manage your Stripe account details and view payouts.
+                You&apos;re set up to receive commissions. Use the button below to manage your Stripe account details
+                and view payouts.
               </p>
               <Button
                 variant="flat"
@@ -147,38 +131,27 @@ export default function Affiliate() {
             </div>
 
             <div>
-              <h2 className="text-lg font-semibold text-content1-foreground mb-2">
-                Share your affiliate links
-              </h2>
+              <h2 className="text-lg font-semibold text-content1-foreground mb-2">Share your affiliate links</h2>
               <p className="text-content2-foreground mb-4">
-                Share one of the links below to start earning based on your
-                preferred commission model. Each user who signs up using your
-                link will be tracked automatically.
+                Share one of the links below to start earning based on your preferred commission model. Each user who
+                signs up using your link will be tracked automatically.
               </p>
               <div className="flex flex-wrap gap-4 md:gap-6">
                 <div className="flex-1">
-                  <p className="mb-1 font-medium text-content2-foreground">
-                    6-month / 30% commission:
-                  </p>
+                  <p className="mb-1 font-medium text-content2-foreground">6-month / 30% commission:</p>
                   <Snippet
                     color="default"
-                    codeString={`${origin}${href(
-                      "/subscription?affiliate=" + data.me.affiliate6moCode
-                    )}`}
+                    codeString={`${origin}${href("/subscription?affiliate=" + data.me.affiliate6moCode)}`}
                     symbol={<Link2 className="inline-block size-5 mr-2" />}
                   >
                     {data.me.affiliate6moCode}
                   </Snippet>
                 </div>
                 <div className="flex-1">
-                  <p className="mb-1 font-medium text-content2-foreground">
-                    12-month / 20% commission:
-                  </p>
+                  <p className="mb-1 font-medium text-content2-foreground">12-month / 20% commission:</p>
                   <Snippet
                     color="default"
-                    codeString={`${origin}${href(
-                      "/subscription?affiliate=" + data.me.affiliate12moCode
-                    )}`}
+                    codeString={`${origin}${href("/subscription?affiliate=" + data.me.affiliate12moCode)}`}
                     symbol={<Link2 className="inline-block size-5 mr-2" />}
                   >
                     {data.me.affiliate12moCode}
@@ -189,13 +162,10 @@ export default function Affiliate() {
           </div>
         ) : (
           <div>
-            <h2 className="text-lg font-semibold text-content1-foreground mb-2">
-              Set up your affiliate account
-            </h2>
+            <h2 className="text-lg font-semibold text-content1-foreground mb-2">Set up your affiliate account</h2>
             <p className="text-content2-foreground mb-4">
-              To start earning commissions, connect your Stripe account.
-              We&apos;ll use this to send payouts automatically based on your
-              referred users&apos; active subscriptions.
+              To start earning commissions, connect your Stripe account. We&apos;ll use this to send payouts
+              automatically based on your referred users&apos; active subscriptions.
             </p>
             <Button
               variant="flat"
@@ -203,9 +173,7 @@ export default function Affiliate() {
               className="self-center"
               endContent={<Link className="size-5" />}
               onPress={() => {
-                let promise: Promise<
-                  FetchResult<LinkConnectAccountMutation> | undefined
-                >;
+                let promise: Promise<FetchResult<LinkConnectAccountMutation> | undefined>;
 
                 if (data?.me?.stripeAccountID) {
                   promise = mutateLinkConnectAccount();

@@ -10,10 +10,10 @@ import (
 	"io"
 	"time"
 
-	"github.com/Dan6erbond/revline/auth"
-	"github.com/Dan6erbond/revline/ent"
-	"github.com/Dan6erbond/revline/graph/model"
-	"github.com/Dan6erbond/revline/internal"
+	"github.com/theyoungwolf-dev/kortex/auth"
+	"github.com/theyoungwolf-dev/kortex/ent"
+	"github.com/theyoungwolf-dev/kortex/graph/model"
+	"github.com/theyoungwolf-dev/kortex/internal"
 	"github.com/google/uuid"
 	minio "github.com/minio/minio-go/v7"
 )

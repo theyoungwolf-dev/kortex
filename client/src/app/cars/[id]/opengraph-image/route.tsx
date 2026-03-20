@@ -42,18 +42,11 @@ const getCarOverviewForOpenGraph = graphql(`
   }
 `);
 
-export async function GET(
-  _: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const inter = await readFile(
-    join(process.cwd(), "assets/Inter_24pt-Medium.ttf")
-  );
+export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
+  const inter = await readFile(join(process.cwd(), "assets/Inter_24pt-Medium.ttf"));
 
   const logo = (
-    await readFile(
-      join(process.cwd(), "public", "web-app-manifest-192x192.png")
-    ).then((buff) => Uint8Array.from(buff))
+    await readFile(join(process.cwd(), "public", "web-app-manifest-192x192.png")).then((buff) => Uint8Array.from(buff))
   ).buffer;
 
   const client = buildClient({});
@@ -72,94 +65,81 @@ export async function GET(
   const { email, profile } = owner ?? {};
 
   return new ImageResponse(
-    (
-      <div
-        tw="flex flex-col w-full h-full p-12 justify-between"
-        style={{
-          backgroundColor: "#11181C",
-          fontFamily: "Inter, sans-serif",
-        }}
-      >
-        {/* Header */}
-        <div tw="flex items-center justify-between">
-          <div tw="flex items-start">
-            <img
-              src={profile?.pictureUrl ?? undefined}
-              width={64}
-              height={64}
-              tw="rounded-full border border-gray-700"
-              alt="avatar"
-              style={{ marginRight: 16, objectFit: "cover" }}
-            />
-            <div tw="flex flex-col -mt-4">
-              <p tw="text-xl mb-0 font-semibold text-white">
-                {profile?.username}
-              </p>
-              <p tw="text-sm mb-0 text-gray-400">{email}</p>
-            </div>
+    <div
+      tw="flex flex-col w-full h-full p-12 justify-between"
+      style={{
+        backgroundColor: "#11181C",
+        fontFamily: "Inter, sans-serif",
+      }}
+    >
+      {/* Header */}
+      <div tw="flex items-center justify-between">
+        <div tw="flex items-start">
+          <img
+            src={profile?.pictureUrl ?? undefined}
+            width={64}
+            height={64}
+            tw="rounded-full border border-gray-700"
+            alt="avatar"
+            style={{ marginRight: 16, objectFit: "cover" }}
+          />
+          <div tw="flex flex-col -mt-4">
+            <p tw="text-xl mb-0 font-semibold text-white">{profile?.username}</p>
+            <p tw="text-sm mb-0 text-gray-400">{email}</p>
           </div>
-          <p tw="text-lg text-gray-400">Shared on Revline 1</p>
         </div>
+        <p tw="text-lg text-gray-400">Shared on Kortex 1</p>
+      </div>
 
-        <div tw="flex flex-1 mt-8 mb-8 rounded-xl overflow-hidden border border-gray-700">
-          {bannerImage?.url && (
-            <img
-              src={bannerImage.url}
-              alt="media"
-              tw="w-full h-full"
-              style={{ objectFit: "cover" }}
-            />
+      <div tw="flex flex-1 mt-8 mb-8 rounded-xl overflow-hidden border border-gray-700">
+        {bannerImage?.url && (
+          <img src={bannerImage.url} alt="media" tw="w-full h-full" style={{ objectFit: "cover" }} />
+        )}
+
+        {/* Overlay Stats */}
+        <div tw="absolute bottom-0 right-0 m-4 p-4 bg-black/70 rounded-lg text-white text-sm flex" style={{ gap: 12 }}>
+          {car.powerKw && (
+            <div tw="flex items-center" style={{ gap: 4 }}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" />
+              </svg>
+              <span>
+                {getPower(car.powerKw, powerUnit).toLocaleString()} {powerUnitsShort[powerUnit]}
+              </span>
+            </div>
           )}
-
-          {/* Overlay Stats */}
-          <div
-            tw="absolute bottom-0 right-0 m-4 p-4 bg-black/70 rounded-lg text-white text-sm flex"
-            style={{ gap: 12 }}
-          >
-            {car.powerKw && (
-              <div tw="flex items-center" style={{ gap: 4 }}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" />
-                </svg>
-                <span>
-                  {getPower(car.powerKw, powerUnit).toLocaleString()}{" "}
-                  {powerUnitsShort[powerUnit]}
-                </span>
-              </div>
-            )}
-            {car.torqueNm && (
-              <div tw="flex items-center" style={{ gap: 4 }}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="m12 14 4-4" />
-                  <path d="M3.34 19a10 10 0 1 1 17.32 0" />
-                </svg>
-                <span>
-                  {getTorque(car.torqueNm, torqueUnit).toLocaleString()}{" "}
-                  {torqueUnitsShort[torqueUnit]}
-                </span>
-              </div>
-            )}
-            {/* <div tw="flex items-center" style={{ gap: 4 }}>
+          {car.torqueNm && (
+            <div tw="flex items-center" style={{ gap: 4 }}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m12 14 4-4" />
+                <path d="M3.34 19a10 10 0 1 1 17.32 0" />
+              </svg>
+              <span>
+                {getTorque(car.torqueNm, torqueUnit).toLocaleString()} {torqueUnitsShort[torqueUnit]}
+              </span>
+            </div>
+          )}
+          {/* <div tw="flex items-center" style={{ gap: 4 }}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -177,7 +157,7 @@ export async function GET(
               </svg>
               <span>0-60: 4.2s</span>
             </div> */}
-            {/* <div tw="flex items-center" style={{ gap: 4 }}>
+          {/* <div tw="flex items-center" style={{ gap: 4 }}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -196,7 +176,7 @@ export async function GET(
               </svg>
               <span>12 images</span>
             </div> */}
-            {/* <div tw="flex items-center" style={{ gap: 4 }}>
+          {/* <div tw="flex items-center" style={{ gap: 4 }}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -212,7 +192,7 @@ export async function GET(
               </svg>
               <span>5 mods</span>
             </div> */}
-            {/* <div tw="flex items-center" style={{ gap: 4 }}>
+          {/* <div tw="flex items-center" style={{ gap: 4 }}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -233,21 +213,20 @@ export async function GET(
               </svg>
               <span>3 log entries</span>
             </div> */}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div tw="flex justify-between items-center">
-          <p tw="text-3xl font-bold text-white">{name}</p>
-          <img
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            src={logo as any}
-            alt="Revline 1 logo"
-            style={{ width: 48, height: 48, objectFit: "contain" }}
-          />
         </div>
       </div>
-    ),
+
+      {/* Footer */}
+      <div tw="flex justify-between items-center">
+        <p tw="text-3xl font-bold text-white">{name}</p>
+        <img
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          src={logo as any}
+          alt="Kortex 1 logo"
+          style={{ width: 48, height: 48, objectFit: "contain" }}
+        />
+      </div>
+    </div>,
     {
       ...size,
       fonts: [
@@ -258,6 +237,6 @@ export async function GET(
           weight: 400,
         },
       ],
-    }
+    },
   );
 }

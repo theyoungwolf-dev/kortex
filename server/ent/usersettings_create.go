@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Dan6erbond/revline/ent/user"
-	"github.com/Dan6erbond/revline/ent/usersettings"
+	"github.com/theyoungwolf-dev/kortex/ent/user"
+	"github.com/theyoungwolf-dev/kortex/ent/usersettings"
 	"github.com/google/uuid"
 )
 

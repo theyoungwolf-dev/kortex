@@ -35,8 +35,7 @@ const currentFeatures: FeatureItem[] = [
   {
     icon: Gauge,
     title: "Integrated Odometer Tracking",
-    description:
-      "Log odometer readings with fuel entries to automatically calculate fuel efficiency (MPG/L/100km).",
+    description: "Log odometer readings with fuel entries to automatically calculate fuel efficiency (MPG/L/100km).",
   },
   {
     icon: Wrench,
@@ -47,8 +46,7 @@ const currentFeatures: FeatureItem[] = [
   {
     icon: CalendarCheck,
     title: "Proactive Service Schedules",
-    description:
-      "Set up maintenance schedules based on time or mileage. Get reminders for upcoming service needs.",
+    description: "Set up maintenance schedules based on time or mileage. Get reminders for upcoming service needs.",
   },
   {
     icon: ImageIcon,
@@ -59,14 +57,12 @@ const currentFeatures: FeatureItem[] = [
   {
     icon: FileText,
     title: "Secure Document Storage",
-    description:
-      "Safely store important documents like receipts, titles, insurance cards, and registration papers.",
+    description: "Safely store important documents like receipts, titles, insurance cards, and registration papers.",
   },
   {
     icon: BarChart,
     title: "Performance Tracking",
-    description:
-      "Log results from dynamometer sessions and drag strip times to quantify performance gains.",
+    description: "Log results from dynamometer sessions and drag strip times to quantify performance gains.",
   },
 ];
 
@@ -81,8 +77,7 @@ const roadmapFeatures: FeatureItem[] = [
   {
     icon: Users,
     title: "Community Car Meets",
-    description:
-      "Organize, discover, and RSVP to local car meets and events directly within the app.",
+    description: "Organize, discover, and RSVP to local car meets and events directly within the app.",
     isRoadmap: true,
   },
   {
@@ -117,7 +112,7 @@ const roadmapFeatures: FeatureItem[] = [
     icon: MessagesSquare,
     title: "Community Forum/Groups",
     description:
-      "Connect with other Revline users, ask questions, share knowledge, and discuss specific car models or modification types.",
+      "Connect with other Kortex users, ask questions, share knowledge, and discuss specific car models or modification types.",
     isRoadmap: true,
   },
 ];
@@ -132,9 +127,7 @@ function Feature({ title, description, icon: Icon }: FeatureItem) {
         {Icon && <Icon className="w-5 h-5" strokeWidth={2} />}
       </div>
       <div>
-        <h4 className="text-lg font-medium text-gray-900 dark:text-white">
-          {title}
-        </h4>
+        <h4 className="text-lg font-medium text-gray-900 dark:text-white">{title}</h4>
         <p className="text-gray-600 dark:text-gray-400 mt-1">{description}</p>
       </div>
     </div>
@@ -151,9 +144,7 @@ function RoadmapItem({ title, description, icon: Icon }: FeatureItem) {
         {Icon && <Icon className="w-5 h-5" strokeWidth={2} />}
       </div>
       <div>
-        <h4 className="text-lg font-medium text-gray-900 dark:text-white">
-          {title}
-        </h4>
+        <h4 className="text-lg font-medium text-gray-900 dark:text-white">{title}</h4>
         <p className="text-gray-600 dark:text-gray-400 mt-1">{description}</p>
       </div>
     </div>
@@ -169,8 +160,8 @@ export default function FeaturesSection() {
             Everything You Need, And More To Come
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Revline provides powerful tools to manage your vehicles today, with
-            exciting community and advanced features planned for the future.
+            Kortex provides powerful tools to manage your vehicles today, with exciting community and advanced features
+            planned for the future.
           </p>
         </div>
 
@@ -207,8 +198,7 @@ export default function FeaturesSection() {
                 />
               ))}
               <p className="text-sm text-center text-gray-500 dark:text-gray-400 pt-4">
-                Roadmap features and timelines are subject to change based on
-                development progress and user feedback.
+                Roadmap features and timelines are subject to change based on development progress and user feedback.
               </p>
             </div>
           </div>

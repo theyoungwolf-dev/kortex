@@ -8,8 +8,8 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	_ "github.com/jackc/pgx/v5/stdlib"
 
-	"github.com/Dan6erbond/revline/ent"
-	"github.com/Dan6erbond/revline/internal"
+	"github.com/theyoungwolf-dev/kortex/ent"
+	"github.com/theyoungwolf-dev/kortex/internal"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )

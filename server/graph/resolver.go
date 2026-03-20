@@ -2,8 +2,8 @@
 package graph
 
 import (
-	"github.com/Dan6erbond/revline/ent"
-	"github.com/Dan6erbond/revline/internal"
+	"github.com/theyoungwolf-dev/kortex/ent"
+	"github.com/theyoungwolf-dev/kortex/internal"
 	"github.com/minio/minio-go/v7"
 )
 

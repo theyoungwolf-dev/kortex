@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Chip,
-  Divider,
-  Link,
-  cn,
-} from "@heroui/react";
+import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Divider, Link, cn } from "@heroui/react";
 import React, { ReactNode } from "react";
 
 import { Check } from "lucide-react";
@@ -37,7 +27,7 @@ function SubscriptionCard({
     <Card
       className={cn(
         "min-w-[250px] max-w-[400px] flex-1 px-2 py-6 gap-4",
-        isRecommended && "border-primary-400 border-2 relative overflow-visible"
+        isRecommended && "border-primary-400 border-2 relative overflow-visible",
       )}
       isBlurred
     >
@@ -76,17 +66,12 @@ function SubscriptionCard({
 
 export default function Pricing() {
   return (
-    <section
-      className="w-full bg-background py-16 px-4 sm:px-6 lg:px-8"
-      id="pricing"
-    >
+    <section className="w-full bg-background py-16 px-4 sm:px-6 lg:px-8" id="pricing">
       <div className="max-w-4xl mx-auto text-center">
-        <h2 className="text-3xl sm:text-4xl font-bold text-content1-foreground mb-4">
-          Simple, transparent pricing
-        </h2>
+        <h2 className="text-3xl sm:text-4xl font-bold text-content1-foreground mb-4">Simple, transparent pricing</h2>
         <p className="text-lg text-content2-foreground mb-12">
-          Whether you&apos;re tuning your weekend project or tracking your
-          build&apos;s evolution, we&apos;ve got you covered.
+          Whether you&apos;re tuning your weekend project or tracking your build&apos;s evolution, we&apos;ve got you
+          covered.
         </p>
       </div>
 
@@ -94,15 +79,11 @@ export default function Pricing() {
         <SubscriptionCard
           title="Free"
           description="Keep your car's history in check with essentials for maintenance and fuel tracking."
-          features={[
-            "Manage 1 vehicle",
-            "Fuel & maintenance tracking",
-            "Service logs & odometer readings",
-          ]}
+          features={["Manage 1 vehicle", "Fuel & maintenance tracking", "Service logs & odometer readings"]}
           footerContent={
             <Button
               as={Link}
-              href="https://revline.one/app"
+              href="https://kortex.one/app"
               color="primary"
               className="bg-gradient-to-r from-teal-500 to-teal-700 flex flex-col gap-1 h-12 w-32"
             >
@@ -124,7 +105,7 @@ export default function Pricing() {
           footerContent={
             <Button
               as={Link}
-              href="https://revline.one/app/subscription"
+              href="https://kortex.one/app/subscription"
               color="primary"
               className="bg-gradient-to-r from-teal-500 to-teal-700 flex flex-col gap-1 h-12 w-32"
             >
@@ -147,7 +128,7 @@ export default function Pricing() {
           footerContent={
             <Button
               as={Link}
-              href="https://revline.one/app/subscription"
+              href="https://kortex.one/app/subscription"
               color="primary"
               className="bg-gradient-to-r from-teal-500 to-teal-700 flex flex-col gap-1 h-12 w-32"
             >

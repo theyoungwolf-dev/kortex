@@ -5,11 +5,7 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 import { getMedia } from "./query";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
 
   const { data } = await query({ query: getMedia, variables: { id } });
@@ -28,16 +24,12 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${type} of ${name} by ${username} | Revline 1`,
-    description: `Check out this ${type.toLowerCase()} uploaded by ${username} showcasing their ${name}. Shared via Revline 1 - the community for car lovers and DIY enthusiasts.`,
+    title: `${type} of ${name} by ${username} | Kortex 1`,
+    description: `Check out this ${type.toLowerCase()} uploaded by ${username} showcasing their ${name}. Shared via Kortex 1 - the community for car lovers and DIY enthusiasts.`,
   };
 }
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   return (

@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/Dan6erbond/revline/auth"
+	"github.com/theyoungwolf-dev/kortex/auth"
 )
 
 var ErrForbidden = errors.New("forbidden")

@@ -10,13 +10,13 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/Dan6erbond/revline/ent/car"
-	"github.com/Dan6erbond/revline/ent/document"
-	"github.com/Dan6erbond/revline/ent/dragsession"
-	"github.com/Dan6erbond/revline/ent/dynosession"
-	"github.com/Dan6erbond/revline/ent/expense"
-	"github.com/Dan6erbond/revline/ent/fuelup"
-	"github.com/Dan6erbond/revline/ent/servicelog"
+	"github.com/theyoungwolf-dev/kortex/ent/car"
+	"github.com/theyoungwolf-dev/kortex/ent/document"
+	"github.com/theyoungwolf-dev/kortex/ent/dragsession"
+	"github.com/theyoungwolf-dev/kortex/ent/dynosession"
+	"github.com/theyoungwolf-dev/kortex/ent/expense"
+	"github.com/theyoungwolf-dev/kortex/ent/fuelup"
+	"github.com/theyoungwolf-dev/kortex/ent/servicelog"
 	"github.com/google/uuid"
 )
 

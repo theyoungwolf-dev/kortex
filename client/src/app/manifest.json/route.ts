@@ -3,8 +3,8 @@ import type { Manifest } from "next/dist/lib/metadata/types/manifest-types";
 const basePath = process.env.BASE_PATH ?? "";
 export async function GET() {
   return Response.json({
-    name: "Revline 1",
-    short_name: "Revline 1",
+    name: "Kortex 1",
+    short_name: "Kortex 1",
     start_url: basePath,
     icons: [
       {

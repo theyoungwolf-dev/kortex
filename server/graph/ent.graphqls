@@ -1,5 +1,13 @@
-directive @goField(forceResolver: Boolean, name: String, omittable: Boolean) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
-directive @goModel(model: String, models: [String!], forceGenerate: Boolean) on OBJECT | INPUT_OBJECT | SCALAR | ENUM | INTERFACE | UNION
+directive @goField(
+  forceResolver: Boolean
+  name: String
+  omittable: Boolean
+) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @goModel(
+  model: String
+  models: [String!]
+  forceGenerate: Boolean
+) on OBJECT | INPUT_OBJECT | SCALAR | ENUM | INTERFACE | UNION
 type Album implements Node {
   id: ID!
   createTime: Time!
@@ -633,7 +641,7 @@ type CheckoutSession implements Node {
 """
 CheckoutSessionMode is enum for the field mode
 """
-enum CheckoutSessionMode @goModel(model: "github.com/Dan6erbond/revline/ent/checkoutsession.Mode") {
+enum CheckoutSessionMode @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/checkoutsession.Mode") {
   subscription
   setup
   payment
@@ -1139,7 +1147,7 @@ scalar Cursor
 """
 DistanceUnit is enum for the field distance_unit
 """
-enum DistanceUnit @goModel(model: "github.com/Dan6erbond/revline/ent/usersettings.DistanceUnit") {
+enum DistanceUnit @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/usersettings.DistanceUnit") {
   kilometers
   miles
 }
@@ -1256,7 +1264,7 @@ type DragResult implements Node {
 """
 DragResultUnit is enum for the field unit
 """
-enum DragResultUnit @goModel(model: "github.com/Dan6erbond/revline/ent/dragresult.Unit") {
+enum DragResultUnit @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/dragresult.Unit") {
   kph
   km
 }
@@ -1617,7 +1625,7 @@ type Expense implements Node {
 """
 ExpenseType is enum for the field type
 """
-enum ExpenseType @goModel(model: "github.com/Dan6erbond/revline/ent/expense.Type") {
+enum ExpenseType @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/expense.Type") {
   fuel
   service
   insurance
@@ -1728,7 +1736,7 @@ input ExpenseWhereInput {
 """
 FuelCategory is enum for the field fuel_category
 """
-enum FuelCategory @goModel(model: "github.com/Dan6erbond/revline/ent/fuelup.FuelCategory") {
+enum FuelCategory @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/fuelup.FuelCategory") {
   petrol
   diesel
   electric
@@ -1738,7 +1746,7 @@ enum FuelCategory @goModel(model: "github.com/Dan6erbond/revline/ent/fuelup.Fuel
 """
 FuelConsumptionUnit is enum for the field fuel_consumption_unit
 """
-enum FuelConsumptionUnit @goModel(model: "github.com/Dan6erbond/revline/ent/usersettings.FuelConsumptionUnit") {
+enum FuelConsumptionUnit @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/usersettings.FuelConsumptionUnit") {
   mpg
   imp_mpg
   kpl
@@ -1886,7 +1894,7 @@ input FuelUpWhereInput {
 """
 FuelVolumeUnit is enum for the field fuel_volume_unit
 """
-enum FuelVolumeUnit @goModel(model: "github.com/Dan6erbond/revline/ent/usersettings.FuelVolumeUnit") {
+enum FuelVolumeUnit @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/usersettings.FuelVolumeUnit") {
   liter
   gallon
   imp_gallon
@@ -2077,7 +2085,7 @@ type Mod implements Node {
 """
 ModCategory is enum for the field category
 """
-enum ModCategory @goModel(model: "github.com/Dan6erbond/revline/ent/mod.Category") {
+enum ModCategory @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/mod.Category") {
   performance
   aesthetic
   utility
@@ -2267,7 +2275,7 @@ input ModProductOptionWhereInput {
 """
 ModStatus is enum for the field status
 """
-enum ModStatus @goModel(model: "github.com/Dan6erbond/revline/ent/mod.Status") {
+enum ModStatus @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/mod.Status") {
   idea
   planned
   completed
@@ -2409,7 +2417,7 @@ input ModWhereInput {
 An object with an ID.
 Follows the [Relay Global Object Identification Specification](https://relay.dev/graphql/objectidentification.htm)
 """
-interface Node @goModel(model: "github.com/Dan6erbond/revline/ent.Noder") {
+interface Node @goModel(model: "github.com/theyoungwolf-dev/kortex/ent.Noder") {
   """
   The id of the object.
   """
@@ -2418,7 +2426,7 @@ interface Node @goModel(model: "github.com/Dan6erbond/revline/ent.Noder") {
 """
 OctaneRating is enum for the field octane_rating
 """
-enum OctaneRating @goModel(model: "github.com/Dan6erbond/revline/ent/fuelup.OctaneRating") {
+enum OctaneRating @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/fuelup.OctaneRating") {
   ron91
   ron95
   ron98
@@ -2572,7 +2580,7 @@ type PageInfo {
 """
 PowerUnit is enum for the field power_unit
 """
-enum PowerUnit @goModel(model: "github.com/Dan6erbond/revline/ent/usersettings.PowerUnit") {
+enum PowerUnit @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/usersettings.PowerUnit") {
   metric_horsepower
   mech_horsepower
   kilowatts
@@ -2592,7 +2600,7 @@ type Profile implements Node {
 """
 ProfileVisibility is enum for the field visibility
 """
-enum ProfileVisibility @goModel(model: "github.com/Dan6erbond/revline/ent/profile.Visibility") {
+enum ProfileVisibility @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/profile.Visibility") {
   public
   private
 }
@@ -3165,7 +3173,7 @@ input ServiceScheduleWhereInput {
   hasLogs: Boolean
   hasLogsWith: [ServiceLogWhereInput!]
 }
-type SubscriptionPlan implements Node @goModel(model: "github.com/Dan6erbond/revline/ent.Subscription") {
+type SubscriptionPlan implements Node @goModel(model: "github.com/theyoungwolf-dev/kortex/ent.Subscription") {
   id: ID!
   createTime: Time!
   updateTime: Time!
@@ -3334,7 +3342,7 @@ input SubscriptionPlanWhereInput {
 """
 SubscriptionStatus is enum for the field status
 """
-enum SubscriptionStatus @goModel(model: "github.com/Dan6erbond/revline/ent/subscription.Status") {
+enum SubscriptionStatus @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/subscription.Status") {
   active
   trialing
   canceled
@@ -3346,7 +3354,7 @@ enum SubscriptionStatus @goModel(model: "github.com/Dan6erbond/revline/ent/subsc
 """
 SubscriptionTier is enum for the field tier
 """
-enum SubscriptionTier @goModel(model: "github.com/Dan6erbond/revline/ent/subscription.Tier") {
+enum SubscriptionTier @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/subscription.Tier") {
   diy
   enthusiast
 }
@@ -3373,7 +3381,7 @@ type Task implements Node {
 """
 TaskCategory is enum for the field category
 """
-enum TaskCategory @goModel(model: "github.com/Dan6erbond/revline/ent/task.Category") {
+enum TaskCategory @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/task.Category") {
   maintenance
   service
   repair
@@ -3408,7 +3416,7 @@ type TaskConnection {
 """
 TaskDifficulty is enum for the field difficulty
 """
-enum TaskDifficulty @goModel(model: "github.com/Dan6erbond/revline/ent/task.Difficulty") {
+enum TaskDifficulty @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/task.Difficulty") {
   beginner
   intermediate
   advanced
@@ -3430,7 +3438,7 @@ type TaskEdge {
 """
 TaskEffort is enum for the field effort
 """
-enum TaskEffort @goModel(model: "github.com/Dan6erbond/revline/ent/task.Effort") {
+enum TaskEffort @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/task.Effort") {
   trivial
   easy
   moderate
@@ -3470,7 +3478,7 @@ enum TaskOrderField {
 """
 TaskPriority is enum for the field priority
 """
-enum TaskPriority @goModel(model: "github.com/Dan6erbond/revline/ent/task.Priority") {
+enum TaskPriority @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/task.Priority") {
   low
   mid
   high
@@ -3479,7 +3487,7 @@ enum TaskPriority @goModel(model: "github.com/Dan6erbond/revline/ent/task.Priori
 """
 TaskStatus is enum for the field status
 """
-enum TaskStatus @goModel(model: "github.com/Dan6erbond/revline/ent/task.Status") {
+enum TaskStatus @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/task.Status") {
   backlog
   todo
   in_progress
@@ -3683,7 +3691,7 @@ input TaskWhereInput {
 """
 TemperatureUnit is enum for the field temperature_unit
 """
-enum TemperatureUnit @goModel(model: "github.com/Dan6erbond/revline/ent/usersettings.TemperatureUnit") {
+enum TemperatureUnit @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/usersettings.TemperatureUnit") {
   celsius
   fahrenheit
 }
@@ -3694,7 +3702,7 @@ scalar Time
 """
 TorqueUnit is enum for the field torque_unit
 """
-enum TorqueUnit @goModel(model: "github.com/Dan6erbond/revline/ent/usersettings.TorqueUnit") {
+enum TorqueUnit @goModel(model: "github.com/theyoungwolf-dev/kortex/ent/usersettings.TorqueUnit") {
   newton_meters
   pound_feet
   kilogram_meter

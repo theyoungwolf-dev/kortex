@@ -11,11 +11,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Dan6erbond/revline/ent/buildlog"
-	"github.com/Dan6erbond/revline/ent/car"
-	"github.com/Dan6erbond/revline/ent/media"
-	"github.com/Dan6erbond/revline/ent/mod"
-	"github.com/Dan6erbond/revline/ent/predicate"
+	"github.com/theyoungwolf-dev/kortex/ent/buildlog"
+	"github.com/theyoungwolf-dev/kortex/ent/car"
+	"github.com/theyoungwolf-dev/kortex/ent/media"
+	"github.com/theyoungwolf-dev/kortex/ent/mod"
+	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 	"github.com/google/uuid"
 )
 

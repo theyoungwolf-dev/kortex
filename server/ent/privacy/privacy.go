@@ -5,7 +5,7 @@ package privacy
 import (
 	"context"
 
-	"github.com/Dan6erbond/revline/ent"
+	"github.com/theyoungwolf-dev/kortex/ent"
 
 	"entgo.io/ent/entql"
 	"entgo.io/ent/privacy"

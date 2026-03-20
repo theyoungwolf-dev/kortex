@@ -1,4 +1,4 @@
-module github.com/Dan6erbond/revline
+module github.com/theyoungwolf-dev/kortex
 
 go 1.23.8
 

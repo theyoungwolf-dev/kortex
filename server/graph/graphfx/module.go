@@ -1,7 +1,7 @@
 package graphfx
 
 import (
-	"github.com/Dan6erbond/revline/graph"
+	"github.com/theyoungwolf-dev/kortex/graph"
 	"go.uber.org/fx"
 )
 

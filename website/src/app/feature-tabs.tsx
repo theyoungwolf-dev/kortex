@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  ArrowRight,
-  FuelIcon,
-  GaugeIcon,
-  ImageIcon,
-  KanbanSquareIcon,
-  WrenchIcon,
-} from "lucide-react";
+import { ArrowRight, FuelIcon, GaugeIcon, ImageIcon, KanbanSquareIcon, WrenchIcon } from "lucide-react";
 import { Button, Image, Tab, Tabs } from "@heroui/react";
 
 import NextImage from "next/image";
@@ -16,12 +9,10 @@ export default function FeatureTabs() {
   return (
     <section className="py-12">
       <div className="max-w-5xl mx-auto px-4 text-center flex flex-col gap-4 items-center">
-        <h2 className="text-4xl font-bold mb-4 text-foreground">
-          Built for Enthusiasts Who Want It All
-        </h2>
+        <h2 className="text-4xl font-bold mb-4 text-foreground">Built for Enthusiasts Who Want It All</h2>
         <p className="text-lg text-default-500 mb-10">
-          Revline keeps your builds, data, and memories in one place. Explore
-          what makes it the all-in-one garage companion.
+          Kortex keeps your builds, data, and memories in one place. Explore what makes it the all-in-one garage
+          companion.
         </p>
 
         <Tabs
@@ -42,8 +33,7 @@ export default function FeatureTabs() {
           >
             <div className="mt-4 space-y-4">
               <p className="text-default-700">
-                Plan and organize your builds with an intuitive Kanban board
-                made for wrenching workflows.
+                Plan and organize your builds with an intuitive Kanban board made for wrenching workflows.
               </p>
               <video autoPlay className="w-full rounded-lg shadow">
                 <source src="/videos/kanban.mp4" type="video/mp4" />
@@ -62,8 +52,7 @@ export default function FeatureTabs() {
           >
             <div className="mt-4 space-y-4">
               <p className="text-default-700">
-                Import and manage all your dyno results, compare sessions, and
-                track performance over time.
+                Import and manage all your dyno results, compare sessions, and track performance over time.
               </p>
               <video autoPlay className="w-full rounded-lg shadow">
                 <source src="/videos/dyno.mp4" type="video/mp4" />
@@ -82,8 +71,7 @@ export default function FeatureTabs() {
           >
             <div className="mt-4 space-y-4">
               <p className="text-default-700">
-                Track every fuel stop, calculate mileage, and monitor fuel
-                efficiency trends.
+                Track every fuel stop, calculate mileage, and monitor fuel efficiency trends.
               </p>
               <video autoPlay className="w-full rounded-lg shadow">
                 <source src="/videos/fuelups.mp4" type="video/mp4" />
@@ -102,8 +90,7 @@ export default function FeatureTabs() {
             className="self-stretch aspect-video flex flex-col gap-4"
           >
             <p className="text-default-700">
-              Log every oil change, tire swap, and scheduled service with
-              reminders and timelines.
+              Log every oil change, tire swap, and scheduled service with reminders and timelines.
             </p>
             <Image
               as={NextImage}
@@ -128,8 +115,8 @@ export default function FeatureTabs() {
             className="self-stretch aspect-video flex flex-col gap-4"
           >
             <p className="text-default-700">
-              Upload and share albums from meets, builds, and personal projects.
-              Easily organize and showcase your car story.
+              Upload and share albums from meets, builds, and personal projects. Easily organize and showcase your car
+              story.
             </p>
             <Image
               as={NextImage}
@@ -147,7 +134,7 @@ export default function FeatureTabs() {
         <Button
           size="lg"
           as="a"
-          href="https://revline.one/app"
+          href="https://kortex.one/app"
           className="bg-white text-black hover:bg-gray-200 transition-colors flex items-center gap-2 self-center"
         >
           Go to App <ArrowRight className="w-4 h-4" />

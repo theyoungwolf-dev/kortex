@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Button,
-  Navbar as HeroNavbar,
-  Link,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-} from "@heroui/react";
+import { Button, Navbar as HeroNavbar, Link, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 
 import { ArrowRight } from "lucide-react";
 import NextLink from "next/link";
@@ -39,9 +32,7 @@ export default function Navbar() {
           <Link
             as={NextLink}
             aria-current={pathname.startsWith("/selfhosted") ? "page" : false}
-            color={
-              pathname.startsWith("/selfhosted") ? "primary" : "foreground"
-            }
+            color={pathname.startsWith("/selfhosted") ? "primary" : "foreground"}
             href={"/selfhosted"}
           >
             Selfhosted
@@ -51,7 +42,7 @@ export default function Navbar() {
       <NavbarContent justify="end">
         <Button
           as={Link}
-          href="https://revline.one/app"
+          href="https://kortex.one/app"
           className="bg-white text-black hover:bg-gray-200 transition-colors flex items-center gap-2"
         >
           Go to App <ArrowRight className="w-4 h-4" />

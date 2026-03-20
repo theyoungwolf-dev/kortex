@@ -35,38 +35,33 @@ export default function CarHead({
   page?: "overview" | "mods" | "build-log";
 }) {
   const { name, make, model, trim, year, owner, id } = car;
-  const username = owner?.profile?.username || "a Revline 1 user";
+  const username = owner?.profile?.username || "a Kortex 1 user";
   const fallbackTitleParts = [year, make, model, trim].filter(Boolean);
   const carTitle = name || fallbackTitleParts.join(" ");
 
   let titleSuffix = "";
   let description = "";
-  const imageUrl = new URL(
-    basePath + `/cars/${id}/opengraph-image`,
-    baseUrl
-  ).toString();
+  const imageUrl = new URL(basePath + `/cars/${id}/opengraph-image`, baseUrl).toString();
 
   switch (page) {
     case "mods":
       titleSuffix = "Modifications Showcase";
-      description = `Browse custom mods, upgrades, and tweaks made to ${carTitle}, shared by ${username} on Revline 1.`;
+      description = `Browse custom mods, upgrades, and tweaks made to ${carTitle}, shared by ${username} on Kortex 1.`;
       break;
     case "build-log":
       titleSuffix = "Build Logs";
-      description = `Explore detailed build logs and progress notes for ${carTitle}, contributed by ${username} on Revline 1.`;
+      description = `Explore detailed build logs and progress notes for ${carTitle}, contributed by ${username} on Kortex 1.`;
       break;
     case "overview":
     default:
       titleSuffix = "Overview";
       description = name
         ? `Explore ${name}, a custom build by ${username}. Discover specs, history, and more.`
-        : `Discover details of ${fallbackTitleParts.join(
-            " "
-          )}, owned by ${username}, on Revline 1.`;
+        : `Discover details of ${fallbackTitleParts.join(" ")}, owned by ${username}, on Kortex 1.`;
       break;
   }
 
-  const title = `${carTitle} | ${titleSuffix} | Revline 1`;
+  const title = `${carTitle} | ${titleSuffix} | Kortex 1`;
   const canonicalUrl = new URL(basePath + `/cars/${id}`, baseUrl).toString();
 
   return (
@@ -81,7 +76,7 @@ export default function CarHead({
       <meta property="og:description" content={description} />
       <meta property="og:image" content={imageUrl} />
       <meta property="og:url" content={canonicalUrl} />
-      <meta property="og:site_name" content="Revline" />
+      <meta property="og:site_name" content="Kortex" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />

@@ -18,38 +18,24 @@ export default function Footer() {
             </Link>
             <Button
               as="a"
-              href="https://revline.one/app"
+              href="https://kortex.one/app"
               className="bg-white text-black hover:bg-gray-200 transition-colors flex items-center gap-2"
             >
               Go to App <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
           <div className="flex gap-4">
-            <Link
-              href="https://reddit.com/r/revline1"
-              isExternal
-              className="hover:text-gray-400 transition-colors"
-            >
+            <Link href="https://reddit.com/r/kortex1" isExternal className="hover:text-gray-400 transition-colors">
               <SiReddit className="w-5 h-5" />
             </Link>
-            <Link
-              href="https://twitter.com/revlineone"
-              isExternal
-              className="hover:text-gray-400 transition-colors"
-            >
+            <Link href="https://twitter.com/kortexone" isExternal className="hover:text-gray-400 transition-colors">
               <SiX className="w-5 h-5" />
             </Link>
-            <Link
-              href="https://instagram.com/revline.1"
-              isExternal
-              className="hover:text-gray-400 transition-colors"
-            >
+            <Link href="https://instagram.com/kortex.1" isExternal className="hover:text-gray-400 transition-colors">
               <SiInstagram className="w-5 h-5" />
             </Link>
           </div>
-          <p className="text-sm text-gray-400">
-            &copy; {new Date().getFullYear()} Revline 1. Crafted with passion.
-          </p>
+          <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} Kortex 1. Crafted with passion.</p>
           <div className="flex gap-4">
             <NextLink href="/terms-of-use" className="text-zinc-300">
               Terms of Use

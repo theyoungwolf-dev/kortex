@@ -1,24 +1,13 @@
 "use client";
 
 import { Accordion, AccordionItem } from "@heroui/react";
-import {
-  Calendar,
-  FileText,
-  Flame,
-  Lock,
-  Image as LucideImage,
-  Settings,
-  Share2,
-  Upload,
-  Wrench,
-} from "lucide-react";
+import { Calendar, FileText, Flame, Lock, Image as LucideImage, Settings, Share2, Upload, Wrench } from "lucide-react";
 
 const faqItems = [
   {
     key: "1",
     icon: <Wrench className="w-5 h-5 text-primary" />,
-    question:
-      "Is the free version just a teaser, or can I actually use it long-term?",
+    question: "Is the free version just a teaser, or can I actually use it long-term?",
     answer:
       "You're not being funneled into a paid tier. The free version is a fully usable toolkit for tracking your expenses, fuel-ups, service records, and odometer logs. Plenty of users never upgrade—and that's fine.",
   },
@@ -46,7 +35,7 @@ const faqItems = [
   {
     key: "6",
     icon: <Upload className="w-5 h-5 text-primary" />,
-    question: "How can I import dyno charts into Revline 1?",
+    question: "How can I import dyno charts into Kortex 1?",
     answer:
       "You can use a plot digitizer app like PlotDigitizer to convert your dyno charts into a digital format. Check out our guide on how to do this step-by-step.",
   },
@@ -60,35 +49,31 @@ const faqItems = [
   {
     key: "8",
     icon: <Calendar className="w-5 h-5 text-primary" />,
-    question: "Can I schedule service reminders in Revline 1?",
+    question: "Can I schedule service reminders in Kortex 1?",
     answer:
-      "While service reminders aren't available just yet, you can track service logs and create service schedules. Revline 1 will show you upcoming services in order of next by kilometer or next due date. Stay tuned for email and push notifications coming soon!",
+      "While service reminders aren't available just yet, you can track service logs and create service schedules. Kortex 1 will show you upcoming services in order of next by kilometer or next due date. Stay tuned for email and push notifications coming soon!",
   },
   {
     key: "9",
     icon: <Share2 className="w-5 h-5 text-primary" />,
     question: "Can I collaborate with others on my car projects?",
     answer:
-      "Currently, Revline 1 focuses on individual use, but we are exploring features that will allow collaboration in future updates.",
+      "Currently, Kortex 1 focuses on individual use, but we are exploring features that will allow collaboration in future updates.",
   },
   {
     key: "10",
     icon: <Settings className="w-5 h-5 text-primary" />,
-    question: "How do I customize the units in Revline 1?",
+    question: "How do I customize the units in Kortex 1?",
     answer:
-      "You can easily customize your preferred units in the settings menu. Whether you prefer metric or imperial units, Revline 1 has you covered.",
+      "You can easily customize your preferred units in the settings menu. Whether you prefer metric or imperial units, Kortex 1 has you covered.",
   },
 ];
 
 export default function FAQ() {
   return (
     <section className="container mx-auto text-content4-foreground p-6">
-      <h2 className="text-3xl font-bold mb-2 text-center">
-        Frequently Asked Questions
-      </h2>
-      <p className="text-center mb-6">
-        Everything you need to know about Revline 1&apos;s tiers and features
-      </p>
+      <h2 className="text-3xl font-bold mb-2 text-center">Frequently Asked Questions</h2>
+      <p className="text-center mb-6">Everything you need to know about Kortex 1&apos;s tiers and features</p>
       <Accordion>
         {faqItems.map((item) => (
           <AccordionItem

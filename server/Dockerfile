@@ -1,6 +1,6 @@
 FROM golang:1.24-alpine AS builder
 
-WORKDIR /revline
+WORKDIR /kortex
 
 COPY . ./
 
@@ -10,11 +10,11 @@ RUN apk update && \
 
 RUN go mod download
 
-RUN CGO_ENABLED=1 go build -o revline .
+RUN CGO_ENABLED=1 go build -o kortex .
 
 FROM alpine:latest
 
-WORKDIR /revline
+WORKDIR /kortex
 
 RUN apk update && \
   apk upgrade -U && \
@@ -24,7 +24,7 @@ RUN curl -sSf https://atlasgo.sh | sh
 
 COPY ./ent/migrate/migrations/ ./ent/migrate/migrations/
 
-COPY --from=builder /revline/revline .
+COPY --from=builder /kortex/kortex .
 
 ENV PORT=4000
 ENV HOST=0.0.0.0
@@ -32,4 +32,4 @@ ENV ENVIRONMENT=production
 
 EXPOSE 4000
 
-CMD [ "./revline" ]
+CMD [ "./kortex" ]

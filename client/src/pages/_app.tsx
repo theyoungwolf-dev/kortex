@@ -75,33 +75,19 @@ export default function CustomApp({
         }
       `}</style>
       <Head>
-        <title>Revline 1</title>
-        <meta name="apple-mobile-web-app-title" content="Revline 1" />
-        <link
-          rel="icon"
-          type="image/png"
-          href={href("/favicon-96x96.png")}
-          sizes="96x96"
-        />
+        <title>Kortex 1</title>
+        <meta name="apple-mobile-web-app-title" content="Kortex 1" />
+        <link rel="icon" type="image/png" href={href("/favicon-96x96.png")} sizes="96x96" />
         <link rel="icon" type="image/svg+xml" href={href("/favicon.svg")} />
         <link rel="shortcut icon" href={href("/favicon.ico")} />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href={href("/apple-touch-icon.png")}
-        />
-        <meta name="apple-mobile-web-app-title" content="Revline 1" />
+        <link rel="apple-touch-icon" sizes="180x180" href={href("/apple-touch-icon.png")} />
+        <meta name="apple-mobile-web-app-title" content="Kortex 1" />
         <link rel="manifest" href={href("/manifest.json")} />
       </Head>
-      <SessionProvider
-        session={session}
-        basePath={router.basePath ? router.basePath + "/api/auth" : undefined}
-      >
+      <SessionProvider session={session} basePath={router.basePath ? router.basePath + "/api/auth" : undefined}>
         <ConfigProvider basePath={router.basePath} serverUrl={url}>
           <AuthenticatedApolloProvider url={url} pageProps={pageProps}>
-            {process.env.NODE_ENV !== "development" && (
-              <Umami websiteId="64bc9887-3516-4a18-b0a9-bfff4281cb0b" />
-            )}
+            {process.env.NODE_ENV !== "development" && <Umami websiteId="64bc9887-3516-4a18-b0a9-bfff4281cb0b" />}
             <UserTour />
             <Component {...pageProps} />
           </AuthenticatedApolloProvider>
@@ -111,9 +97,7 @@ export default function CustomApp({
   );
 }
 
-CustomApp.getInitialProps = async (
-  context: AppContext
-): Promise<CustomAppProps & AppInitialProps> => {
+CustomApp.getInitialProps = async (context: AppContext): Promise<CustomAppProps & AppInitialProps> => {
   const ctx = await App.getInitialProps(context);
 
   return {

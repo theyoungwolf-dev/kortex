@@ -9,10 +9,10 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/Dan6erbond/revline/ent/car"
-	"github.com/Dan6erbond/revline/ent/media"
-	"github.com/Dan6erbond/revline/ent/modproductoption"
-	"github.com/Dan6erbond/revline/ent/user"
+	"github.com/theyoungwolf-dev/kortex/ent/car"
+	"github.com/theyoungwolf-dev/kortex/ent/media"
+	"github.com/theyoungwolf-dev/kortex/ent/modproductoption"
+	"github.com/theyoungwolf-dev/kortex/ent/user"
 	"github.com/google/uuid"
 )
 
