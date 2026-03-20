@@ -49,7 +49,7 @@ kortex/
 ### 1. Start Infrastructure (Database & MinIO)
 
 ```bash
-git clone [https://github.com/theyoungwolf-dev/kortex.git](https://github.com/theyoungwolf-dev/kortex.git)
+git clone https://github.com/theyoungwolf-dev/kortex.git
 cd kortex
 docker-compose up -d
 ```
