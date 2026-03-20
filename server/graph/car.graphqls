@@ -1,0 +1,119 @@
+type UpcomingService {
+  schedule: ServiceSchedule!
+  nextDueKm: Float
+  nextDueDate: Time
+  dueAtKm: Float!
+}
+
+extend type Car {
+  bannerImageUrl: String
+  averageConsumptionLitersPerKm: Float!
+  upcomingServices: [UpcomingService!]!
+  odometerKm: Float!
+  powerKw: Float
+  torqueNm: Float
+}
+
+type FileMetadata @goModel(model: "github.com/minio/minio-go/v7.ObjectInfo") {
+  etag: String!
+  key: String!
+  size: Int!
+  contentType: String!
+  expires: Time
+}
+
+extend type Media {
+  url: String!
+  metadata: FileMetadata
+}
+
+extend type Document {
+  url: String!
+  metadata: FileMetadata
+}
+
+extend type Query {
+  car(id: ID!): Car!
+  dragSession(id: ID!): DragSession!
+  dynoSession(id: ID!): DynoSession!
+  document(id: ID!): Document!
+  media(id: ID!): Media!
+  album(id: ID!): Album!
+  task(id: ID!): Task!
+  mod(id: ID!): Mod!
+  modProductOption(id: ID!): ModProductOption!
+}
+
+type UploadMediaResult {
+  media: Media!
+  uploadUrl: String!
+}
+
+type UploadDocumentResult {
+  document: Document!
+  uploadUrl: String!
+}
+
+extend input CreateFuelUpInput {
+  cost: Float!
+  odometerKm: Float
+}
+
+extend input UpdateFuelUpInput {
+  cost: Float
+  odometerKm: Float
+}
+
+extend input CreateServiceLogInput {
+  cost: Float
+  odometerKm: Float
+}
+
+extend type Mutation {
+  createCar(input: CreateCarInput!): Car! @loggedIn
+  uploadBannerImage(input: CreateMediaInput!): UploadMediaResult! @loggedIn
+  uploadMedia(input: CreateMediaInput!): UploadMediaResult! @loggedIn
+  updateMedia(id: ID!, input: UpdateMediaInput!): Media! @loggedIn
+  uploadDocument(input: CreateDocumentInput!): UploadDocumentResult! @loggedIn
+  createExpense(input: CreateExpenseInput!): Expense! @loggedIn
+  updateExpense(id: ID!, input: UpdateExpenseInput!): Expense! @loggedIn
+  deleteExpense(id: ID!): Boolean! @loggedIn
+  createFuelUp(input: CreateFuelUpInput!): FuelUp! @loggedIn
+  updateFuelUp(id: ID!, input: UpdateFuelUpInput!): FuelUp! @loggedIn
+  deleteFuelUp(id: ID!): Boolean! @loggedIn
+  createOdometerReading(input: CreateOdometerReadingInput!): OdometerReading!
+    @loggedIn
+  updateOdometerReading(
+    id: ID!
+    input: UpdateOdometerReadingInput!
+  ): OdometerReading! @loggedIn
+  createServiceItem(input: CreateServiceItemInput!): ServiceItem! @loggedIn
+  createServiceSchedule(input: CreateServiceScheduleInput!): ServiceSchedule!
+    @loggedIn
+  createServiceLog(input: CreateServiceLogInput!): ServiceLog! @loggedIn
+  createDragSession(input: CreateDragSessionInput!): DragSession! @loggedIn
+  updateDragSession(id: ID!, input: UpdateDragSessionInput!): DragSession!
+    @loggedIn
+  createDragResult(input: CreateDragResultInput!): DragResult! @loggedIn
+  createDynoSession(input: CreateDynoSessionInput!): DynoSession! @loggedIn
+  updateDynoSession(id: ID!, input: UpdateDynoSessionInput!): DynoSession!
+    @loggedIn
+  createDynoResult(input: CreateDynoResultInput!): DynoResult! @loggedIn
+  deleteDynoResult(id: ID!): Boolean!
+  deleteDynoResults(ids: [ID!]!): Boolean!
+  createAlbum(input: CreateAlbumInput!): Album! @loggedIn
+  updateAlbum(id: ID!, input: UpdateAlbumInput!): Album! @loggedIn
+  createTask(input: CreateTaskInput!): Task! @loggedIn
+  updateTask(id: ID!, input: UpdateTaskInput!): Task! @loggedIn
+  createMod(input: CreateModInput!): Mod! @loggedIn
+  updateMod(id: ID!, input: UpdateModInput!): Mod! @loggedIn
+  createModProductOption(
+    input: CreateModProductOptionInput!
+  ): ModProductOption! @loggedIn
+  updateModProductOption(
+    id: ID!
+    input: UpdateModProductOptionInput!
+  ): ModProductOption! @loggedIn
+  createBuildLog(input: CreateBuildLogInput!): BuildLog! @loggedIn
+  updateBuildLog(id: ID!, input: UpdateBuildLogInput!): BuildLog! @loggedIn
+}
