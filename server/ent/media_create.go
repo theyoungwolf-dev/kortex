@@ -10,13 +10,9 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/theyoungwolf-dev/kortex/ent/album"
-	"github.com/theyoungwolf-dev/kortex/ent/buildlog"
-	"github.com/theyoungwolf-dev/kortex/ent/car"
-	"github.com/theyoungwolf-dev/kortex/ent/media"
-	"github.com/theyoungwolf-dev/kortex/ent/modproductoption"
-	"github.com/theyoungwolf-dev/kortex/ent/user"
 	"github.com/google/uuid"
+	"github.com/theyoungwolf-dev/kortex/ent/media"
+	"github.com/theyoungwolf-dev/kortex/ent/user"
 )
 
 // MediaCreate is the builder for creating a Media entity.
@@ -113,74 +109,6 @@ func (mc *MediaCreate) SetNillableUserID(id *uuid.UUID) *MediaCreate {
 // SetUser sets the "user" edge to the User entity.
 func (mc *MediaCreate) SetUser(u *User) *MediaCreate {
 	return mc.SetUserID(u.ID)
-}
-
-// SetCarID sets the "car" edge to the Car entity by ID.
-func (mc *MediaCreate) SetCarID(id uuid.UUID) *MediaCreate {
-	mc.mutation.SetCarID(id)
-	return mc
-}
-
-// SetNillableCarID sets the "car" edge to the Car entity by ID if the given value is not nil.
-func (mc *MediaCreate) SetNillableCarID(id *uuid.UUID) *MediaCreate {
-	if id != nil {
-		mc = mc.SetCarID(*id)
-	}
-	return mc
-}
-
-// SetCar sets the "car" edge to the Car entity.
-func (mc *MediaCreate) SetCar(c *Car) *MediaCreate {
-	return mc.SetCarID(c.ID)
-}
-
-// SetModProductOptionID sets the "mod_product_option" edge to the ModProductOption entity by ID.
-func (mc *MediaCreate) SetModProductOptionID(id uuid.UUID) *MediaCreate {
-	mc.mutation.SetModProductOptionID(id)
-	return mc
-}
-
-// SetNillableModProductOptionID sets the "mod_product_option" edge to the ModProductOption entity by ID if the given value is not nil.
-func (mc *MediaCreate) SetNillableModProductOptionID(id *uuid.UUID) *MediaCreate {
-	if id != nil {
-		mc = mc.SetModProductOptionID(*id)
-	}
-	return mc
-}
-
-// SetModProductOption sets the "mod_product_option" edge to the ModProductOption entity.
-func (mc *MediaCreate) SetModProductOption(m *ModProductOption) *MediaCreate {
-	return mc.SetModProductOptionID(m.ID)
-}
-
-// AddBuildLogIDs adds the "build_log" edge to the BuildLog entity by IDs.
-func (mc *MediaCreate) AddBuildLogIDs(ids ...uuid.UUID) *MediaCreate {
-	mc.mutation.AddBuildLogIDs(ids...)
-	return mc
-}
-
-// AddBuildLog adds the "build_log" edges to the BuildLog entity.
-func (mc *MediaCreate) AddBuildLog(b ...*BuildLog) *MediaCreate {
-	ids := make([]uuid.UUID, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return mc.AddBuildLogIDs(ids...)
-}
-
-// AddAlbumIDs adds the "albums" edge to the Album entity by IDs.
-func (mc *MediaCreate) AddAlbumIDs(ids ...uuid.UUID) *MediaCreate {
-	mc.mutation.AddAlbumIDs(ids...)
-	return mc
-}
-
-// AddAlbums adds the "albums" edges to the Album entity.
-func (mc *MediaCreate) AddAlbums(a ...*Album) *MediaCreate {
-	ids := make([]uuid.UUID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return mc.AddAlbumIDs(ids...)
 }
 
 // Mutation returns the MediaMutation object of the builder.
@@ -306,72 +234,6 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.user_media = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := mc.mutation.CarIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   media.CarTable,
-			Columns: []string{media.CarColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(car.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.car_media = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := mc.mutation.ModProductOptionIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   media.ModProductOptionTable,
-			Columns: []string{media.ModProductOptionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(modproductoption.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.mod_product_option_media = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := mc.mutation.BuildLogIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   media.BuildLogTable,
-			Columns: media.BuildLogPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(buildlog.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := mc.mutation.AlbumsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   media.AlbumsTable,
-			Columns: media.AlbumsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(album.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

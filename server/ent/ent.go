@@ -12,27 +12,10 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/theyoungwolf-dev/kortex/ent/album"
-	"github.com/theyoungwolf-dev/kortex/ent/buildlog"
-	"github.com/theyoungwolf-dev/kortex/ent/car"
 	"github.com/theyoungwolf-dev/kortex/ent/checkoutsession"
-	"github.com/theyoungwolf-dev/kortex/ent/document"
-	"github.com/theyoungwolf-dev/kortex/ent/dragresult"
-	"github.com/theyoungwolf-dev/kortex/ent/dragsession"
-	"github.com/theyoungwolf-dev/kortex/ent/dynoresult"
-	"github.com/theyoungwolf-dev/kortex/ent/dynosession"
-	"github.com/theyoungwolf-dev/kortex/ent/expense"
-	"github.com/theyoungwolf-dev/kortex/ent/fuelup"
 	"github.com/theyoungwolf-dev/kortex/ent/media"
-	"github.com/theyoungwolf-dev/kortex/ent/mod"
-	"github.com/theyoungwolf-dev/kortex/ent/modproductoption"
-	"github.com/theyoungwolf-dev/kortex/ent/odometerreading"
 	"github.com/theyoungwolf-dev/kortex/ent/profile"
-	"github.com/theyoungwolf-dev/kortex/ent/serviceitem"
-	"github.com/theyoungwolf-dev/kortex/ent/servicelog"
-	"github.com/theyoungwolf-dev/kortex/ent/serviceschedule"
 	"github.com/theyoungwolf-dev/kortex/ent/subscription"
-	"github.com/theyoungwolf-dev/kortex/ent/task"
 	"github.com/theyoungwolf-dev/kortex/ent/user"
 	"github.com/theyoungwolf-dev/kortex/ent/usersettings"
 )
@@ -95,29 +78,12 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			album.Table:            album.ValidColumn,
-			buildlog.Table:         buildlog.ValidColumn,
-			car.Table:              car.ValidColumn,
-			checkoutsession.Table:  checkoutsession.ValidColumn,
-			document.Table:         document.ValidColumn,
-			dragresult.Table:       dragresult.ValidColumn,
-			dragsession.Table:      dragsession.ValidColumn,
-			dynoresult.Table:       dynoresult.ValidColumn,
-			dynosession.Table:      dynosession.ValidColumn,
-			expense.Table:          expense.ValidColumn,
-			fuelup.Table:           fuelup.ValidColumn,
-			media.Table:            media.ValidColumn,
-			mod.Table:              mod.ValidColumn,
-			modproductoption.Table: modproductoption.ValidColumn,
-			odometerreading.Table:  odometerreading.ValidColumn,
-			profile.Table:          profile.ValidColumn,
-			serviceitem.Table:      serviceitem.ValidColumn,
-			servicelog.Table:       servicelog.ValidColumn,
-			serviceschedule.Table:  serviceschedule.ValidColumn,
-			subscription.Table:     subscription.ValidColumn,
-			task.Table:             task.ValidColumn,
-			user.Table:             user.ValidColumn,
-			usersettings.Table:     usersettings.ValidColumn,
+			checkoutsession.Table: checkoutsession.ValidColumn,
+			media.Table:           media.ValidColumn,
+			profile.Table:         profile.ValidColumn,
+			subscription.Table:    subscription.ValidColumn,
+			user.Table:            user.ValidColumn,
+			usersettings.Table:    usersettings.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

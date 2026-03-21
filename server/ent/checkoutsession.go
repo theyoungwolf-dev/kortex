@@ -9,10 +9,10 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 	"github.com/theyoungwolf-dev/kortex/ent/checkoutsession"
 	"github.com/theyoungwolf-dev/kortex/ent/subscription"
 	"github.com/theyoungwolf-dev/kortex/ent/user"
-	"github.com/google/uuid"
 )
 
 // CheckoutSession is the model entity for the CheckoutSession schema.

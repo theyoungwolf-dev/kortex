@@ -10,9 +10,9 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/theyoungwolf-dev/kortex/ent/user"
 	"github.com/theyoungwolf-dev/kortex/ent/usersettings"
-	"github.com/google/uuid"
 )
 
 // UserSettingsCreate is the builder for creating a UserSettings entity.
@@ -64,86 +64,16 @@ func (usc *UserSettingsCreate) SetNillableCurrencyCode(s *string) *UserSettingsC
 	return usc
 }
 
-// SetFuelVolumeUnit sets the "fuel_volume_unit" field.
-func (usc *UserSettingsCreate) SetFuelVolumeUnit(uvu usersettings.FuelVolumeUnit) *UserSettingsCreate {
-	usc.mutation.SetFuelVolumeUnit(uvu)
+// SetMode sets the "mode" field.
+func (usc *UserSettingsCreate) SetMode(u usersettings.Mode) *UserSettingsCreate {
+	usc.mutation.SetMode(u)
 	return usc
 }
 
-// SetNillableFuelVolumeUnit sets the "fuel_volume_unit" field if the given value is not nil.
-func (usc *UserSettingsCreate) SetNillableFuelVolumeUnit(uvu *usersettings.FuelVolumeUnit) *UserSettingsCreate {
-	if uvu != nil {
-		usc.SetFuelVolumeUnit(*uvu)
-	}
-	return usc
-}
-
-// SetDistanceUnit sets the "distance_unit" field.
-func (usc *UserSettingsCreate) SetDistanceUnit(uu usersettings.DistanceUnit) *UserSettingsCreate {
-	usc.mutation.SetDistanceUnit(uu)
-	return usc
-}
-
-// SetNillableDistanceUnit sets the "distance_unit" field if the given value is not nil.
-func (usc *UserSettingsCreate) SetNillableDistanceUnit(uu *usersettings.DistanceUnit) *UserSettingsCreate {
-	if uu != nil {
-		usc.SetDistanceUnit(*uu)
-	}
-	return usc
-}
-
-// SetFuelConsumptionUnit sets the "fuel_consumption_unit" field.
-func (usc *UserSettingsCreate) SetFuelConsumptionUnit(ucu usersettings.FuelConsumptionUnit) *UserSettingsCreate {
-	usc.mutation.SetFuelConsumptionUnit(ucu)
-	return usc
-}
-
-// SetNillableFuelConsumptionUnit sets the "fuel_consumption_unit" field if the given value is not nil.
-func (usc *UserSettingsCreate) SetNillableFuelConsumptionUnit(ucu *usersettings.FuelConsumptionUnit) *UserSettingsCreate {
-	if ucu != nil {
-		usc.SetFuelConsumptionUnit(*ucu)
-	}
-	return usc
-}
-
-// SetTemperatureUnit sets the "temperature_unit" field.
-func (usc *UserSettingsCreate) SetTemperatureUnit(uu usersettings.TemperatureUnit) *UserSettingsCreate {
-	usc.mutation.SetTemperatureUnit(uu)
-	return usc
-}
-
-// SetNillableTemperatureUnit sets the "temperature_unit" field if the given value is not nil.
-func (usc *UserSettingsCreate) SetNillableTemperatureUnit(uu *usersettings.TemperatureUnit) *UserSettingsCreate {
-	if uu != nil {
-		usc.SetTemperatureUnit(*uu)
-	}
-	return usc
-}
-
-// SetPowerUnit sets the "power_unit" field.
-func (usc *UserSettingsCreate) SetPowerUnit(uu usersettings.PowerUnit) *UserSettingsCreate {
-	usc.mutation.SetPowerUnit(uu)
-	return usc
-}
-
-// SetNillablePowerUnit sets the "power_unit" field if the given value is not nil.
-func (usc *UserSettingsCreate) SetNillablePowerUnit(uu *usersettings.PowerUnit) *UserSettingsCreate {
-	if uu != nil {
-		usc.SetPowerUnit(*uu)
-	}
-	return usc
-}
-
-// SetTorqueUnit sets the "torque_unit" field.
-func (usc *UserSettingsCreate) SetTorqueUnit(uu usersettings.TorqueUnit) *UserSettingsCreate {
-	usc.mutation.SetTorqueUnit(uu)
-	return usc
-}
-
-// SetNillableTorqueUnit sets the "torque_unit" field if the given value is not nil.
-func (usc *UserSettingsCreate) SetNillableTorqueUnit(uu *usersettings.TorqueUnit) *UserSettingsCreate {
-	if uu != nil {
-		usc.SetTorqueUnit(*uu)
+// SetNillableMode sets the "mode" field if the given value is not nil.
+func (usc *UserSettingsCreate) SetNillableMode(u *usersettings.Mode) *UserSettingsCreate {
+	if u != nil {
+		usc.SetMode(*u)
 	}
 	return usc
 }
@@ -216,6 +146,10 @@ func (usc *UserSettingsCreate) defaults() {
 		v := usersettings.DefaultUpdateTime()
 		usc.mutation.SetUpdateTime(v)
 	}
+	if _, ok := usc.mutation.Mode(); !ok {
+		v := usersettings.DefaultMode
+		usc.mutation.SetMode(v)
+	}
 	if _, ok := usc.mutation.ID(); !ok {
 		v := usersettings.DefaultID()
 		usc.mutation.SetID(v)
@@ -230,34 +164,12 @@ func (usc *UserSettingsCreate) check() error {
 	if _, ok := usc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "UserSettings.update_time"`)}
 	}
-	if v, ok := usc.mutation.FuelVolumeUnit(); ok {
-		if err := usersettings.FuelVolumeUnitValidator(v); err != nil {
-			return &ValidationError{Name: "fuel_volume_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.fuel_volume_unit": %w`, err)}
-		}
+	if _, ok := usc.mutation.Mode(); !ok {
+		return &ValidationError{Name: "mode", err: errors.New(`ent: missing required field "UserSettings.mode"`)}
 	}
-	if v, ok := usc.mutation.DistanceUnit(); ok {
-		if err := usersettings.DistanceUnitValidator(v); err != nil {
-			return &ValidationError{Name: "distance_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.distance_unit": %w`, err)}
-		}
-	}
-	if v, ok := usc.mutation.FuelConsumptionUnit(); ok {
-		if err := usersettings.FuelConsumptionUnitValidator(v); err != nil {
-			return &ValidationError{Name: "fuel_consumption_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.fuel_consumption_unit": %w`, err)}
-		}
-	}
-	if v, ok := usc.mutation.TemperatureUnit(); ok {
-		if err := usersettings.TemperatureUnitValidator(v); err != nil {
-			return &ValidationError{Name: "temperature_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.temperature_unit": %w`, err)}
-		}
-	}
-	if v, ok := usc.mutation.PowerUnit(); ok {
-		if err := usersettings.PowerUnitValidator(v); err != nil {
-			return &ValidationError{Name: "power_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.power_unit": %w`, err)}
-		}
-	}
-	if v, ok := usc.mutation.TorqueUnit(); ok {
-		if err := usersettings.TorqueUnitValidator(v); err != nil {
-			return &ValidationError{Name: "torque_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.torque_unit": %w`, err)}
+	if v, ok := usc.mutation.Mode(); ok {
+		if err := usersettings.ModeValidator(v); err != nil {
+			return &ValidationError{Name: "mode", err: fmt.Errorf(`ent: validator failed for field "UserSettings.mode": %w`, err)}
 		}
 	}
 	if len(usc.mutation.UserIDs()) == 0 {
@@ -310,29 +222,9 @@ func (usc *UserSettingsCreate) createSpec() (*UserSettings, *sqlgraph.CreateSpec
 		_spec.SetField(usersettings.FieldCurrencyCode, field.TypeString, value)
 		_node.CurrencyCode = &value
 	}
-	if value, ok := usc.mutation.FuelVolumeUnit(); ok {
-		_spec.SetField(usersettings.FieldFuelVolumeUnit, field.TypeEnum, value)
-		_node.FuelVolumeUnit = &value
-	}
-	if value, ok := usc.mutation.DistanceUnit(); ok {
-		_spec.SetField(usersettings.FieldDistanceUnit, field.TypeEnum, value)
-		_node.DistanceUnit = &value
-	}
-	if value, ok := usc.mutation.FuelConsumptionUnit(); ok {
-		_spec.SetField(usersettings.FieldFuelConsumptionUnit, field.TypeEnum, value)
-		_node.FuelConsumptionUnit = &value
-	}
-	if value, ok := usc.mutation.TemperatureUnit(); ok {
-		_spec.SetField(usersettings.FieldTemperatureUnit, field.TypeEnum, value)
-		_node.TemperatureUnit = &value
-	}
-	if value, ok := usc.mutation.PowerUnit(); ok {
-		_spec.SetField(usersettings.FieldPowerUnit, field.TypeEnum, value)
-		_node.PowerUnit = &value
-	}
-	if value, ok := usc.mutation.TorqueUnit(); ok {
-		_spec.SetField(usersettings.FieldTorqueUnit, field.TypeEnum, value)
-		_node.TorqueUnit = &value
+	if value, ok := usc.mutation.Mode(); ok {
+		_spec.SetField(usersettings.FieldMode, field.TypeEnum, value)
+		_node.Mode = value
 	}
 	if nodes := usc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

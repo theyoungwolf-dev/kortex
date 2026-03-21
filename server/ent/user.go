@@ -10,10 +10,10 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 	"github.com/theyoungwolf-dev/kortex/ent/profile"
 	"github.com/theyoungwolf-dev/kortex/ent/user"
 	"github.com/theyoungwolf-dev/kortex/ent/usersettings"
-	"github.com/google/uuid"
 )
 
 // User is the model entity for the User schema.
@@ -45,8 +45,6 @@ type User struct {
 
 // UserEdges holds the relations/edges for other nodes in the graph.
 type UserEdges struct {
-	// Cars holds the value of the cars edge.
-	Cars []*Car `json:"cars,omitempty"`
 	// Profile holds the value of the profile edge.
 	Profile *Profile `json:"profile,omitempty"`
 	// Settings holds the value of the settings edge.
@@ -59,23 +57,13 @@ type UserEdges struct {
 	Media []*Media `json:"media,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [5]bool
 	// totalCount holds the count of the edges above.
-	totalCount [6]map[string]int
+	totalCount [5]map[string]int
 
-	namedCars             map[string][]*Car
 	namedSubscriptions    map[string][]*Subscription
 	namedCheckoutSessions map[string][]*CheckoutSession
 	namedMedia            map[string][]*Media
-}
-
-// CarsOrErr returns the Cars value or an error if the edge
-// was not loaded in eager-loading.
-func (e UserEdges) CarsOrErr() ([]*Car, error) {
-	if e.loadedTypes[0] {
-		return e.Cars, nil
-	}
-	return nil, &NotLoadedError{edge: "cars"}
 }
 
 // ProfileOrErr returns the Profile value or an error if the edge
@@ -83,7 +71,7 @@ func (e UserEdges) CarsOrErr() ([]*Car, error) {
 func (e UserEdges) ProfileOrErr() (*Profile, error) {
 	if e.Profile != nil {
 		return e.Profile, nil
-	} else if e.loadedTypes[1] {
+	} else if e.loadedTypes[0] {
 		return nil, &NotFoundError{label: profile.Label}
 	}
 	return nil, &NotLoadedError{edge: "profile"}
@@ -94,7 +82,7 @@ func (e UserEdges) ProfileOrErr() (*Profile, error) {
 func (e UserEdges) SettingsOrErr() (*UserSettings, error) {
 	if e.Settings != nil {
 		return e.Settings, nil
-	} else if e.loadedTypes[2] {
+	} else if e.loadedTypes[1] {
 		return nil, &NotFoundError{label: usersettings.Label}
 	}
 	return nil, &NotLoadedError{edge: "settings"}
@@ -103,7 +91,7 @@ func (e UserEdges) SettingsOrErr() (*UserSettings, error) {
 // SubscriptionsOrErr returns the Subscriptions value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) SubscriptionsOrErr() ([]*Subscription, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		return e.Subscriptions, nil
 	}
 	return nil, &NotLoadedError{edge: "subscriptions"}
@@ -112,7 +100,7 @@ func (e UserEdges) SubscriptionsOrErr() ([]*Subscription, error) {
 // CheckoutSessionsOrErr returns the CheckoutSessions value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) CheckoutSessionsOrErr() ([]*CheckoutSession, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		return e.CheckoutSessions, nil
 	}
 	return nil, &NotLoadedError{edge: "checkout_sessions"}
@@ -121,7 +109,7 @@ func (e UserEdges) CheckoutSessionsOrErr() ([]*CheckoutSession, error) {
 // MediaOrErr returns the Media value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) MediaOrErr() ([]*Media, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[4] {
 		return e.Media, nil
 	}
 	return nil, &NotLoadedError{edge: "media"}
@@ -228,11 +216,6 @@ func (u *User) Value(name string) (ent.Value, error) {
 	return u.selectValues.Get(name)
 }
 
-// QueryCars queries the "cars" edge of the User entity.
-func (u *User) QueryCars() *CarQuery {
-	return NewUserClient(u.config).QueryCars(u)
-}
-
 // QueryProfile queries the "profile" edge of the User entity.
 func (u *User) QueryProfile() *ProfileQuery {
 	return NewUserClient(u.config).QueryProfile(u)
@@ -314,30 +297,6 @@ func (u *User) String() string {
 	}
 	builder.WriteByte(')')
 	return builder.String()
-}
-
-// NamedCars returns the Cars named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (u *User) NamedCars(name string) ([]*Car, error) {
-	if u.Edges.namedCars == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := u.Edges.namedCars[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (u *User) appendNamedCars(name string, edges ...*Car) {
-	if u.Edges.namedCars == nil {
-		u.Edges.namedCars = make(map[string][]*Car)
-	}
-	if len(edges) == 0 {
-		u.Edges.namedCars[name] = []*Car{}
-	} else {
-		u.Edges.namedCars[name] = append(u.Edges.namedCars[name], edges...)
-	}
 }
 
 // NamedSubscriptions returns the Subscriptions named value or an error if the edge was not

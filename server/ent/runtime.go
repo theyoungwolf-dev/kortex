@@ -5,94 +5,20 @@ package ent
 import (
 	"time"
 
-	"github.com/theyoungwolf-dev/kortex/ent/album"
-	"github.com/theyoungwolf-dev/kortex/ent/buildlog"
-	"github.com/theyoungwolf-dev/kortex/ent/car"
+	"github.com/google/uuid"
 	"github.com/theyoungwolf-dev/kortex/ent/checkoutsession"
-	"github.com/theyoungwolf-dev/kortex/ent/document"
-	"github.com/theyoungwolf-dev/kortex/ent/dragresult"
-	"github.com/theyoungwolf-dev/kortex/ent/dragsession"
-	"github.com/theyoungwolf-dev/kortex/ent/dynoresult"
-	"github.com/theyoungwolf-dev/kortex/ent/dynosession"
-	"github.com/theyoungwolf-dev/kortex/ent/expense"
-	"github.com/theyoungwolf-dev/kortex/ent/fuelup"
 	"github.com/theyoungwolf-dev/kortex/ent/media"
-	"github.com/theyoungwolf-dev/kortex/ent/mod"
-	"github.com/theyoungwolf-dev/kortex/ent/modproductoption"
-	"github.com/theyoungwolf-dev/kortex/ent/odometerreading"
 	"github.com/theyoungwolf-dev/kortex/ent/profile"
 	"github.com/theyoungwolf-dev/kortex/ent/schema"
-	"github.com/theyoungwolf-dev/kortex/ent/serviceitem"
-	"github.com/theyoungwolf-dev/kortex/ent/servicelog"
-	"github.com/theyoungwolf-dev/kortex/ent/serviceschedule"
 	"github.com/theyoungwolf-dev/kortex/ent/subscription"
-	"github.com/theyoungwolf-dev/kortex/ent/task"
 	"github.com/theyoungwolf-dev/kortex/ent/user"
 	"github.com/theyoungwolf-dev/kortex/ent/usersettings"
-	"github.com/google/uuid"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	albumMixin := schema.Album{}.Mixin()
-	albumMixinFields0 := albumMixin[0].Fields()
-	_ = albumMixinFields0
-	albumFields := schema.Album{}.Fields()
-	_ = albumFields
-	// albumDescCreateTime is the schema descriptor for create_time field.
-	albumDescCreateTime := albumMixinFields0[0].Descriptor()
-	// album.DefaultCreateTime holds the default value on creation for the create_time field.
-	album.DefaultCreateTime = albumDescCreateTime.Default.(func() time.Time)
-	// albumDescUpdateTime is the schema descriptor for update_time field.
-	albumDescUpdateTime := albumMixinFields0[1].Descriptor()
-	// album.DefaultUpdateTime holds the default value on creation for the update_time field.
-	album.DefaultUpdateTime = albumDescUpdateTime.Default.(func() time.Time)
-	// album.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	album.UpdateDefaultUpdateTime = albumDescUpdateTime.UpdateDefault.(func() time.Time)
-	// albumDescID is the schema descriptor for id field.
-	albumDescID := albumFields[0].Descriptor()
-	// album.DefaultID holds the default value on creation for the id field.
-	album.DefaultID = albumDescID.Default.(func() uuid.UUID)
-	buildlogMixin := schema.BuildLog{}.Mixin()
-	buildlogMixinFields0 := buildlogMixin[0].Fields()
-	_ = buildlogMixinFields0
-	buildlogFields := schema.BuildLog{}.Fields()
-	_ = buildlogFields
-	// buildlogDescCreateTime is the schema descriptor for create_time field.
-	buildlogDescCreateTime := buildlogMixinFields0[0].Descriptor()
-	// buildlog.DefaultCreateTime holds the default value on creation for the create_time field.
-	buildlog.DefaultCreateTime = buildlogDescCreateTime.Default.(func() time.Time)
-	// buildlogDescUpdateTime is the schema descriptor for update_time field.
-	buildlogDescUpdateTime := buildlogMixinFields0[1].Descriptor()
-	// buildlog.DefaultUpdateTime holds the default value on creation for the update_time field.
-	buildlog.DefaultUpdateTime = buildlogDescUpdateTime.Default.(func() time.Time)
-	// buildlog.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	buildlog.UpdateDefaultUpdateTime = buildlogDescUpdateTime.UpdateDefault.(func() time.Time)
-	// buildlogDescID is the schema descriptor for id field.
-	buildlogDescID := buildlogFields[0].Descriptor()
-	// buildlog.DefaultID holds the default value on creation for the id field.
-	buildlog.DefaultID = buildlogDescID.Default.(func() uuid.UUID)
-	carMixin := schema.Car{}.Mixin()
-	carMixinFields0 := carMixin[0].Fields()
-	_ = carMixinFields0
-	carFields := schema.Car{}.Fields()
-	_ = carFields
-	// carDescCreateTime is the schema descriptor for create_time field.
-	carDescCreateTime := carMixinFields0[0].Descriptor()
-	// car.DefaultCreateTime holds the default value on creation for the create_time field.
-	car.DefaultCreateTime = carDescCreateTime.Default.(func() time.Time)
-	// carDescUpdateTime is the schema descriptor for update_time field.
-	carDescUpdateTime := carMixinFields0[1].Descriptor()
-	// car.DefaultUpdateTime holds the default value on creation for the update_time field.
-	car.DefaultUpdateTime = carDescUpdateTime.Default.(func() time.Time)
-	// car.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	car.UpdateDefaultUpdateTime = carDescUpdateTime.UpdateDefault.(func() time.Time)
-	// carDescID is the schema descriptor for id field.
-	carDescID := carFields[0].Descriptor()
-	// car.DefaultID holds the default value on creation for the id field.
-	car.DefaultID = carDescID.Default.(func() uuid.UUID)
 	checkoutsessionMixin := schema.CheckoutSession{}.Mixin()
 	checkoutsessionMixinFields0 := checkoutsessionMixin[0].Fields()
 	_ = checkoutsessionMixinFields0
@@ -120,151 +46,6 @@ func init() {
 	checkoutsessionDescID := checkoutsessionFields[0].Descriptor()
 	// checkoutsession.DefaultID holds the default value on creation for the id field.
 	checkoutsession.DefaultID = checkoutsessionDescID.Default.(func() uuid.UUID)
-	documentMixin := schema.Document{}.Mixin()
-	documentMixinFields0 := documentMixin[0].Fields()
-	_ = documentMixinFields0
-	documentFields := schema.Document{}.Fields()
-	_ = documentFields
-	// documentDescCreateTime is the schema descriptor for create_time field.
-	documentDescCreateTime := documentMixinFields0[0].Descriptor()
-	// document.DefaultCreateTime holds the default value on creation for the create_time field.
-	document.DefaultCreateTime = documentDescCreateTime.Default.(func() time.Time)
-	// documentDescUpdateTime is the schema descriptor for update_time field.
-	documentDescUpdateTime := documentMixinFields0[1].Descriptor()
-	// document.DefaultUpdateTime holds the default value on creation for the update_time field.
-	document.DefaultUpdateTime = documentDescUpdateTime.Default.(func() time.Time)
-	// document.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	document.UpdateDefaultUpdateTime = documentDescUpdateTime.UpdateDefault.(func() time.Time)
-	// documentDescTags is the schema descriptor for tags field.
-	documentDescTags := documentFields[2].Descriptor()
-	// document.DefaultTags holds the default value on creation for the tags field.
-	document.DefaultTags = documentDescTags.Default.([]string)
-	// documentDescID is the schema descriptor for id field.
-	documentDescID := documentFields[0].Descriptor()
-	// document.DefaultID holds the default value on creation for the id field.
-	document.DefaultID = documentDescID.Default.(func() uuid.UUID)
-	dragresultMixin := schema.DragResult{}.Mixin()
-	dragresultMixinFields0 := dragresultMixin[0].Fields()
-	_ = dragresultMixinFields0
-	dragresultFields := schema.DragResult{}.Fields()
-	_ = dragresultFields
-	// dragresultDescCreateTime is the schema descriptor for create_time field.
-	dragresultDescCreateTime := dragresultMixinFields0[0].Descriptor()
-	// dragresult.DefaultCreateTime holds the default value on creation for the create_time field.
-	dragresult.DefaultCreateTime = dragresultDescCreateTime.Default.(func() time.Time)
-	// dragresultDescUpdateTime is the schema descriptor for update_time field.
-	dragresultDescUpdateTime := dragresultMixinFields0[1].Descriptor()
-	// dragresult.DefaultUpdateTime holds the default value on creation for the update_time field.
-	dragresult.DefaultUpdateTime = dragresultDescUpdateTime.Default.(func() time.Time)
-	// dragresult.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	dragresult.UpdateDefaultUpdateTime = dragresultDescUpdateTime.UpdateDefault.(func() time.Time)
-	// dragresultDescID is the schema descriptor for id field.
-	dragresultDescID := dragresultFields[0].Descriptor()
-	// dragresult.DefaultID holds the default value on creation for the id field.
-	dragresult.DefaultID = dragresultDescID.Default.(func() uuid.UUID)
-	dragsessionMixin := schema.DragSession{}.Mixin()
-	dragsessionMixinFields0 := dragsessionMixin[0].Fields()
-	_ = dragsessionMixinFields0
-	dragsessionFields := schema.DragSession{}.Fields()
-	_ = dragsessionFields
-	// dragsessionDescCreateTime is the schema descriptor for create_time field.
-	dragsessionDescCreateTime := dragsessionMixinFields0[0].Descriptor()
-	// dragsession.DefaultCreateTime holds the default value on creation for the create_time field.
-	dragsession.DefaultCreateTime = dragsessionDescCreateTime.Default.(func() time.Time)
-	// dragsessionDescUpdateTime is the schema descriptor for update_time field.
-	dragsessionDescUpdateTime := dragsessionMixinFields0[1].Descriptor()
-	// dragsession.DefaultUpdateTime holds the default value on creation for the update_time field.
-	dragsession.DefaultUpdateTime = dragsessionDescUpdateTime.Default.(func() time.Time)
-	// dragsession.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	dragsession.UpdateDefaultUpdateTime = dragsessionDescUpdateTime.UpdateDefault.(func() time.Time)
-	// dragsessionDescID is the schema descriptor for id field.
-	dragsessionDescID := dragsessionFields[0].Descriptor()
-	// dragsession.DefaultID holds the default value on creation for the id field.
-	dragsession.DefaultID = dragsessionDescID.Default.(func() uuid.UUID)
-	dynoresultMixin := schema.DynoResult{}.Mixin()
-	dynoresultMixinFields0 := dynoresultMixin[0].Fields()
-	_ = dynoresultMixinFields0
-	dynoresultFields := schema.DynoResult{}.Fields()
-	_ = dynoresultFields
-	// dynoresultDescCreateTime is the schema descriptor for create_time field.
-	dynoresultDescCreateTime := dynoresultMixinFields0[0].Descriptor()
-	// dynoresult.DefaultCreateTime holds the default value on creation for the create_time field.
-	dynoresult.DefaultCreateTime = dynoresultDescCreateTime.Default.(func() time.Time)
-	// dynoresultDescUpdateTime is the schema descriptor for update_time field.
-	dynoresultDescUpdateTime := dynoresultMixinFields0[1].Descriptor()
-	// dynoresult.DefaultUpdateTime holds the default value on creation for the update_time field.
-	dynoresult.DefaultUpdateTime = dynoresultDescUpdateTime.Default.(func() time.Time)
-	// dynoresult.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	dynoresult.UpdateDefaultUpdateTime = dynoresultDescUpdateTime.UpdateDefault.(func() time.Time)
-	// dynoresultDescID is the schema descriptor for id field.
-	dynoresultDescID := dynoresultFields[0].Descriptor()
-	// dynoresult.DefaultID holds the default value on creation for the id field.
-	dynoresult.DefaultID = dynoresultDescID.Default.(func() uuid.UUID)
-	dynosessionMixin := schema.DynoSession{}.Mixin()
-	dynosessionMixinFields0 := dynosessionMixin[0].Fields()
-	_ = dynosessionMixinFields0
-	dynosessionFields := schema.DynoSession{}.Fields()
-	_ = dynosessionFields
-	// dynosessionDescCreateTime is the schema descriptor for create_time field.
-	dynosessionDescCreateTime := dynosessionMixinFields0[0].Descriptor()
-	// dynosession.DefaultCreateTime holds the default value on creation for the create_time field.
-	dynosession.DefaultCreateTime = dynosessionDescCreateTime.Default.(func() time.Time)
-	// dynosessionDescUpdateTime is the schema descriptor for update_time field.
-	dynosessionDescUpdateTime := dynosessionMixinFields0[1].Descriptor()
-	// dynosession.DefaultUpdateTime holds the default value on creation for the update_time field.
-	dynosession.DefaultUpdateTime = dynosessionDescUpdateTime.Default.(func() time.Time)
-	// dynosession.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	dynosession.UpdateDefaultUpdateTime = dynosessionDescUpdateTime.UpdateDefault.(func() time.Time)
-	// dynosessionDescID is the schema descriptor for id field.
-	dynosessionDescID := dynosessionFields[0].Descriptor()
-	// dynosession.DefaultID holds the default value on creation for the id field.
-	dynosession.DefaultID = dynosessionDescID.Default.(func() uuid.UUID)
-	expenseMixin := schema.Expense{}.Mixin()
-	expenseMixinFields0 := expenseMixin[0].Fields()
-	_ = expenseMixinFields0
-	expenseFields := schema.Expense{}.Fields()
-	_ = expenseFields
-	// expenseDescCreateTime is the schema descriptor for create_time field.
-	expenseDescCreateTime := expenseMixinFields0[0].Descriptor()
-	// expense.DefaultCreateTime holds the default value on creation for the create_time field.
-	expense.DefaultCreateTime = expenseDescCreateTime.Default.(func() time.Time)
-	// expenseDescUpdateTime is the schema descriptor for update_time field.
-	expenseDescUpdateTime := expenseMixinFields0[1].Descriptor()
-	// expense.DefaultUpdateTime holds the default value on creation for the update_time field.
-	expense.DefaultUpdateTime = expenseDescUpdateTime.Default.(func() time.Time)
-	// expense.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	expense.UpdateDefaultUpdateTime = expenseDescUpdateTime.UpdateDefault.(func() time.Time)
-	// expenseDescAmount is the schema descriptor for amount field.
-	expenseDescAmount := expenseFields[3].Descriptor()
-	// expense.AmountValidator is a validator for the "amount" field. It is called by the builders before save.
-	expense.AmountValidator = expenseDescAmount.Validators[0].(func(float64) error)
-	// expenseDescID is the schema descriptor for id field.
-	expenseDescID := expenseFields[0].Descriptor()
-	// expense.DefaultID holds the default value on creation for the id field.
-	expense.DefaultID = expenseDescID.Default.(func() uuid.UUID)
-	fuelupMixin := schema.FuelUp{}.Mixin()
-	fuelupMixinFields0 := fuelupMixin[0].Fields()
-	_ = fuelupMixinFields0
-	fuelupFields := schema.FuelUp{}.Fields()
-	_ = fuelupFields
-	// fuelupDescCreateTime is the schema descriptor for create_time field.
-	fuelupDescCreateTime := fuelupMixinFields0[0].Descriptor()
-	// fuelup.DefaultCreateTime holds the default value on creation for the create_time field.
-	fuelup.DefaultCreateTime = fuelupDescCreateTime.Default.(func() time.Time)
-	// fuelupDescUpdateTime is the schema descriptor for update_time field.
-	fuelupDescUpdateTime := fuelupMixinFields0[1].Descriptor()
-	// fuelup.DefaultUpdateTime holds the default value on creation for the update_time field.
-	fuelup.DefaultUpdateTime = fuelupDescUpdateTime.Default.(func() time.Time)
-	// fuelup.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	fuelup.UpdateDefaultUpdateTime = fuelupDescUpdateTime.UpdateDefault.(func() time.Time)
-	// fuelupDescIsFullTank is the schema descriptor for is_full_tank field.
-	fuelupDescIsFullTank := fuelupFields[6].Descriptor()
-	// fuelup.DefaultIsFullTank holds the default value on creation for the is_full_tank field.
-	fuelup.DefaultIsFullTank = fuelupDescIsFullTank.Default.(bool)
-	// fuelupDescID is the schema descriptor for id field.
-	fuelupDescID := fuelupFields[0].Descriptor()
-	// fuelup.DefaultID holds the default value on creation for the id field.
-	fuelup.DefaultID = fuelupDescID.Default.(func() uuid.UUID)
 	mediaFields := schema.Media{}.Fields()
 	_ = mediaFields
 	// mediaDescCreateTime is the schema descriptor for create_time field.
@@ -281,63 +62,6 @@ func init() {
 	mediaDescID := mediaFields[0].Descriptor()
 	// media.DefaultID holds the default value on creation for the id field.
 	media.DefaultID = mediaDescID.Default.(func() uuid.UUID)
-	modMixin := schema.Mod{}.Mixin()
-	modMixinFields0 := modMixin[0].Fields()
-	_ = modMixinFields0
-	modFields := schema.Mod{}.Fields()
-	_ = modFields
-	// modDescCreateTime is the schema descriptor for create_time field.
-	modDescCreateTime := modMixinFields0[0].Descriptor()
-	// mod.DefaultCreateTime holds the default value on creation for the create_time field.
-	mod.DefaultCreateTime = modDescCreateTime.Default.(func() time.Time)
-	// modDescUpdateTime is the schema descriptor for update_time field.
-	modDescUpdateTime := modMixinFields0[1].Descriptor()
-	// mod.DefaultUpdateTime holds the default value on creation for the update_time field.
-	mod.DefaultUpdateTime = modDescUpdateTime.Default.(func() time.Time)
-	// mod.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	mod.UpdateDefaultUpdateTime = modDescUpdateTime.UpdateDefault.(func() time.Time)
-	// modDescID is the schema descriptor for id field.
-	modDescID := modFields[0].Descriptor()
-	// mod.DefaultID holds the default value on creation for the id field.
-	mod.DefaultID = modDescID.Default.(func() uuid.UUID)
-	modproductoptionMixin := schema.ModProductOption{}.Mixin()
-	modproductoptionMixinFields0 := modproductoptionMixin[0].Fields()
-	_ = modproductoptionMixinFields0
-	modproductoptionFields := schema.ModProductOption{}.Fields()
-	_ = modproductoptionFields
-	// modproductoptionDescCreateTime is the schema descriptor for create_time field.
-	modproductoptionDescCreateTime := modproductoptionMixinFields0[0].Descriptor()
-	// modproductoption.DefaultCreateTime holds the default value on creation for the create_time field.
-	modproductoption.DefaultCreateTime = modproductoptionDescCreateTime.Default.(func() time.Time)
-	// modproductoptionDescUpdateTime is the schema descriptor for update_time field.
-	modproductoptionDescUpdateTime := modproductoptionMixinFields0[1].Descriptor()
-	// modproductoption.DefaultUpdateTime holds the default value on creation for the update_time field.
-	modproductoption.DefaultUpdateTime = modproductoptionDescUpdateTime.Default.(func() time.Time)
-	// modproductoption.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	modproductoption.UpdateDefaultUpdateTime = modproductoptionDescUpdateTime.UpdateDefault.(func() time.Time)
-	// modproductoptionDescID is the schema descriptor for id field.
-	modproductoptionDescID := modproductoptionFields[0].Descriptor()
-	// modproductoption.DefaultID holds the default value on creation for the id field.
-	modproductoption.DefaultID = modproductoptionDescID.Default.(func() uuid.UUID)
-	odometerreadingMixin := schema.OdometerReading{}.Mixin()
-	odometerreadingMixinFields0 := odometerreadingMixin[0].Fields()
-	_ = odometerreadingMixinFields0
-	odometerreadingFields := schema.OdometerReading{}.Fields()
-	_ = odometerreadingFields
-	// odometerreadingDescCreateTime is the schema descriptor for create_time field.
-	odometerreadingDescCreateTime := odometerreadingMixinFields0[0].Descriptor()
-	// odometerreading.DefaultCreateTime holds the default value on creation for the create_time field.
-	odometerreading.DefaultCreateTime = odometerreadingDescCreateTime.Default.(func() time.Time)
-	// odometerreadingDescUpdateTime is the schema descriptor for update_time field.
-	odometerreadingDescUpdateTime := odometerreadingMixinFields0[1].Descriptor()
-	// odometerreading.DefaultUpdateTime holds the default value on creation for the update_time field.
-	odometerreading.DefaultUpdateTime = odometerreadingDescUpdateTime.Default.(func() time.Time)
-	// odometerreading.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	odometerreading.UpdateDefaultUpdateTime = odometerreadingDescUpdateTime.UpdateDefault.(func() time.Time)
-	// odometerreadingDescID is the schema descriptor for id field.
-	odometerreadingDescID := odometerreadingFields[0].Descriptor()
-	// odometerreading.DefaultID holds the default value on creation for the id field.
-	odometerreading.DefaultID = odometerreadingDescID.Default.(func() uuid.UUID)
 	profileMixin := schema.Profile{}.Mixin()
 	profileMixinFields0 := profileMixin[0].Fields()
 	_ = profileMixinFields0
@@ -357,75 +81,6 @@ func init() {
 	profileDescID := profileFields[0].Descriptor()
 	// profile.DefaultID holds the default value on creation for the id field.
 	profile.DefaultID = profileDescID.Default.(func() uuid.UUID)
-	serviceitemMixin := schema.ServiceItem{}.Mixin()
-	serviceitemMixinFields0 := serviceitemMixin[0].Fields()
-	_ = serviceitemMixinFields0
-	serviceitemFields := schema.ServiceItem{}.Fields()
-	_ = serviceitemFields
-	// serviceitemDescCreateTime is the schema descriptor for create_time field.
-	serviceitemDescCreateTime := serviceitemMixinFields0[0].Descriptor()
-	// serviceitem.DefaultCreateTime holds the default value on creation for the create_time field.
-	serviceitem.DefaultCreateTime = serviceitemDescCreateTime.Default.(func() time.Time)
-	// serviceitemDescUpdateTime is the schema descriptor for update_time field.
-	serviceitemDescUpdateTime := serviceitemMixinFields0[1].Descriptor()
-	// serviceitem.DefaultUpdateTime holds the default value on creation for the update_time field.
-	serviceitem.DefaultUpdateTime = serviceitemDescUpdateTime.Default.(func() time.Time)
-	// serviceitem.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	serviceitem.UpdateDefaultUpdateTime = serviceitemDescUpdateTime.UpdateDefault.(func() time.Time)
-	// serviceitemDescTags is the schema descriptor for tags field.
-	serviceitemDescTags := serviceitemFields[6].Descriptor()
-	// serviceitem.DefaultTags holds the default value on creation for the tags field.
-	serviceitem.DefaultTags = serviceitemDescTags.Default.([]string)
-	// serviceitemDescID is the schema descriptor for id field.
-	serviceitemDescID := serviceitemFields[0].Descriptor()
-	// serviceitem.DefaultID holds the default value on creation for the id field.
-	serviceitem.DefaultID = serviceitemDescID.Default.(func() uuid.UUID)
-	servicelogMixin := schema.ServiceLog{}.Mixin()
-	servicelogMixinFields0 := servicelogMixin[0].Fields()
-	_ = servicelogMixinFields0
-	servicelogFields := schema.ServiceLog{}.Fields()
-	_ = servicelogFields
-	// servicelogDescCreateTime is the schema descriptor for create_time field.
-	servicelogDescCreateTime := servicelogMixinFields0[0].Descriptor()
-	// servicelog.DefaultCreateTime holds the default value on creation for the create_time field.
-	servicelog.DefaultCreateTime = servicelogDescCreateTime.Default.(func() time.Time)
-	// servicelogDescUpdateTime is the schema descriptor for update_time field.
-	servicelogDescUpdateTime := servicelogMixinFields0[1].Descriptor()
-	// servicelog.DefaultUpdateTime holds the default value on creation for the update_time field.
-	servicelog.DefaultUpdateTime = servicelogDescUpdateTime.Default.(func() time.Time)
-	// servicelog.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	servicelog.UpdateDefaultUpdateTime = servicelogDescUpdateTime.UpdateDefault.(func() time.Time)
-	// servicelogDescTags is the schema descriptor for tags field.
-	servicelogDescTags := servicelogFields[4].Descriptor()
-	// servicelog.DefaultTags holds the default value on creation for the tags field.
-	servicelog.DefaultTags = servicelogDescTags.Default.([]string)
-	// servicelogDescID is the schema descriptor for id field.
-	servicelogDescID := servicelogFields[0].Descriptor()
-	// servicelog.DefaultID holds the default value on creation for the id field.
-	servicelog.DefaultID = servicelogDescID.Default.(func() uuid.UUID)
-	servicescheduleMixin := schema.ServiceSchedule{}.Mixin()
-	servicescheduleMixinFields0 := servicescheduleMixin[0].Fields()
-	_ = servicescheduleMixinFields0
-	servicescheduleFields := schema.ServiceSchedule{}.Fields()
-	_ = servicescheduleFields
-	// servicescheduleDescCreateTime is the schema descriptor for create_time field.
-	servicescheduleDescCreateTime := servicescheduleMixinFields0[0].Descriptor()
-	// serviceschedule.DefaultCreateTime holds the default value on creation for the create_time field.
-	serviceschedule.DefaultCreateTime = servicescheduleDescCreateTime.Default.(func() time.Time)
-	// servicescheduleDescUpdateTime is the schema descriptor for update_time field.
-	servicescheduleDescUpdateTime := servicescheduleMixinFields0[1].Descriptor()
-	// serviceschedule.DefaultUpdateTime holds the default value on creation for the update_time field.
-	serviceschedule.DefaultUpdateTime = servicescheduleDescUpdateTime.Default.(func() time.Time)
-	// serviceschedule.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	serviceschedule.UpdateDefaultUpdateTime = servicescheduleDescUpdateTime.UpdateDefault.(func() time.Time)
-	// servicescheduleDescArchived is the schema descriptor for archived field.
-	servicescheduleDescArchived := servicescheduleFields[7].Descriptor()
-	// serviceschedule.DefaultArchived holds the default value on creation for the archived field.
-	serviceschedule.DefaultArchived = servicescheduleDescArchived.Default.(bool)
-	// servicescheduleDescID is the schema descriptor for id field.
-	servicescheduleDescID := servicescheduleFields[0].Descriptor()
-	// serviceschedule.DefaultID holds the default value on creation for the id field.
-	serviceschedule.DefaultID = servicescheduleDescID.Default.(func() uuid.UUID)
 	subscriptionMixin := schema.Subscription{}.Mixin()
 	subscriptionMixinFields0 := subscriptionMixin[0].Fields()
 	_ = subscriptionMixinFields0
@@ -449,33 +104,6 @@ func init() {
 	subscriptionDescID := subscriptionFields[0].Descriptor()
 	// subscription.DefaultID holds the default value on creation for the id field.
 	subscription.DefaultID = subscriptionDescID.Default.(func() uuid.UUID)
-	taskMixin := schema.Task{}.Mixin()
-	taskMixinFields0 := taskMixin[0].Fields()
-	_ = taskMixinFields0
-	taskFields := schema.Task{}.Fields()
-	_ = taskFields
-	// taskDescCreateTime is the schema descriptor for create_time field.
-	taskDescCreateTime := taskMixinFields0[0].Descriptor()
-	// task.DefaultCreateTime holds the default value on creation for the create_time field.
-	task.DefaultCreateTime = taskDescCreateTime.Default.(func() time.Time)
-	// taskDescUpdateTime is the schema descriptor for update_time field.
-	taskDescUpdateTime := taskMixinFields0[1].Descriptor()
-	// task.DefaultUpdateTime holds the default value on creation for the update_time field.
-	task.DefaultUpdateTime = taskDescUpdateTime.Default.(func() time.Time)
-	// task.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	task.UpdateDefaultUpdateTime = taskDescUpdateTime.UpdateDefault.(func() time.Time)
-	// taskDescTitle is the schema descriptor for title field.
-	taskDescTitle := taskFields[2].Descriptor()
-	// task.TitleValidator is a validator for the "title" field. It is called by the builders before save.
-	task.TitleValidator = taskDescTitle.Validators[0].(func(string) error)
-	// taskDescRank is the schema descriptor for rank field.
-	taskDescRank := taskFields[4].Descriptor()
-	// task.DefaultRank holds the default value on creation for the rank field.
-	task.DefaultRank = taskDescRank.Default.(float64)
-	// taskDescID is the schema descriptor for id field.
-	taskDescID := taskFields[0].Descriptor()
-	// task.DefaultID holds the default value on creation for the id field.
-	task.DefaultID = taskDescID.Default.(func() uuid.UUID)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0

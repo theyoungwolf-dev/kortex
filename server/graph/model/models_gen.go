@@ -3,33 +3,13 @@
 package model
 
 import (
-	"time"
-
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/theyoungwolf-dev/kortex/ent"
 	"github.com/theyoungwolf-dev/kortex/ent/subscription"
 )
 
 type CreateCheckoutSessionInput struct {
 	Tier      subscription.Tier `json:"tier"`
 	Affiliate *string           `json:"affiliate,omitempty"`
-}
-
-type UpcomingService struct {
-	Schedule    *ent.ServiceSchedule `json:"schedule"`
-	NextDueKm   *float64             `json:"nextDueKm,omitempty"`
-	NextDueDate *time.Time           `json:"nextDueDate,omitempty"`
-	DueAtKm     float64              `json:"dueAtKm"`
-}
-
-type UploadDocumentResult struct {
-	Document  *ent.Document `json:"document"`
-	UploadURL string        `json:"uploadUrl"`
-}
-
-type UploadMediaResult struct {
-	Media     *ent.Media `json:"media"`
-	UploadURL string     `json:"uploadUrl"`
 }
 
 type UploadProfilePictureInput struct {

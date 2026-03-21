@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 	"github.com/theyoungwolf-dev/kortex/ent/user"
 	"github.com/theyoungwolf-dev/kortex/ent/usersettings"
-	"github.com/google/uuid"
 )
 
 // UserSettingsQuery is the builder for querying UserSettings entities.

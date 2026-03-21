@@ -8,14 +8,14 @@ import (
 	"context"
 	"net/url"
 
+	stripe "github.com/stripe/stripe-go/v82"
+	portalsession "github.com/stripe/stripe-go/v82/billingportal/session"
+	"github.com/stripe/stripe-go/v82/checkout/session"
 	"github.com/theyoungwolf-dev/kortex/auth"
 	"github.com/theyoungwolf-dev/kortex/ent"
 	"github.com/theyoungwolf-dev/kortex/ent/subscription"
 	entUser "github.com/theyoungwolf-dev/kortex/ent/user"
 	"github.com/theyoungwolf-dev/kortex/graph/model"
-	stripe "github.com/stripe/stripe-go/v82"
-	portalsession "github.com/stripe/stripe-go/v82/billingportal/session"
-	"github.com/stripe/stripe-go/v82/checkout/session"
 )
 
 // CreateCheckoutSession is the resolver for the createCheckoutSession field.

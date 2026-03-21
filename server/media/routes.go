@@ -5,13 +5,13 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/go-chi/chi"
+	"github.com/google/uuid"
+	minio "github.com/minio/minio-go/v7"
 	"github.com/theyoungwolf-dev/kortex/ent"
 	"github.com/theyoungwolf-dev/kortex/ent/media"
 	"github.com/theyoungwolf-dev/kortex/httpfx"
 	"github.com/theyoungwolf-dev/kortex/internal"
-	"github.com/go-chi/chi"
-	"github.com/google/uuid"
-	minio "github.com/minio/minio-go/v7"
 	"go.uber.org/zap"
 )
 
@@ -45,9 +45,6 @@ func NewMediaHandler(entClient *ent.Client, s3Client *minio.Client, config inter
 
 		media, err := entClient.Media.Query().
 			Where(media.ID(uid)).
-			WithCar(func(cq *ent.CarQuery) {
-				cq.WithOwner()
-			}).
 			WithUser().
 			First(r.Context())
 
@@ -59,11 +56,7 @@ func NewMediaHandler(entClient *ent.Client, s3Client *minio.Client, config inter
 
 		var objectName string
 
-		if media.Edges.Car != nil {
-			objectName = fmt.Sprintf("users/%s/cars/%s/media/%s", media.Edges.Car.Edges.Owner.ID, media.Edges.Car.ID, media.ID)
-		} else {
-			objectName = fmt.Sprintf("users/%s/media/%s", media.Edges.User.ID, media.ID)
-		}
+		objectName = fmt.Sprintf("users/%s/media/%s", media.Edges.User.ID, media.ID)
 
 		logger = logger.With(zap.String("objectName", objectName))
 

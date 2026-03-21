@@ -9,9 +9,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 	"github.com/theyoungwolf-dev/kortex/ent/profile"
 	"github.com/theyoungwolf-dev/kortex/ent/user"
-	"github.com/google/uuid"
 )
 
 // Profile is the model entity for the Profile schema.

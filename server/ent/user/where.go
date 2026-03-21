@@ -7,8 +7,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 	"github.com/google/uuid"
+	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.
@@ -544,29 +544,6 @@ func Affiliate12moCodeEqualFold(v string) predicate.User {
 // Affiliate12moCodeContainsFold applies the ContainsFold predicate on the "affiliate_12mo_code" field.
 func Affiliate12moCodeContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldAffiliate12moCode, v))
-}
-
-// HasCars applies the HasEdge predicate on the "cars" edge.
-func HasCars() predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CarsTable, CarsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasCarsWith applies the HasEdge predicate on the "cars" edge with a given conditions (other predicates).
-func HasCarsWith(preds ...predicate.Car) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := newCarsStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
 }
 
 // HasProfile applies the HasEdge predicate on the "profile" edge.

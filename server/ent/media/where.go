@@ -7,8 +7,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 	"github.com/google/uuid"
+	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.
@@ -321,98 +321,6 @@ func HasUser() predicate.Media {
 func HasUserWith(preds ...predicate.User) predicate.Media {
 	return predicate.Media(func(s *sql.Selector) {
 		step := newUserStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasCar applies the HasEdge predicate on the "car" edge.
-func HasCar() predicate.Media {
-	return predicate.Media(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CarTable, CarColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasCarWith applies the HasEdge predicate on the "car" edge with a given conditions (other predicates).
-func HasCarWith(preds ...predicate.Car) predicate.Media {
-	return predicate.Media(func(s *sql.Selector) {
-		step := newCarStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasModProductOption applies the HasEdge predicate on the "mod_product_option" edge.
-func HasModProductOption() predicate.Media {
-	return predicate.Media(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ModProductOptionTable, ModProductOptionColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasModProductOptionWith applies the HasEdge predicate on the "mod_product_option" edge with a given conditions (other predicates).
-func HasModProductOptionWith(preds ...predicate.ModProductOption) predicate.Media {
-	return predicate.Media(func(s *sql.Selector) {
-		step := newModProductOptionStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasBuildLog applies the HasEdge predicate on the "build_log" edge.
-func HasBuildLog() predicate.Media {
-	return predicate.Media(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, BuildLogTable, BuildLogPrimaryKey...),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasBuildLogWith applies the HasEdge predicate on the "build_log" edge with a given conditions (other predicates).
-func HasBuildLogWith(preds ...predicate.BuildLog) predicate.Media {
-	return predicate.Media(func(s *sql.Selector) {
-		step := newBuildLogStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasAlbums applies the HasEdge predicate on the "albums" edge.
-func HasAlbums() predicate.Media {
-	return predicate.Media(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, AlbumsTable, AlbumsPrimaryKey...),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasAlbumsWith applies the HasEdge predicate on the "albums" edge with a given conditions (other predicates).
-func HasAlbumsWith(preds ...predicate.Album) predicate.Media {
-	return predicate.Media(func(s *sql.Selector) {
-		step := newAlbumsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -41,16 +41,6 @@ func (Media) Edges() []ent.Edge {
 		edge.From("user", User.Type).
 			Ref("media").
 			Unique(),
-		edge.From("car", Car.Type).
-			Ref("media").
-			Unique(),
-		edge.From("mod_product_option", ModProductOption.Type).
-			Ref("media").
-			Unique(),
-		edge.From("build_log", BuildLog.Type).
-			Ref("media"),
-		edge.From("albums", Album.Type).
-			Ref("media"),
 	}
 }
 

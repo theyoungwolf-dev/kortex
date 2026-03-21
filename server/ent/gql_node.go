@@ -8,31 +8,14 @@ import (
 
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/theyoungwolf-dev/kortex/ent/album"
-	"github.com/theyoungwolf-dev/kortex/ent/buildlog"
-	"github.com/theyoungwolf-dev/kortex/ent/car"
-	"github.com/theyoungwolf-dev/kortex/ent/checkoutsession"
-	"github.com/theyoungwolf-dev/kortex/ent/document"
-	"github.com/theyoungwolf-dev/kortex/ent/dragresult"
-	"github.com/theyoungwolf-dev/kortex/ent/dragsession"
-	"github.com/theyoungwolf-dev/kortex/ent/dynoresult"
-	"github.com/theyoungwolf-dev/kortex/ent/dynosession"
-	"github.com/theyoungwolf-dev/kortex/ent/expense"
-	"github.com/theyoungwolf-dev/kortex/ent/fuelup"
-	"github.com/theyoungwolf-dev/kortex/ent/media"
-	"github.com/theyoungwolf-dev/kortex/ent/mod"
-	"github.com/theyoungwolf-dev/kortex/ent/modproductoption"
-	"github.com/theyoungwolf-dev/kortex/ent/odometerreading"
-	"github.com/theyoungwolf-dev/kortex/ent/profile"
-	"github.com/theyoungwolf-dev/kortex/ent/serviceitem"
-	"github.com/theyoungwolf-dev/kortex/ent/servicelog"
-	"github.com/theyoungwolf-dev/kortex/ent/serviceschedule"
-	"github.com/theyoungwolf-dev/kortex/ent/subscription"
-	"github.com/theyoungwolf-dev/kortex/ent/task"
-	"github.com/theyoungwolf-dev/kortex/ent/user"
-	"github.com/theyoungwolf-dev/kortex/ent/usersettings"
 	"github.com/google/uuid"
 	"github.com/hashicorp/go-multierror"
+	"github.com/theyoungwolf-dev/kortex/ent/checkoutsession"
+	"github.com/theyoungwolf-dev/kortex/ent/media"
+	"github.com/theyoungwolf-dev/kortex/ent/profile"
+	"github.com/theyoungwolf-dev/kortex/ent/subscription"
+	"github.com/theyoungwolf-dev/kortex/ent/user"
+	"github.com/theyoungwolf-dev/kortex/ent/usersettings"
 )
 
 // Noder wraps the basic Node method.
@@ -40,110 +23,25 @@ type Noder interface {
 	IsNode()
 }
 
-var albumImplementors = []string{"Album", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*Album) IsNode() {}
-
-var buildlogImplementors = []string{"BuildLog", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*BuildLog) IsNode() {}
-
-var carImplementors = []string{"Car", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*Car) IsNode() {}
-
 var checkoutsessionImplementors = []string{"CheckoutSession", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*CheckoutSession) IsNode() {}
-
-var documentImplementors = []string{"Document", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*Document) IsNode() {}
-
-var dragresultImplementors = []string{"DragResult", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*DragResult) IsNode() {}
-
-var dragsessionImplementors = []string{"DragSession", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*DragSession) IsNode() {}
-
-var dynoresultImplementors = []string{"DynoResult", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*DynoResult) IsNode() {}
-
-var dynosessionImplementors = []string{"DynoSession", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*DynoSession) IsNode() {}
-
-var expenseImplementors = []string{"Expense", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*Expense) IsNode() {}
-
-var fuelupImplementors = []string{"FuelUp", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*FuelUp) IsNode() {}
 
 var mediaImplementors = []string{"Media", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*Media) IsNode() {}
 
-var modImplementors = []string{"Mod", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*Mod) IsNode() {}
-
-var modproductoptionImplementors = []string{"ModProductOption", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*ModProductOption) IsNode() {}
-
-var odometerreadingImplementors = []string{"OdometerReading", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*OdometerReading) IsNode() {}
-
 var profileImplementors = []string{"Profile", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*Profile) IsNode() {}
 
-var serviceitemImplementors = []string{"ServiceItem", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*ServiceItem) IsNode() {}
-
-var servicelogImplementors = []string{"ServiceLog", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*ServiceLog) IsNode() {}
-
-var servicescheduleImplementors = []string{"ServiceSchedule", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*ServiceSchedule) IsNode() {}
-
 var subscriptionImplementors = []string{"SubscriptionPlan", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*Subscription) IsNode() {}
-
-var taskImplementors = []string{"Task", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*Task) IsNode() {}
 
 var userImplementors = []string{"User", "Node"}
 
@@ -213,101 +111,11 @@ func (c *Client) Noder(ctx context.Context, id uuid.UUID, opts ...NodeOption) (_
 
 func (c *Client) noder(ctx context.Context, table string, id uuid.UUID) (Noder, error) {
 	switch table {
-	case album.Table:
-		query := c.Album.Query().
-			Where(album.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, albumImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case buildlog.Table:
-		query := c.BuildLog.Query().
-			Where(buildlog.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, buildlogImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case car.Table:
-		query := c.Car.Query().
-			Where(car.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, carImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
 	case checkoutsession.Table:
 		query := c.CheckoutSession.Query().
 			Where(checkoutsession.ID(id))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, checkoutsessionImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case document.Table:
-		query := c.Document.Query().
-			Where(document.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, documentImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case dragresult.Table:
-		query := c.DragResult.Query().
-			Where(dragresult.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, dragresultImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case dragsession.Table:
-		query := c.DragSession.Query().
-			Where(dragsession.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, dragsessionImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case dynoresult.Table:
-		query := c.DynoResult.Query().
-			Where(dynoresult.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, dynoresultImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case dynosession.Table:
-		query := c.DynoSession.Query().
-			Where(dynosession.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, dynosessionImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case expense.Table:
-		query := c.Expense.Query().
-			Where(expense.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, expenseImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case fuelup.Table:
-		query := c.FuelUp.Query().
-			Where(fuelup.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, fuelupImplementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -321,33 +129,6 @@ func (c *Client) noder(ctx context.Context, table string, id uuid.UUID) (Noder, 
 			}
 		}
 		return query.Only(ctx)
-	case mod.Table:
-		query := c.Mod.Query().
-			Where(mod.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, modImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case modproductoption.Table:
-		query := c.ModProductOption.Query().
-			Where(modproductoption.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, modproductoptionImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case odometerreading.Table:
-		query := c.OdometerReading.Query().
-			Where(odometerreading.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, odometerreadingImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
 	case profile.Table:
 		query := c.Profile.Query().
 			Where(profile.ID(id))
@@ -357,47 +138,11 @@ func (c *Client) noder(ctx context.Context, table string, id uuid.UUID) (Noder, 
 			}
 		}
 		return query.Only(ctx)
-	case serviceitem.Table:
-		query := c.ServiceItem.Query().
-			Where(serviceitem.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, serviceitemImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case servicelog.Table:
-		query := c.ServiceLog.Query().
-			Where(servicelog.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, servicelogImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case serviceschedule.Table:
-		query := c.ServiceSchedule.Query().
-			Where(serviceschedule.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, servicescheduleImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
 	case subscription.Table:
 		query := c.Subscription.Query().
 			Where(subscription.ID(id))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, subscriptionImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case task.Table:
-		query := c.Task.Query().
-			Where(task.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, taskImplementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -493,170 +238,10 @@ func (c *Client) noders(ctx context.Context, table string, ids []uuid.UUID) ([]N
 		idmap[id] = append(idmap[id], &noders[i])
 	}
 	switch table {
-	case album.Table:
-		query := c.Album.Query().
-			Where(album.IDIn(ids...))
-		query, err := query.CollectFields(ctx, albumImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case buildlog.Table:
-		query := c.BuildLog.Query().
-			Where(buildlog.IDIn(ids...))
-		query, err := query.CollectFields(ctx, buildlogImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case car.Table:
-		query := c.Car.Query().
-			Where(car.IDIn(ids...))
-		query, err := query.CollectFields(ctx, carImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
 	case checkoutsession.Table:
 		query := c.CheckoutSession.Query().
 			Where(checkoutsession.IDIn(ids...))
 		query, err := query.CollectFields(ctx, checkoutsessionImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case document.Table:
-		query := c.Document.Query().
-			Where(document.IDIn(ids...))
-		query, err := query.CollectFields(ctx, documentImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case dragresult.Table:
-		query := c.DragResult.Query().
-			Where(dragresult.IDIn(ids...))
-		query, err := query.CollectFields(ctx, dragresultImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case dragsession.Table:
-		query := c.DragSession.Query().
-			Where(dragsession.IDIn(ids...))
-		query, err := query.CollectFields(ctx, dragsessionImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case dynoresult.Table:
-		query := c.DynoResult.Query().
-			Where(dynoresult.IDIn(ids...))
-		query, err := query.CollectFields(ctx, dynoresultImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case dynosession.Table:
-		query := c.DynoSession.Query().
-			Where(dynosession.IDIn(ids...))
-		query, err := query.CollectFields(ctx, dynosessionImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case expense.Table:
-		query := c.Expense.Query().
-			Where(expense.IDIn(ids...))
-		query, err := query.CollectFields(ctx, expenseImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case fuelup.Table:
-		query := c.FuelUp.Query().
-			Where(fuelup.IDIn(ids...))
-		query, err := query.CollectFields(ctx, fuelupImplementors...)
 		if err != nil {
 			return nil, err
 		}
@@ -685,54 +270,6 @@ func (c *Client) noders(ctx context.Context, table string, ids []uuid.UUID) ([]N
 				*noder = node
 			}
 		}
-	case mod.Table:
-		query := c.Mod.Query().
-			Where(mod.IDIn(ids...))
-		query, err := query.CollectFields(ctx, modImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case modproductoption.Table:
-		query := c.ModProductOption.Query().
-			Where(modproductoption.IDIn(ids...))
-		query, err := query.CollectFields(ctx, modproductoptionImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case odometerreading.Table:
-		query := c.OdometerReading.Query().
-			Where(odometerreading.IDIn(ids...))
-		query, err := query.CollectFields(ctx, odometerreadingImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
 	case profile.Table:
 		query := c.Profile.Query().
 			Where(profile.IDIn(ids...))
@@ -749,74 +286,10 @@ func (c *Client) noders(ctx context.Context, table string, ids []uuid.UUID) ([]N
 				*noder = node
 			}
 		}
-	case serviceitem.Table:
-		query := c.ServiceItem.Query().
-			Where(serviceitem.IDIn(ids...))
-		query, err := query.CollectFields(ctx, serviceitemImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case servicelog.Table:
-		query := c.ServiceLog.Query().
-			Where(servicelog.IDIn(ids...))
-		query, err := query.CollectFields(ctx, servicelogImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case serviceschedule.Table:
-		query := c.ServiceSchedule.Query().
-			Where(serviceschedule.IDIn(ids...))
-		query, err := query.CollectFields(ctx, servicescheduleImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
 	case subscription.Table:
 		query := c.Subscription.Query().
 			Where(subscription.IDIn(ids...))
 		query, err := query.CollectFields(ctx, subscriptionImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case task.Table:
-		query := c.Task.Query().
-			Where(task.IDIn(ids...))
-		query, err := query.CollectFields(ctx, taskImplementors...)
 		if err != nil {
 			return nil, err
 		}

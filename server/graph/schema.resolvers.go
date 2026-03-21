@@ -10,12 +10,12 @@ import (
 	"io"
 	"time"
 
+	"github.com/google/uuid"
+	minio "github.com/minio/minio-go/v7"
 	"github.com/theyoungwolf-dev/kortex/auth"
 	"github.com/theyoungwolf-dev/kortex/ent"
 	"github.com/theyoungwolf-dev/kortex/graph/model"
 	"github.com/theyoungwolf-dev/kortex/internal"
-	"github.com/google/uuid"
-	minio "github.com/minio/minio-go/v7"
 )
 
 // UpdateProfile is the resolver for the updateProfile field.
@@ -104,14 +104,9 @@ func (r *mutationResolver) UpdateSettings(ctx context.Context, input ent.UpdateU
 
 	if settings == nil {
 		if settings, err = r.entClient.UserSettings.Create().SetInput(ent.CreateUserSettingsInput{
-			CurrencyCode:        input.CurrencyCode,
-			FuelVolumeUnit:      input.FuelVolumeUnit,
-			DistanceUnit:        input.DistanceUnit,
-			FuelConsumptionUnit: input.FuelConsumptionUnit,
-			TemperatureUnit:     input.TemperatureUnit,
-			PowerUnit:           input.PowerUnit,
-			TorqueUnit:          input.TorqueUnit,
-			UserID:              user.ID,
+			CurrencyCode: input.CurrencyCode,
+			Mode:         input.Mode,
+			UserID:       user.ID,
 		}).Save(ctx); err != nil {
 			return nil, err
 		}

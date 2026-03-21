@@ -8,13 +8,13 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/theyoungwolf-dev/kortex/auth"
-	"github.com/theyoungwolf-dev/kortex/ent"
 	"github.com/dustinkirkland/golang-petname"
 	stripe "github.com/stripe/stripe-go/v82"
 	"github.com/stripe/stripe-go/v82/account"
 	"github.com/stripe/stripe-go/v82/accountlink"
 	"github.com/stripe/stripe-go/v82/loginlink"
+	"github.com/theyoungwolf-dev/kortex/auth"
+	"github.com/theyoungwolf-dev/kortex/ent"
 )
 
 // CreateConnectAccount is the resolver for the createConnectAccount field.

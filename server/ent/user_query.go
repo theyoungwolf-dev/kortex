@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/theyoungwolf-dev/kortex/ent/car"
+	"github.com/google/uuid"
 	"github.com/theyoungwolf-dev/kortex/ent/checkoutsession"
 	"github.com/theyoungwolf-dev/kortex/ent/media"
 	"github.com/theyoungwolf-dev/kortex/ent/predicate"
@@ -20,7 +20,6 @@ import (
 	"github.com/theyoungwolf-dev/kortex/ent/subscription"
 	"github.com/theyoungwolf-dev/kortex/ent/user"
 	"github.com/theyoungwolf-dev/kortex/ent/usersettings"
-	"github.com/google/uuid"
 )
 
 // UserQuery is the builder for querying User entities.
@@ -30,7 +29,6 @@ type UserQuery struct {
 	order                     []user.OrderOption
 	inters                    []Interceptor
 	predicates                []predicate.User
-	withCars                  *CarQuery
 	withProfile               *ProfileQuery
 	withSettings              *UserSettingsQuery
 	withSubscriptions         *SubscriptionQuery
@@ -38,7 +36,6 @@ type UserQuery struct {
 	withMedia                 *MediaQuery
 	modifiers                 []func(*sql.Selector)
 	loadTotal                 []func(context.Context, []*User) error
-	withNamedCars             map[string]*CarQuery
 	withNamedSubscriptions    map[string]*SubscriptionQuery
 	withNamedCheckoutSessions map[string]*CheckoutSessionQuery
 	withNamedMedia            map[string]*MediaQuery
@@ -76,28 +73,6 @@ func (uq *UserQuery) Unique(unique bool) *UserQuery {
 func (uq *UserQuery) Order(o ...user.OrderOption) *UserQuery {
 	uq.order = append(uq.order, o...)
 	return uq
-}
-
-// QueryCars chains the current query on the "cars" edge.
-func (uq *UserQuery) QueryCars() *CarQuery {
-	query := (&CarClient{config: uq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := uq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := uq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(car.Table, car.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.CarsTable, user.CarsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // QueryProfile chains the current query on the "profile" edge.
@@ -402,7 +377,6 @@ func (uq *UserQuery) Clone() *UserQuery {
 		order:                append([]user.OrderOption{}, uq.order...),
 		inters:               append([]Interceptor{}, uq.inters...),
 		predicates:           append([]predicate.User{}, uq.predicates...),
-		withCars:             uq.withCars.Clone(),
 		withProfile:          uq.withProfile.Clone(),
 		withSettings:         uq.withSettings.Clone(),
 		withSubscriptions:    uq.withSubscriptions.Clone(),
@@ -412,17 +386,6 @@ func (uq *UserQuery) Clone() *UserQuery {
 		sql:  uq.sql.Clone(),
 		path: uq.path,
 	}
-}
-
-// WithCars tells the query-builder to eager-load the nodes that are connected to
-// the "cars" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithCars(opts ...func(*CarQuery)) *UserQuery {
-	query := (&CarClient{config: uq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	uq.withCars = query
-	return uq
 }
 
 // WithProfile tells the query-builder to eager-load the nodes that are connected to
@@ -558,8 +521,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [6]bool{
-			uq.withCars != nil,
+		loadedTypes = [5]bool{
 			uq.withProfile != nil,
 			uq.withSettings != nil,
 			uq.withSubscriptions != nil,
@@ -587,13 +549,6 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
-	}
-	if query := uq.withCars; query != nil {
-		if err := uq.loadCars(ctx, query, nodes,
-			func(n *User) { n.Edges.Cars = []*Car{} },
-			func(n *User, e *Car) { n.Edges.Cars = append(n.Edges.Cars, e) }); err != nil {
-			return nil, err
-		}
 	}
 	if query := uq.withProfile; query != nil {
 		if err := uq.loadProfile(ctx, query, nodes, nil,
@@ -628,13 +583,6 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			return nil, err
 		}
 	}
-	for name, query := range uq.withNamedCars {
-		if err := uq.loadCars(ctx, query, nodes,
-			func(n *User) { n.appendNamedCars(name) },
-			func(n *User, e *Car) { n.appendNamedCars(name, e) }); err != nil {
-			return nil, err
-		}
-	}
 	for name, query := range uq.withNamedSubscriptions {
 		if err := uq.loadSubscriptions(ctx, query, nodes,
 			func(n *User) { n.appendNamedSubscriptions(name) },
@@ -664,37 +612,6 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	return nodes, nil
 }
 
-func (uq *UserQuery) loadCars(ctx context.Context, query *CarQuery, nodes []*User, init func(*User), assign func(*User, *Car)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*User)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.withFKs = true
-	query.Where(predicate.Car(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.CarsColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.user_cars
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "user_cars" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_cars" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
 func (uq *UserQuery) loadProfile(ctx context.Context, query *ProfileQuery, nodes []*User, init func(*User), assign func(*User, *Profile)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*User)
@@ -927,20 +844,6 @@ func (uq *UserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
-}
-
-// WithNamedCars tells the query-builder to eager-load the nodes that are connected to the "cars"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithNamedCars(name string, opts ...func(*CarQuery)) *UserQuery {
-	query := (&CarClient{config: uq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	if uq.withNamedCars == nil {
-		uq.withNamedCars = make(map[string]*CarQuery)
-	}
-	uq.withNamedCars[name] = query
-	return uq
 }
 
 // WithNamedSubscriptions tells the query-builder to eager-load the nodes that are connected to the "subscriptions"

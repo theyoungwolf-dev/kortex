@@ -12,11 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/theyoungwolf-dev/kortex/ent/checkoutsession"
 	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 	"github.com/theyoungwolf-dev/kortex/ent/subscription"
 	"github.com/theyoungwolf-dev/kortex/ent/user"
-	"github.com/google/uuid"
 )
 
 // CheckoutSessionQuery is the builder for querying CheckoutSession entities.

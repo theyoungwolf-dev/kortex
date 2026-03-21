@@ -10,14 +10,13 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/theyoungwolf-dev/kortex/ent/car"
+	"github.com/google/uuid"
 	"github.com/theyoungwolf-dev/kortex/ent/checkoutsession"
 	"github.com/theyoungwolf-dev/kortex/ent/media"
 	"github.com/theyoungwolf-dev/kortex/ent/profile"
 	"github.com/theyoungwolf-dev/kortex/ent/subscription"
 	"github.com/theyoungwolf-dev/kortex/ent/user"
 	"github.com/theyoungwolf-dev/kortex/ent/usersettings"
-	"github.com/google/uuid"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -135,21 +134,6 @@ func (uc *UserCreate) SetNillableID(u *uuid.UUID) *UserCreate {
 		uc.SetID(*u)
 	}
 	return uc
-}
-
-// AddCarIDs adds the "cars" edge to the Car entity by IDs.
-func (uc *UserCreate) AddCarIDs(ids ...uuid.UUID) *UserCreate {
-	uc.mutation.AddCarIDs(ids...)
-	return uc
-}
-
-// AddCars adds the "cars" edges to the Car entity.
-func (uc *UserCreate) AddCars(c ...*Car) *UserCreate {
-	ids := make([]uuid.UUID, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return uc.AddCarIDs(ids...)
 }
 
 // SetProfileID sets the "profile" edge to the Profile entity by ID.
@@ -361,22 +345,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Affiliate12moCode(); ok {
 		_spec.SetField(user.FieldAffiliate12moCode, field.TypeString, value)
 		_node.Affiliate12moCode = &value
-	}
-	if nodes := uc.mutation.CarsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.CarsTable,
-			Columns: []string{user.CarsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(car.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := uc.mutation.ProfileIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

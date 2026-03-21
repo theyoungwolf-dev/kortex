@@ -24,18 +24,8 @@ const (
 	FieldUpdateTime = "update_time"
 	// FieldCurrencyCode holds the string denoting the currency_code field in the database.
 	FieldCurrencyCode = "currency_code"
-	// FieldFuelVolumeUnit holds the string denoting the fuel_volume_unit field in the database.
-	FieldFuelVolumeUnit = "fuel_volume_unit"
-	// FieldDistanceUnit holds the string denoting the distance_unit field in the database.
-	FieldDistanceUnit = "distance_unit"
-	// FieldFuelConsumptionUnit holds the string denoting the fuel_consumption_unit field in the database.
-	FieldFuelConsumptionUnit = "fuel_consumption_unit"
-	// FieldTemperatureUnit holds the string denoting the temperature_unit field in the database.
-	FieldTemperatureUnit = "temperature_unit"
-	// FieldPowerUnit holds the string denoting the power_unit field in the database.
-	FieldPowerUnit = "power_unit"
-	// FieldTorqueUnit holds the string denoting the torque_unit field in the database.
-	FieldTorqueUnit = "torque_unit"
+	// FieldMode holds the string denoting the mode field in the database.
+	FieldMode = "mode"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// Table holds the table name of the usersettings in the database.
@@ -55,12 +45,7 @@ var Columns = []string{
 	FieldCreateTime,
 	FieldUpdateTime,
 	FieldCurrencyCode,
-	FieldFuelVolumeUnit,
-	FieldDistanceUnit,
-	FieldFuelConsumptionUnit,
-	FieldTemperatureUnit,
-	FieldPowerUnit,
-	FieldTorqueUnit,
+	FieldMode,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "user_settings"
@@ -95,148 +80,30 @@ var (
 	DefaultID func() uuid.UUID
 )
 
-// FuelVolumeUnit defines the type for the "fuel_volume_unit" enum field.
-type FuelVolumeUnit string
+// Mode defines the type for the "mode" enum field.
+type Mode string
 
-// FuelVolumeUnit values.
+// ModeSystem is the default value of the Mode enum.
+const DefaultMode = ModeSystem
+
+// Mode values.
 const (
-	FuelVolumeUnitLiter     FuelVolumeUnit = "liter"
-	FuelVolumeUnitGallon    FuelVolumeUnit = "gallon"
-	FuelVolumeUnitImpGallon FuelVolumeUnit = "imp_gallon"
+	ModeLight  Mode = "light"
+	ModeDark   Mode = "dark"
+	ModeSystem Mode = "system"
 )
 
-func (fvu FuelVolumeUnit) String() string {
-	return string(fvu)
+func (m Mode) String() string {
+	return string(m)
 }
 
-// FuelVolumeUnitValidator is a validator for the "fuel_volume_unit" field enum values. It is called by the builders before save.
-func FuelVolumeUnitValidator(fvu FuelVolumeUnit) error {
-	switch fvu {
-	case FuelVolumeUnitLiter, FuelVolumeUnitGallon, FuelVolumeUnitImpGallon:
+// ModeValidator is a validator for the "mode" field enum values. It is called by the builders before save.
+func ModeValidator(m Mode) error {
+	switch m {
+	case ModeLight, ModeDark, ModeSystem:
 		return nil
 	default:
-		return fmt.Errorf("usersettings: invalid enum value for fuel_volume_unit field: %q", fvu)
-	}
-}
-
-// DistanceUnit defines the type for the "distance_unit" enum field.
-type DistanceUnit string
-
-// DistanceUnit values.
-const (
-	DistanceUnitKilometers DistanceUnit = "kilometers"
-	DistanceUnitMiles      DistanceUnit = "miles"
-)
-
-func (du DistanceUnit) String() string {
-	return string(du)
-}
-
-// DistanceUnitValidator is a validator for the "distance_unit" field enum values. It is called by the builders before save.
-func DistanceUnitValidator(du DistanceUnit) error {
-	switch du {
-	case DistanceUnitKilometers, DistanceUnitMiles:
-		return nil
-	default:
-		return fmt.Errorf("usersettings: invalid enum value for distance_unit field: %q", du)
-	}
-}
-
-// FuelConsumptionUnit defines the type for the "fuel_consumption_unit" enum field.
-type FuelConsumptionUnit string
-
-// FuelConsumptionUnit values.
-const (
-	FuelConsumptionUnitMpg    FuelConsumptionUnit = "mpg"
-	FuelConsumptionUnitImpMpg FuelConsumptionUnit = "imp_mpg"
-	FuelConsumptionUnitKpl    FuelConsumptionUnit = "kpl"
-	FuelConsumptionUnitLp100k FuelConsumptionUnit = "lp100k"
-)
-
-func (fcu FuelConsumptionUnit) String() string {
-	return string(fcu)
-}
-
-// FuelConsumptionUnitValidator is a validator for the "fuel_consumption_unit" field enum values. It is called by the builders before save.
-func FuelConsumptionUnitValidator(fcu FuelConsumptionUnit) error {
-	switch fcu {
-	case FuelConsumptionUnitMpg, FuelConsumptionUnitImpMpg, FuelConsumptionUnitKpl, FuelConsumptionUnitLp100k:
-		return nil
-	default:
-		return fmt.Errorf("usersettings: invalid enum value for fuel_consumption_unit field: %q", fcu)
-	}
-}
-
-// TemperatureUnit defines the type for the "temperature_unit" enum field.
-type TemperatureUnit string
-
-// TemperatureUnit values.
-const (
-	TemperatureUnitCelsius    TemperatureUnit = "celsius"
-	TemperatureUnitFahrenheit TemperatureUnit = "fahrenheit"
-)
-
-func (tu TemperatureUnit) String() string {
-	return string(tu)
-}
-
-// TemperatureUnitValidator is a validator for the "temperature_unit" field enum values. It is called by the builders before save.
-func TemperatureUnitValidator(tu TemperatureUnit) error {
-	switch tu {
-	case TemperatureUnitCelsius, TemperatureUnitFahrenheit:
-		return nil
-	default:
-		return fmt.Errorf("usersettings: invalid enum value for temperature_unit field: %q", tu)
-	}
-}
-
-// PowerUnit defines the type for the "power_unit" enum field.
-type PowerUnit string
-
-// PowerUnit values.
-const (
-	PowerUnitMetricHorsepower   PowerUnit = "metric_horsepower"
-	PowerUnitMechHorsepower     PowerUnit = "mech_horsepower"
-	PowerUnitKilowatts          PowerUnit = "kilowatts"
-	PowerUnitImpHorsepower      PowerUnit = "imp_horsepower"
-	PowerUnitElectricHorsepower PowerUnit = "electric_horsepower"
-)
-
-func (pu PowerUnit) String() string {
-	return string(pu)
-}
-
-// PowerUnitValidator is a validator for the "power_unit" field enum values. It is called by the builders before save.
-func PowerUnitValidator(pu PowerUnit) error {
-	switch pu {
-	case PowerUnitMetricHorsepower, PowerUnitMechHorsepower, PowerUnitKilowatts, PowerUnitImpHorsepower, PowerUnitElectricHorsepower:
-		return nil
-	default:
-		return fmt.Errorf("usersettings: invalid enum value for power_unit field: %q", pu)
-	}
-}
-
-// TorqueUnit defines the type for the "torque_unit" enum field.
-type TorqueUnit string
-
-// TorqueUnit values.
-const (
-	TorqueUnitNewtonMeters  TorqueUnit = "newton_meters"
-	TorqueUnitPoundFeet     TorqueUnit = "pound_feet"
-	TorqueUnitKilogramMeter TorqueUnit = "kilogram_meter"
-)
-
-func (tu TorqueUnit) String() string {
-	return string(tu)
-}
-
-// TorqueUnitValidator is a validator for the "torque_unit" field enum values. It is called by the builders before save.
-func TorqueUnitValidator(tu TorqueUnit) error {
-	switch tu {
-	case TorqueUnitNewtonMeters, TorqueUnitPoundFeet, TorqueUnitKilogramMeter:
-		return nil
-	default:
-		return fmt.Errorf("usersettings: invalid enum value for torque_unit field: %q", tu)
+		return fmt.Errorf("usersettings: invalid enum value for mode field: %q", m)
 	}
 }
 
@@ -263,34 +130,9 @@ func ByCurrencyCode(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCurrencyCode, opts...).ToFunc()
 }
 
-// ByFuelVolumeUnit orders the results by the fuel_volume_unit field.
-func ByFuelVolumeUnit(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldFuelVolumeUnit, opts...).ToFunc()
-}
-
-// ByDistanceUnit orders the results by the distance_unit field.
-func ByDistanceUnit(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDistanceUnit, opts...).ToFunc()
-}
-
-// ByFuelConsumptionUnit orders the results by the fuel_consumption_unit field.
-func ByFuelConsumptionUnit(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldFuelConsumptionUnit, opts...).ToFunc()
-}
-
-// ByTemperatureUnit orders the results by the temperature_unit field.
-func ByTemperatureUnit(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldTemperatureUnit, opts...).ToFunc()
-}
-
-// ByPowerUnit orders the results by the power_unit field.
-func ByPowerUnit(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPowerUnit, opts...).ToFunc()
-}
-
-// ByTorqueUnit orders the results by the torque_unit field.
-func ByTorqueUnit(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldTorqueUnit, opts...).ToFunc()
+// ByMode orders the results by the mode field.
+func ByMode(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMode, opts...).ToFunc()
 }
 
 // ByUserField orders the results by user field.
@@ -308,109 +150,19 @@ func newUserStep() *sqlgraph.Step {
 }
 
 // MarshalGQL implements graphql.Marshaler interface.
-func (e FuelVolumeUnit) MarshalGQL(w io.Writer) {
+func (e Mode) MarshalGQL(w io.Writer) {
 	io.WriteString(w, strconv.Quote(e.String()))
 }
 
 // UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *FuelVolumeUnit) UnmarshalGQL(val interface{}) error {
+func (e *Mode) UnmarshalGQL(val interface{}) error {
 	str, ok := val.(string)
 	if !ok {
 		return fmt.Errorf("enum %T must be a string", val)
 	}
-	*e = FuelVolumeUnit(str)
-	if err := FuelVolumeUnitValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid FuelVolumeUnit", str)
-	}
-	return nil
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (e DistanceUnit) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(e.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *DistanceUnit) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*e = DistanceUnit(str)
-	if err := DistanceUnitValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid DistanceUnit", str)
-	}
-	return nil
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (e FuelConsumptionUnit) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(e.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *FuelConsumptionUnit) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*e = FuelConsumptionUnit(str)
-	if err := FuelConsumptionUnitValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid FuelConsumptionUnit", str)
-	}
-	return nil
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (e TemperatureUnit) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(e.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *TemperatureUnit) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*e = TemperatureUnit(str)
-	if err := TemperatureUnitValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid TemperatureUnit", str)
-	}
-	return nil
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (e PowerUnit) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(e.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *PowerUnit) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*e = PowerUnit(str)
-	if err := PowerUnitValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid PowerUnit", str)
-	}
-	return nil
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (e TorqueUnit) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(e.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *TorqueUnit) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*e = TorqueUnit(str)
-	if err := TorqueUnitValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid TorqueUnit", str)
+	*e = Mode(str)
+	if err := ModeValidator(*e); err != nil {
+		return fmt.Errorf("%s is not a valid Mode", str)
 	}
 	return nil
 }

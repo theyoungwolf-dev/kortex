@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 	"github.com/theyoungwolf-dev/kortex/ent/user"
 	"github.com/theyoungwolf-dev/kortex/ent/usersettings"
-	"github.com/google/uuid"
 )
 
 // UserSettingsUpdate is the builder for updating UserSettings entities.
@@ -56,123 +56,17 @@ func (usu *UserSettingsUpdate) ClearCurrencyCode() *UserSettingsUpdate {
 	return usu
 }
 
-// SetFuelVolumeUnit sets the "fuel_volume_unit" field.
-func (usu *UserSettingsUpdate) SetFuelVolumeUnit(uvu usersettings.FuelVolumeUnit) *UserSettingsUpdate {
-	usu.mutation.SetFuelVolumeUnit(uvu)
+// SetMode sets the "mode" field.
+func (usu *UserSettingsUpdate) SetMode(u usersettings.Mode) *UserSettingsUpdate {
+	usu.mutation.SetMode(u)
 	return usu
 }
 
-// SetNillableFuelVolumeUnit sets the "fuel_volume_unit" field if the given value is not nil.
-func (usu *UserSettingsUpdate) SetNillableFuelVolumeUnit(uvu *usersettings.FuelVolumeUnit) *UserSettingsUpdate {
-	if uvu != nil {
-		usu.SetFuelVolumeUnit(*uvu)
+// SetNillableMode sets the "mode" field if the given value is not nil.
+func (usu *UserSettingsUpdate) SetNillableMode(u *usersettings.Mode) *UserSettingsUpdate {
+	if u != nil {
+		usu.SetMode(*u)
 	}
-	return usu
-}
-
-// ClearFuelVolumeUnit clears the value of the "fuel_volume_unit" field.
-func (usu *UserSettingsUpdate) ClearFuelVolumeUnit() *UserSettingsUpdate {
-	usu.mutation.ClearFuelVolumeUnit()
-	return usu
-}
-
-// SetDistanceUnit sets the "distance_unit" field.
-func (usu *UserSettingsUpdate) SetDistanceUnit(uu usersettings.DistanceUnit) *UserSettingsUpdate {
-	usu.mutation.SetDistanceUnit(uu)
-	return usu
-}
-
-// SetNillableDistanceUnit sets the "distance_unit" field if the given value is not nil.
-func (usu *UserSettingsUpdate) SetNillableDistanceUnit(uu *usersettings.DistanceUnit) *UserSettingsUpdate {
-	if uu != nil {
-		usu.SetDistanceUnit(*uu)
-	}
-	return usu
-}
-
-// ClearDistanceUnit clears the value of the "distance_unit" field.
-func (usu *UserSettingsUpdate) ClearDistanceUnit() *UserSettingsUpdate {
-	usu.mutation.ClearDistanceUnit()
-	return usu
-}
-
-// SetFuelConsumptionUnit sets the "fuel_consumption_unit" field.
-func (usu *UserSettingsUpdate) SetFuelConsumptionUnit(ucu usersettings.FuelConsumptionUnit) *UserSettingsUpdate {
-	usu.mutation.SetFuelConsumptionUnit(ucu)
-	return usu
-}
-
-// SetNillableFuelConsumptionUnit sets the "fuel_consumption_unit" field if the given value is not nil.
-func (usu *UserSettingsUpdate) SetNillableFuelConsumptionUnit(ucu *usersettings.FuelConsumptionUnit) *UserSettingsUpdate {
-	if ucu != nil {
-		usu.SetFuelConsumptionUnit(*ucu)
-	}
-	return usu
-}
-
-// ClearFuelConsumptionUnit clears the value of the "fuel_consumption_unit" field.
-func (usu *UserSettingsUpdate) ClearFuelConsumptionUnit() *UserSettingsUpdate {
-	usu.mutation.ClearFuelConsumptionUnit()
-	return usu
-}
-
-// SetTemperatureUnit sets the "temperature_unit" field.
-func (usu *UserSettingsUpdate) SetTemperatureUnit(uu usersettings.TemperatureUnit) *UserSettingsUpdate {
-	usu.mutation.SetTemperatureUnit(uu)
-	return usu
-}
-
-// SetNillableTemperatureUnit sets the "temperature_unit" field if the given value is not nil.
-func (usu *UserSettingsUpdate) SetNillableTemperatureUnit(uu *usersettings.TemperatureUnit) *UserSettingsUpdate {
-	if uu != nil {
-		usu.SetTemperatureUnit(*uu)
-	}
-	return usu
-}
-
-// ClearTemperatureUnit clears the value of the "temperature_unit" field.
-func (usu *UserSettingsUpdate) ClearTemperatureUnit() *UserSettingsUpdate {
-	usu.mutation.ClearTemperatureUnit()
-	return usu
-}
-
-// SetPowerUnit sets the "power_unit" field.
-func (usu *UserSettingsUpdate) SetPowerUnit(uu usersettings.PowerUnit) *UserSettingsUpdate {
-	usu.mutation.SetPowerUnit(uu)
-	return usu
-}
-
-// SetNillablePowerUnit sets the "power_unit" field if the given value is not nil.
-func (usu *UserSettingsUpdate) SetNillablePowerUnit(uu *usersettings.PowerUnit) *UserSettingsUpdate {
-	if uu != nil {
-		usu.SetPowerUnit(*uu)
-	}
-	return usu
-}
-
-// ClearPowerUnit clears the value of the "power_unit" field.
-func (usu *UserSettingsUpdate) ClearPowerUnit() *UserSettingsUpdate {
-	usu.mutation.ClearPowerUnit()
-	return usu
-}
-
-// SetTorqueUnit sets the "torque_unit" field.
-func (usu *UserSettingsUpdate) SetTorqueUnit(uu usersettings.TorqueUnit) *UserSettingsUpdate {
-	usu.mutation.SetTorqueUnit(uu)
-	return usu
-}
-
-// SetNillableTorqueUnit sets the "torque_unit" field if the given value is not nil.
-func (usu *UserSettingsUpdate) SetNillableTorqueUnit(uu *usersettings.TorqueUnit) *UserSettingsUpdate {
-	if uu != nil {
-		usu.SetTorqueUnit(*uu)
-	}
-	return usu
-}
-
-// ClearTorqueUnit clears the value of the "torque_unit" field.
-func (usu *UserSettingsUpdate) ClearTorqueUnit() *UserSettingsUpdate {
-	usu.mutation.ClearTorqueUnit()
 	return usu
 }
 
@@ -236,34 +130,9 @@ func (usu *UserSettingsUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (usu *UserSettingsUpdate) check() error {
-	if v, ok := usu.mutation.FuelVolumeUnit(); ok {
-		if err := usersettings.FuelVolumeUnitValidator(v); err != nil {
-			return &ValidationError{Name: "fuel_volume_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.fuel_volume_unit": %w`, err)}
-		}
-	}
-	if v, ok := usu.mutation.DistanceUnit(); ok {
-		if err := usersettings.DistanceUnitValidator(v); err != nil {
-			return &ValidationError{Name: "distance_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.distance_unit": %w`, err)}
-		}
-	}
-	if v, ok := usu.mutation.FuelConsumptionUnit(); ok {
-		if err := usersettings.FuelConsumptionUnitValidator(v); err != nil {
-			return &ValidationError{Name: "fuel_consumption_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.fuel_consumption_unit": %w`, err)}
-		}
-	}
-	if v, ok := usu.mutation.TemperatureUnit(); ok {
-		if err := usersettings.TemperatureUnitValidator(v); err != nil {
-			return &ValidationError{Name: "temperature_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.temperature_unit": %w`, err)}
-		}
-	}
-	if v, ok := usu.mutation.PowerUnit(); ok {
-		if err := usersettings.PowerUnitValidator(v); err != nil {
-			return &ValidationError{Name: "power_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.power_unit": %w`, err)}
-		}
-	}
-	if v, ok := usu.mutation.TorqueUnit(); ok {
-		if err := usersettings.TorqueUnitValidator(v); err != nil {
-			return &ValidationError{Name: "torque_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.torque_unit": %w`, err)}
+	if v, ok := usu.mutation.Mode(); ok {
+		if err := usersettings.ModeValidator(v); err != nil {
+			return &ValidationError{Name: "mode", err: fmt.Errorf(`ent: validator failed for field "UserSettings.mode": %w`, err)}
 		}
 	}
 	if usu.mutation.UserCleared() && len(usu.mutation.UserIDs()) > 0 {
@@ -293,41 +162,8 @@ func (usu *UserSettingsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if usu.mutation.CurrencyCodeCleared() {
 		_spec.ClearField(usersettings.FieldCurrencyCode, field.TypeString)
 	}
-	if value, ok := usu.mutation.FuelVolumeUnit(); ok {
-		_spec.SetField(usersettings.FieldFuelVolumeUnit, field.TypeEnum, value)
-	}
-	if usu.mutation.FuelVolumeUnitCleared() {
-		_spec.ClearField(usersettings.FieldFuelVolumeUnit, field.TypeEnum)
-	}
-	if value, ok := usu.mutation.DistanceUnit(); ok {
-		_spec.SetField(usersettings.FieldDistanceUnit, field.TypeEnum, value)
-	}
-	if usu.mutation.DistanceUnitCleared() {
-		_spec.ClearField(usersettings.FieldDistanceUnit, field.TypeEnum)
-	}
-	if value, ok := usu.mutation.FuelConsumptionUnit(); ok {
-		_spec.SetField(usersettings.FieldFuelConsumptionUnit, field.TypeEnum, value)
-	}
-	if usu.mutation.FuelConsumptionUnitCleared() {
-		_spec.ClearField(usersettings.FieldFuelConsumptionUnit, field.TypeEnum)
-	}
-	if value, ok := usu.mutation.TemperatureUnit(); ok {
-		_spec.SetField(usersettings.FieldTemperatureUnit, field.TypeEnum, value)
-	}
-	if usu.mutation.TemperatureUnitCleared() {
-		_spec.ClearField(usersettings.FieldTemperatureUnit, field.TypeEnum)
-	}
-	if value, ok := usu.mutation.PowerUnit(); ok {
-		_spec.SetField(usersettings.FieldPowerUnit, field.TypeEnum, value)
-	}
-	if usu.mutation.PowerUnitCleared() {
-		_spec.ClearField(usersettings.FieldPowerUnit, field.TypeEnum)
-	}
-	if value, ok := usu.mutation.TorqueUnit(); ok {
-		_spec.SetField(usersettings.FieldTorqueUnit, field.TypeEnum, value)
-	}
-	if usu.mutation.TorqueUnitCleared() {
-		_spec.ClearField(usersettings.FieldTorqueUnit, field.TypeEnum)
+	if value, ok := usu.mutation.Mode(); ok {
+		_spec.SetField(usersettings.FieldMode, field.TypeEnum, value)
 	}
 	if usu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -404,123 +240,17 @@ func (usuo *UserSettingsUpdateOne) ClearCurrencyCode() *UserSettingsUpdateOne {
 	return usuo
 }
 
-// SetFuelVolumeUnit sets the "fuel_volume_unit" field.
-func (usuo *UserSettingsUpdateOne) SetFuelVolumeUnit(uvu usersettings.FuelVolumeUnit) *UserSettingsUpdateOne {
-	usuo.mutation.SetFuelVolumeUnit(uvu)
+// SetMode sets the "mode" field.
+func (usuo *UserSettingsUpdateOne) SetMode(u usersettings.Mode) *UserSettingsUpdateOne {
+	usuo.mutation.SetMode(u)
 	return usuo
 }
 
-// SetNillableFuelVolumeUnit sets the "fuel_volume_unit" field if the given value is not nil.
-func (usuo *UserSettingsUpdateOne) SetNillableFuelVolumeUnit(uvu *usersettings.FuelVolumeUnit) *UserSettingsUpdateOne {
-	if uvu != nil {
-		usuo.SetFuelVolumeUnit(*uvu)
+// SetNillableMode sets the "mode" field if the given value is not nil.
+func (usuo *UserSettingsUpdateOne) SetNillableMode(u *usersettings.Mode) *UserSettingsUpdateOne {
+	if u != nil {
+		usuo.SetMode(*u)
 	}
-	return usuo
-}
-
-// ClearFuelVolumeUnit clears the value of the "fuel_volume_unit" field.
-func (usuo *UserSettingsUpdateOne) ClearFuelVolumeUnit() *UserSettingsUpdateOne {
-	usuo.mutation.ClearFuelVolumeUnit()
-	return usuo
-}
-
-// SetDistanceUnit sets the "distance_unit" field.
-func (usuo *UserSettingsUpdateOne) SetDistanceUnit(uu usersettings.DistanceUnit) *UserSettingsUpdateOne {
-	usuo.mutation.SetDistanceUnit(uu)
-	return usuo
-}
-
-// SetNillableDistanceUnit sets the "distance_unit" field if the given value is not nil.
-func (usuo *UserSettingsUpdateOne) SetNillableDistanceUnit(uu *usersettings.DistanceUnit) *UserSettingsUpdateOne {
-	if uu != nil {
-		usuo.SetDistanceUnit(*uu)
-	}
-	return usuo
-}
-
-// ClearDistanceUnit clears the value of the "distance_unit" field.
-func (usuo *UserSettingsUpdateOne) ClearDistanceUnit() *UserSettingsUpdateOne {
-	usuo.mutation.ClearDistanceUnit()
-	return usuo
-}
-
-// SetFuelConsumptionUnit sets the "fuel_consumption_unit" field.
-func (usuo *UserSettingsUpdateOne) SetFuelConsumptionUnit(ucu usersettings.FuelConsumptionUnit) *UserSettingsUpdateOne {
-	usuo.mutation.SetFuelConsumptionUnit(ucu)
-	return usuo
-}
-
-// SetNillableFuelConsumptionUnit sets the "fuel_consumption_unit" field if the given value is not nil.
-func (usuo *UserSettingsUpdateOne) SetNillableFuelConsumptionUnit(ucu *usersettings.FuelConsumptionUnit) *UserSettingsUpdateOne {
-	if ucu != nil {
-		usuo.SetFuelConsumptionUnit(*ucu)
-	}
-	return usuo
-}
-
-// ClearFuelConsumptionUnit clears the value of the "fuel_consumption_unit" field.
-func (usuo *UserSettingsUpdateOne) ClearFuelConsumptionUnit() *UserSettingsUpdateOne {
-	usuo.mutation.ClearFuelConsumptionUnit()
-	return usuo
-}
-
-// SetTemperatureUnit sets the "temperature_unit" field.
-func (usuo *UserSettingsUpdateOne) SetTemperatureUnit(uu usersettings.TemperatureUnit) *UserSettingsUpdateOne {
-	usuo.mutation.SetTemperatureUnit(uu)
-	return usuo
-}
-
-// SetNillableTemperatureUnit sets the "temperature_unit" field if the given value is not nil.
-func (usuo *UserSettingsUpdateOne) SetNillableTemperatureUnit(uu *usersettings.TemperatureUnit) *UserSettingsUpdateOne {
-	if uu != nil {
-		usuo.SetTemperatureUnit(*uu)
-	}
-	return usuo
-}
-
-// ClearTemperatureUnit clears the value of the "temperature_unit" field.
-func (usuo *UserSettingsUpdateOne) ClearTemperatureUnit() *UserSettingsUpdateOne {
-	usuo.mutation.ClearTemperatureUnit()
-	return usuo
-}
-
-// SetPowerUnit sets the "power_unit" field.
-func (usuo *UserSettingsUpdateOne) SetPowerUnit(uu usersettings.PowerUnit) *UserSettingsUpdateOne {
-	usuo.mutation.SetPowerUnit(uu)
-	return usuo
-}
-
-// SetNillablePowerUnit sets the "power_unit" field if the given value is not nil.
-func (usuo *UserSettingsUpdateOne) SetNillablePowerUnit(uu *usersettings.PowerUnit) *UserSettingsUpdateOne {
-	if uu != nil {
-		usuo.SetPowerUnit(*uu)
-	}
-	return usuo
-}
-
-// ClearPowerUnit clears the value of the "power_unit" field.
-func (usuo *UserSettingsUpdateOne) ClearPowerUnit() *UserSettingsUpdateOne {
-	usuo.mutation.ClearPowerUnit()
-	return usuo
-}
-
-// SetTorqueUnit sets the "torque_unit" field.
-func (usuo *UserSettingsUpdateOne) SetTorqueUnit(uu usersettings.TorqueUnit) *UserSettingsUpdateOne {
-	usuo.mutation.SetTorqueUnit(uu)
-	return usuo
-}
-
-// SetNillableTorqueUnit sets the "torque_unit" field if the given value is not nil.
-func (usuo *UserSettingsUpdateOne) SetNillableTorqueUnit(uu *usersettings.TorqueUnit) *UserSettingsUpdateOne {
-	if uu != nil {
-		usuo.SetTorqueUnit(*uu)
-	}
-	return usuo
-}
-
-// ClearTorqueUnit clears the value of the "torque_unit" field.
-func (usuo *UserSettingsUpdateOne) ClearTorqueUnit() *UserSettingsUpdateOne {
-	usuo.mutation.ClearTorqueUnit()
 	return usuo
 }
 
@@ -597,34 +327,9 @@ func (usuo *UserSettingsUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (usuo *UserSettingsUpdateOne) check() error {
-	if v, ok := usuo.mutation.FuelVolumeUnit(); ok {
-		if err := usersettings.FuelVolumeUnitValidator(v); err != nil {
-			return &ValidationError{Name: "fuel_volume_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.fuel_volume_unit": %w`, err)}
-		}
-	}
-	if v, ok := usuo.mutation.DistanceUnit(); ok {
-		if err := usersettings.DistanceUnitValidator(v); err != nil {
-			return &ValidationError{Name: "distance_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.distance_unit": %w`, err)}
-		}
-	}
-	if v, ok := usuo.mutation.FuelConsumptionUnit(); ok {
-		if err := usersettings.FuelConsumptionUnitValidator(v); err != nil {
-			return &ValidationError{Name: "fuel_consumption_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.fuel_consumption_unit": %w`, err)}
-		}
-	}
-	if v, ok := usuo.mutation.TemperatureUnit(); ok {
-		if err := usersettings.TemperatureUnitValidator(v); err != nil {
-			return &ValidationError{Name: "temperature_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.temperature_unit": %w`, err)}
-		}
-	}
-	if v, ok := usuo.mutation.PowerUnit(); ok {
-		if err := usersettings.PowerUnitValidator(v); err != nil {
-			return &ValidationError{Name: "power_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.power_unit": %w`, err)}
-		}
-	}
-	if v, ok := usuo.mutation.TorqueUnit(); ok {
-		if err := usersettings.TorqueUnitValidator(v); err != nil {
-			return &ValidationError{Name: "torque_unit", err: fmt.Errorf(`ent: validator failed for field "UserSettings.torque_unit": %w`, err)}
+	if v, ok := usuo.mutation.Mode(); ok {
+		if err := usersettings.ModeValidator(v); err != nil {
+			return &ValidationError{Name: "mode", err: fmt.Errorf(`ent: validator failed for field "UserSettings.mode": %w`, err)}
 		}
 	}
 	if usuo.mutation.UserCleared() && len(usuo.mutation.UserIDs()) > 0 {
@@ -671,41 +376,8 @@ func (usuo *UserSettingsUpdateOne) sqlSave(ctx context.Context) (_node *UserSett
 	if usuo.mutation.CurrencyCodeCleared() {
 		_spec.ClearField(usersettings.FieldCurrencyCode, field.TypeString)
 	}
-	if value, ok := usuo.mutation.FuelVolumeUnit(); ok {
-		_spec.SetField(usersettings.FieldFuelVolumeUnit, field.TypeEnum, value)
-	}
-	if usuo.mutation.FuelVolumeUnitCleared() {
-		_spec.ClearField(usersettings.FieldFuelVolumeUnit, field.TypeEnum)
-	}
-	if value, ok := usuo.mutation.DistanceUnit(); ok {
-		_spec.SetField(usersettings.FieldDistanceUnit, field.TypeEnum, value)
-	}
-	if usuo.mutation.DistanceUnitCleared() {
-		_spec.ClearField(usersettings.FieldDistanceUnit, field.TypeEnum)
-	}
-	if value, ok := usuo.mutation.FuelConsumptionUnit(); ok {
-		_spec.SetField(usersettings.FieldFuelConsumptionUnit, field.TypeEnum, value)
-	}
-	if usuo.mutation.FuelConsumptionUnitCleared() {
-		_spec.ClearField(usersettings.FieldFuelConsumptionUnit, field.TypeEnum)
-	}
-	if value, ok := usuo.mutation.TemperatureUnit(); ok {
-		_spec.SetField(usersettings.FieldTemperatureUnit, field.TypeEnum, value)
-	}
-	if usuo.mutation.TemperatureUnitCleared() {
-		_spec.ClearField(usersettings.FieldTemperatureUnit, field.TypeEnum)
-	}
-	if value, ok := usuo.mutation.PowerUnit(); ok {
-		_spec.SetField(usersettings.FieldPowerUnit, field.TypeEnum, value)
-	}
-	if usuo.mutation.PowerUnitCleared() {
-		_spec.ClearField(usersettings.FieldPowerUnit, field.TypeEnum)
-	}
-	if value, ok := usuo.mutation.TorqueUnit(); ok {
-		_spec.SetField(usersettings.FieldTorqueUnit, field.TypeEnum, value)
-	}
-	if usuo.mutation.TorqueUnitCleared() {
-		_spec.ClearField(usersettings.FieldTorqueUnit, field.TypeEnum)
+	if value, ok := usuo.mutation.Mode(); ok {
+		_spec.SetField(usersettings.FieldMode, field.TypeEnum, value)
 	}
 	if usuo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

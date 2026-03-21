@@ -8,20 +8,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/theyoungwolf-dev/kortex/ent"
 	"github.com/dustinkirkland/golang-petname"
-	"github.com/spf13/cast"
+	"github.com/theyoungwolf-dev/kortex/ent"
 )
-
-// Specs is the resolver for the specs field.
-func (r *modProductOptionResolver) Specs(ctx context.Context, obj *ent.ModProductOption) (map[string]any, error) {
-	converted := make(map[string]any, len(obj.Specs))
-	for k, v := range obj.Specs {
-		converted[k] = v
-	}
-
-	return converted, nil
-}
 
 // Node is the resolver for the node field.
 func (r *queryResolver) Node(ctx context.Context, id string) (ent.Noder, error) {
@@ -65,47 +54,15 @@ func (r *userResolver) Affiliate12moCode(ctx context.Context, obj *ent.User) (*s
 	return obj.Affiliate12moCode, nil
 }
 
-// Specs is the resolver for the specs field.
-func (r *createModProductOptionInputResolver) Specs(ctx context.Context, obj *ent.CreateModProductOptionInput, data map[string]any) error {
-	converted := make(map[string]string, len(data))
-	for k, v := range data {
-		converted[k] = cast.ToString(v)
-	}
-	obj.Specs = converted
-	return nil
-}
-
 // StripeAccountCapabilities is the resolver for the stripeAccountCapabilities field.
 func (r *createUserInputResolver) StripeAccountCapabilities(ctx context.Context, obj *ent.CreateUserInput, data map[string]any) error {
 	panic(fmt.Errorf("not implemented: StripeAccountCapabilities - stripeAccountCapabilities"))
-}
-
-// Specs is the resolver for the specs field.
-func (r *updateModProductOptionInputResolver) Specs(ctx context.Context, obj *ent.UpdateModProductOptionInput, data map[string]any) error {
-	converted := make(map[string]string, len(data))
-	for k, v := range data {
-		converted[k] = cast.ToString(v)
-	}
-	obj.Specs = converted
-	return nil
 }
 
 // StripeAccountCapabilities is the resolver for the stripeAccountCapabilities field.
 func (r *updateUserInputResolver) StripeAccountCapabilities(ctx context.Context, obj *ent.UpdateUserInput, data map[string]any) error {
 	panic(fmt.Errorf("not implemented: StripeAccountCapabilities - stripeAccountCapabilities"))
 }
-
-// Car returns CarResolver implementation.
-func (r *Resolver) Car() CarResolver { return &carResolver{r} }
-
-// Document returns DocumentResolver implementation.
-func (r *Resolver) Document() DocumentResolver { return &documentResolver{r} }
-
-// Media returns MediaResolver implementation.
-func (r *Resolver) Media() MediaResolver { return &mediaResolver{r} }
-
-// ModProductOption returns ModProductOptionResolver implementation.
-func (r *Resolver) ModProductOption() ModProductOptionResolver { return &modProductOptionResolver{r} }
 
 // Profile returns ProfileResolver implementation.
 func (r *Resolver) Profile() ProfileResolver { return &profileResolver{r} }
@@ -116,48 +73,14 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 // User returns UserResolver implementation.
 func (r *Resolver) User() UserResolver { return &userResolver{r} }
 
-// CreateFuelUpInput returns CreateFuelUpInputResolver implementation.
-func (r *Resolver) CreateFuelUpInput() CreateFuelUpInputResolver {
-	return &createFuelUpInputResolver{r}
-}
-
-// CreateModProductOptionInput returns CreateModProductOptionInputResolver implementation.
-func (r *Resolver) CreateModProductOptionInput() CreateModProductOptionInputResolver {
-	return &createModProductOptionInputResolver{r}
-}
-
-// CreateServiceLogInput returns CreateServiceLogInputResolver implementation.
-func (r *Resolver) CreateServiceLogInput() CreateServiceLogInputResolver {
-	return &createServiceLogInputResolver{r}
-}
-
 // CreateUserInput returns CreateUserInputResolver implementation.
 func (r *Resolver) CreateUserInput() CreateUserInputResolver { return &createUserInputResolver{r} }
-
-// UpdateFuelUpInput returns UpdateFuelUpInputResolver implementation.
-func (r *Resolver) UpdateFuelUpInput() UpdateFuelUpInputResolver {
-	return &updateFuelUpInputResolver{r}
-}
-
-// UpdateModProductOptionInput returns UpdateModProductOptionInputResolver implementation.
-func (r *Resolver) UpdateModProductOptionInput() UpdateModProductOptionInputResolver {
-	return &updateModProductOptionInputResolver{r}
-}
 
 // UpdateUserInput returns UpdateUserInputResolver implementation.
 func (r *Resolver) UpdateUserInput() UpdateUserInputResolver { return &updateUserInputResolver{r} }
 
-type carResolver struct{ *Resolver }
-type documentResolver struct{ *Resolver }
-type mediaResolver struct{ *Resolver }
-type modProductOptionResolver struct{ *Resolver }
 type profileResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type userResolver struct{ *Resolver }
-type createFuelUpInputResolver struct{ *Resolver }
-type createModProductOptionInputResolver struct{ *Resolver }
-type createServiceLogInputResolver struct{ *Resolver }
 type createUserInputResolver struct{ *Resolver }
-type updateFuelUpInputResolver struct{ *Resolver }
-type updateModProductOptionInputResolver struct{ *Resolver }
 type updateUserInputResolver struct{ *Resolver }

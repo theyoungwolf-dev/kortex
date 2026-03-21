@@ -7,8 +7,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 	"github.com/google/uuid"
+	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.
@@ -226,184 +226,24 @@ func CurrencyCodeContainsFold(v string) predicate.UserSettings {
 	return predicate.UserSettings(sql.FieldContainsFold(FieldCurrencyCode, v))
 }
 
-// FuelVolumeUnitEQ applies the EQ predicate on the "fuel_volume_unit" field.
-func FuelVolumeUnitEQ(v FuelVolumeUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldEQ(FieldFuelVolumeUnit, v))
+// ModeEQ applies the EQ predicate on the "mode" field.
+func ModeEQ(v Mode) predicate.UserSettings {
+	return predicate.UserSettings(sql.FieldEQ(FieldMode, v))
 }
 
-// FuelVolumeUnitNEQ applies the NEQ predicate on the "fuel_volume_unit" field.
-func FuelVolumeUnitNEQ(v FuelVolumeUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNEQ(FieldFuelVolumeUnit, v))
+// ModeNEQ applies the NEQ predicate on the "mode" field.
+func ModeNEQ(v Mode) predicate.UserSettings {
+	return predicate.UserSettings(sql.FieldNEQ(FieldMode, v))
 }
 
-// FuelVolumeUnitIn applies the In predicate on the "fuel_volume_unit" field.
-func FuelVolumeUnitIn(vs ...FuelVolumeUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldIn(FieldFuelVolumeUnit, vs...))
+// ModeIn applies the In predicate on the "mode" field.
+func ModeIn(vs ...Mode) predicate.UserSettings {
+	return predicate.UserSettings(sql.FieldIn(FieldMode, vs...))
 }
 
-// FuelVolumeUnitNotIn applies the NotIn predicate on the "fuel_volume_unit" field.
-func FuelVolumeUnitNotIn(vs ...FuelVolumeUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNotIn(FieldFuelVolumeUnit, vs...))
-}
-
-// FuelVolumeUnitIsNil applies the IsNil predicate on the "fuel_volume_unit" field.
-func FuelVolumeUnitIsNil() predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldIsNull(FieldFuelVolumeUnit))
-}
-
-// FuelVolumeUnitNotNil applies the NotNil predicate on the "fuel_volume_unit" field.
-func FuelVolumeUnitNotNil() predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNotNull(FieldFuelVolumeUnit))
-}
-
-// DistanceUnitEQ applies the EQ predicate on the "distance_unit" field.
-func DistanceUnitEQ(v DistanceUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldEQ(FieldDistanceUnit, v))
-}
-
-// DistanceUnitNEQ applies the NEQ predicate on the "distance_unit" field.
-func DistanceUnitNEQ(v DistanceUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNEQ(FieldDistanceUnit, v))
-}
-
-// DistanceUnitIn applies the In predicate on the "distance_unit" field.
-func DistanceUnitIn(vs ...DistanceUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldIn(FieldDistanceUnit, vs...))
-}
-
-// DistanceUnitNotIn applies the NotIn predicate on the "distance_unit" field.
-func DistanceUnitNotIn(vs ...DistanceUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNotIn(FieldDistanceUnit, vs...))
-}
-
-// DistanceUnitIsNil applies the IsNil predicate on the "distance_unit" field.
-func DistanceUnitIsNil() predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldIsNull(FieldDistanceUnit))
-}
-
-// DistanceUnitNotNil applies the NotNil predicate on the "distance_unit" field.
-func DistanceUnitNotNil() predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNotNull(FieldDistanceUnit))
-}
-
-// FuelConsumptionUnitEQ applies the EQ predicate on the "fuel_consumption_unit" field.
-func FuelConsumptionUnitEQ(v FuelConsumptionUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldEQ(FieldFuelConsumptionUnit, v))
-}
-
-// FuelConsumptionUnitNEQ applies the NEQ predicate on the "fuel_consumption_unit" field.
-func FuelConsumptionUnitNEQ(v FuelConsumptionUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNEQ(FieldFuelConsumptionUnit, v))
-}
-
-// FuelConsumptionUnitIn applies the In predicate on the "fuel_consumption_unit" field.
-func FuelConsumptionUnitIn(vs ...FuelConsumptionUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldIn(FieldFuelConsumptionUnit, vs...))
-}
-
-// FuelConsumptionUnitNotIn applies the NotIn predicate on the "fuel_consumption_unit" field.
-func FuelConsumptionUnitNotIn(vs ...FuelConsumptionUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNotIn(FieldFuelConsumptionUnit, vs...))
-}
-
-// FuelConsumptionUnitIsNil applies the IsNil predicate on the "fuel_consumption_unit" field.
-func FuelConsumptionUnitIsNil() predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldIsNull(FieldFuelConsumptionUnit))
-}
-
-// FuelConsumptionUnitNotNil applies the NotNil predicate on the "fuel_consumption_unit" field.
-func FuelConsumptionUnitNotNil() predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNotNull(FieldFuelConsumptionUnit))
-}
-
-// TemperatureUnitEQ applies the EQ predicate on the "temperature_unit" field.
-func TemperatureUnitEQ(v TemperatureUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldEQ(FieldTemperatureUnit, v))
-}
-
-// TemperatureUnitNEQ applies the NEQ predicate on the "temperature_unit" field.
-func TemperatureUnitNEQ(v TemperatureUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNEQ(FieldTemperatureUnit, v))
-}
-
-// TemperatureUnitIn applies the In predicate on the "temperature_unit" field.
-func TemperatureUnitIn(vs ...TemperatureUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldIn(FieldTemperatureUnit, vs...))
-}
-
-// TemperatureUnitNotIn applies the NotIn predicate on the "temperature_unit" field.
-func TemperatureUnitNotIn(vs ...TemperatureUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNotIn(FieldTemperatureUnit, vs...))
-}
-
-// TemperatureUnitIsNil applies the IsNil predicate on the "temperature_unit" field.
-func TemperatureUnitIsNil() predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldIsNull(FieldTemperatureUnit))
-}
-
-// TemperatureUnitNotNil applies the NotNil predicate on the "temperature_unit" field.
-func TemperatureUnitNotNil() predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNotNull(FieldTemperatureUnit))
-}
-
-// PowerUnitEQ applies the EQ predicate on the "power_unit" field.
-func PowerUnitEQ(v PowerUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldEQ(FieldPowerUnit, v))
-}
-
-// PowerUnitNEQ applies the NEQ predicate on the "power_unit" field.
-func PowerUnitNEQ(v PowerUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNEQ(FieldPowerUnit, v))
-}
-
-// PowerUnitIn applies the In predicate on the "power_unit" field.
-func PowerUnitIn(vs ...PowerUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldIn(FieldPowerUnit, vs...))
-}
-
-// PowerUnitNotIn applies the NotIn predicate on the "power_unit" field.
-func PowerUnitNotIn(vs ...PowerUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNotIn(FieldPowerUnit, vs...))
-}
-
-// PowerUnitIsNil applies the IsNil predicate on the "power_unit" field.
-func PowerUnitIsNil() predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldIsNull(FieldPowerUnit))
-}
-
-// PowerUnitNotNil applies the NotNil predicate on the "power_unit" field.
-func PowerUnitNotNil() predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNotNull(FieldPowerUnit))
-}
-
-// TorqueUnitEQ applies the EQ predicate on the "torque_unit" field.
-func TorqueUnitEQ(v TorqueUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldEQ(FieldTorqueUnit, v))
-}
-
-// TorqueUnitNEQ applies the NEQ predicate on the "torque_unit" field.
-func TorqueUnitNEQ(v TorqueUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNEQ(FieldTorqueUnit, v))
-}
-
-// TorqueUnitIn applies the In predicate on the "torque_unit" field.
-func TorqueUnitIn(vs ...TorqueUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldIn(FieldTorqueUnit, vs...))
-}
-
-// TorqueUnitNotIn applies the NotIn predicate on the "torque_unit" field.
-func TorqueUnitNotIn(vs ...TorqueUnit) predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNotIn(FieldTorqueUnit, vs...))
-}
-
-// TorqueUnitIsNil applies the IsNil predicate on the "torque_unit" field.
-func TorqueUnitIsNil() predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldIsNull(FieldTorqueUnit))
-}
-
-// TorqueUnitNotNil applies the NotNil predicate on the "torque_unit" field.
-func TorqueUnitNotNil() predicate.UserSettings {
-	return predicate.UserSettings(sql.FieldNotNull(FieldTorqueUnit))
+// ModeNotIn applies the NotIn predicate on the "mode" field.
+func ModeNotIn(vs ...Mode) predicate.UserSettings {
+	return predicate.UserSettings(sql.FieldNotIn(FieldMode, vs...))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

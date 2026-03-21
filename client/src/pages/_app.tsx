@@ -4,7 +4,6 @@ import "react-pdf/dist/Page/TextLayer.css";
 
 import type { AppContext, AppInitialProps, AppProps } from "next/app";
 import { HeroUIProvider, ToastProvider } from "@heroui/react";
-import { SessionProvider, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 import App from "next/app";
@@ -12,39 +11,16 @@ import AuthenticatedApolloProvider from "@/apollo-client/provider";
 import ConfigProvider from "@/contexts/config";
 import Head from "next/head";
 import { Inter } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
 import Umami from "@/components/umami";
 import { getQueryParam } from "@/utils/router";
 import { pdfjs } from "react-pdf";
 import { useHref } from "@/utils/use-href";
 import { useRouter } from "next/router";
-import usertour from "usertour.js";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const inter = Inter({ subsets: ["latin"] });
-
-function UserTour() {
-  const { data: session } = useSession();
-
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_USERTOUR_TOKEN) {
-      usertour.init(process.env.NEXT_PUBLIC_USERTOUR_TOKEN);
-
-      if (session?.user) {
-        const {
-          user: { id, ...user },
-        } = session;
-
-        usertour.identify(id, {
-          ...user,
-          signed_up_at: user.createTime,
-        });
-      }
-    }
-  }, [session]);
-
-  return null;
-}
 
 type CustomAppProps = {
   serverUrl: string;
@@ -88,7 +64,6 @@ export default function CustomApp({
         <ConfigProvider basePath={router.basePath} serverUrl={url}>
           <AuthenticatedApolloProvider url={url} pageProps={pageProps}>
             {process.env.NODE_ENV !== "development" && <Umami websiteId="64bc9887-3516-4a18-b0a9-bfff4281cb0b" />}
-            <UserTour />
             <Component {...pageProps} />
           </AuthenticatedApolloProvider>
         </ConfigProvider>

@@ -48,7 +48,6 @@ func (User) Fields() []ent.Field {
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("cars", Car.Type),
 		edge.To("profile", Profile.Type).
 			Unique(),
 		edge.To("settings", UserSettings.Type).

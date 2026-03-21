@@ -14,48 +14,14 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
-	// Album is the client for interacting with the Album builders.
-	Album *AlbumClient
-	// BuildLog is the client for interacting with the BuildLog builders.
-	BuildLog *BuildLogClient
-	// Car is the client for interacting with the Car builders.
-	Car *CarClient
 	// CheckoutSession is the client for interacting with the CheckoutSession builders.
 	CheckoutSession *CheckoutSessionClient
-	// Document is the client for interacting with the Document builders.
-	Document *DocumentClient
-	// DragResult is the client for interacting with the DragResult builders.
-	DragResult *DragResultClient
-	// DragSession is the client for interacting with the DragSession builders.
-	DragSession *DragSessionClient
-	// DynoResult is the client for interacting with the DynoResult builders.
-	DynoResult *DynoResultClient
-	// DynoSession is the client for interacting with the DynoSession builders.
-	DynoSession *DynoSessionClient
-	// Expense is the client for interacting with the Expense builders.
-	Expense *ExpenseClient
-	// FuelUp is the client for interacting with the FuelUp builders.
-	FuelUp *FuelUpClient
 	// Media is the client for interacting with the Media builders.
 	Media *MediaClient
-	// Mod is the client for interacting with the Mod builders.
-	Mod *ModClient
-	// ModProductOption is the client for interacting with the ModProductOption builders.
-	ModProductOption *ModProductOptionClient
-	// OdometerReading is the client for interacting with the OdometerReading builders.
-	OdometerReading *OdometerReadingClient
 	// Profile is the client for interacting with the Profile builders.
 	Profile *ProfileClient
-	// ServiceItem is the client for interacting with the ServiceItem builders.
-	ServiceItem *ServiceItemClient
-	// ServiceLog is the client for interacting with the ServiceLog builders.
-	ServiceLog *ServiceLogClient
-	// ServiceSchedule is the client for interacting with the ServiceSchedule builders.
-	ServiceSchedule *ServiceScheduleClient
 	// Subscription is the client for interacting with the Subscription builders.
 	Subscription *SubscriptionClient
-	// Task is the client for interacting with the Task builders.
-	Task *TaskClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserSettings is the client for interacting with the UserSettings builders.
@@ -191,27 +157,10 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
-	tx.Album = NewAlbumClient(tx.config)
-	tx.BuildLog = NewBuildLogClient(tx.config)
-	tx.Car = NewCarClient(tx.config)
 	tx.CheckoutSession = NewCheckoutSessionClient(tx.config)
-	tx.Document = NewDocumentClient(tx.config)
-	tx.DragResult = NewDragResultClient(tx.config)
-	tx.DragSession = NewDragSessionClient(tx.config)
-	tx.DynoResult = NewDynoResultClient(tx.config)
-	tx.DynoSession = NewDynoSessionClient(tx.config)
-	tx.Expense = NewExpenseClient(tx.config)
-	tx.FuelUp = NewFuelUpClient(tx.config)
 	tx.Media = NewMediaClient(tx.config)
-	tx.Mod = NewModClient(tx.config)
-	tx.ModProductOption = NewModProductOptionClient(tx.config)
-	tx.OdometerReading = NewOdometerReadingClient(tx.config)
 	tx.Profile = NewProfileClient(tx.config)
-	tx.ServiceItem = NewServiceItemClient(tx.config)
-	tx.ServiceLog = NewServiceLogClient(tx.config)
-	tx.ServiceSchedule = NewServiceScheduleClient(tx.config)
 	tx.Subscription = NewSubscriptionClient(tx.config)
-	tx.Task = NewTaskClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserSettings = NewUserSettingsClient(tx.config)
 }
@@ -223,7 +172,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Album.QueryXXX(), the query will be executed
+// applies a query, for example: CheckoutSession.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

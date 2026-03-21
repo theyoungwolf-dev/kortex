@@ -25,14 +25,6 @@ const (
 	FieldUpdateTime = "update_time"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
-	// EdgeCar holds the string denoting the car edge name in mutations.
-	EdgeCar = "car"
-	// EdgeModProductOption holds the string denoting the mod_product_option edge name in mutations.
-	EdgeModProductOption = "mod_product_option"
-	// EdgeBuildLog holds the string denoting the build_log edge name in mutations.
-	EdgeBuildLog = "build_log"
-	// EdgeAlbums holds the string denoting the albums edge name in mutations.
-	EdgeAlbums = "albums"
 	// Table holds the table name of the media in the database.
 	Table = "media"
 	// UserTable is the table that holds the user relation/edge.
@@ -42,30 +34,6 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_media"
-	// CarTable is the table that holds the car relation/edge.
-	CarTable = "media"
-	// CarInverseTable is the table name for the Car entity.
-	// It exists in this package in order to avoid circular dependency with the "car" package.
-	CarInverseTable = "cars"
-	// CarColumn is the table column denoting the car relation/edge.
-	CarColumn = "car_media"
-	// ModProductOptionTable is the table that holds the mod_product_option relation/edge.
-	ModProductOptionTable = "media"
-	// ModProductOptionInverseTable is the table name for the ModProductOption entity.
-	// It exists in this package in order to avoid circular dependency with the "modproductoption" package.
-	ModProductOptionInverseTable = "mod_product_options"
-	// ModProductOptionColumn is the table column denoting the mod_product_option relation/edge.
-	ModProductOptionColumn = "mod_product_option_media"
-	// BuildLogTable is the table that holds the build_log relation/edge. The primary key declared below.
-	BuildLogTable = "build_log_media"
-	// BuildLogInverseTable is the table name for the BuildLog entity.
-	// It exists in this package in order to avoid circular dependency with the "buildlog" package.
-	BuildLogInverseTable = "build_logs"
-	// AlbumsTable is the table that holds the albums relation/edge. The primary key declared below.
-	AlbumsTable = "album_media"
-	// AlbumsInverseTable is the table name for the Album entity.
-	// It exists in this package in order to avoid circular dependency with the "album" package.
-	AlbumsInverseTable = "albums"
 )
 
 // Columns holds all SQL columns for media fields.
@@ -80,19 +48,8 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "media"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"car_media",
-	"mod_product_option_media",
 	"user_media",
 }
-
-var (
-	// BuildLogPrimaryKey and BuildLogColumn2 are the table columns denoting the
-	// primary key for the build_log relation (M2M).
-	BuildLogPrimaryKey = []string{"build_log_id", "media_id"}
-	// AlbumsPrimaryKey and AlbumsColumn2 are the table columns denoting the
-	// primary key for the albums relation (M2M).
-	AlbumsPrimaryKey = []string{"album_id", "media_id"}
-)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -154,80 +111,10 @@ func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newUserStep(), sql.OrderByField(field, opts...))
 	}
 }
-
-// ByCarField orders the results by car field.
-func ByCarField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newCarStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByModProductOptionField orders the results by mod_product_option field.
-func ByModProductOptionField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newModProductOptionStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByBuildLogCount orders the results by build_log count.
-func ByBuildLogCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newBuildLogStep(), opts...)
-	}
-}
-
-// ByBuildLog orders the results by build_log terms.
-func ByBuildLog(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newBuildLogStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByAlbumsCount orders the results by albums count.
-func ByAlbumsCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newAlbumsStep(), opts...)
-	}
-}
-
-// ByAlbums orders the results by albums terms.
-func ByAlbums(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newAlbumsStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
 func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UserInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
-	)
-}
-func newCarStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(CarInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, CarTable, CarColumn),
-	)
-}
-func newModProductOptionStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ModProductOptionInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, ModProductOptionTable, ModProductOptionColumn),
-	)
-}
-func newBuildLogStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(BuildLogInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, BuildLogTable, BuildLogPrimaryKey...),
-	)
-}
-func newAlbumsStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(AlbumsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, AlbumsTable, AlbumsPrimaryKey...),
 	)
 }

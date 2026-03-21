@@ -9,9 +9,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 	"github.com/theyoungwolf-dev/kortex/ent/user"
 	"github.com/theyoungwolf-dev/kortex/ent/usersettings"
-	"github.com/google/uuid"
 )
 
 // UserSettings is the model entity for the UserSettings schema.
@@ -25,18 +25,8 @@ type UserSettings struct {
 	UpdateTime time.Time `json:"update_time,omitempty"`
 	// CurrencyCode holds the value of the "currency_code" field.
 	CurrencyCode *string `json:"currency_code,omitempty"`
-	// FuelVolumeUnit holds the value of the "fuel_volume_unit" field.
-	FuelVolumeUnit *usersettings.FuelVolumeUnit `json:"fuel_volume_unit,omitempty"`
-	// DistanceUnit holds the value of the "distance_unit" field.
-	DistanceUnit *usersettings.DistanceUnit `json:"distance_unit,omitempty"`
-	// FuelConsumptionUnit holds the value of the "fuel_consumption_unit" field.
-	FuelConsumptionUnit *usersettings.FuelConsumptionUnit `json:"fuel_consumption_unit,omitempty"`
-	// TemperatureUnit holds the value of the "temperature_unit" field.
-	TemperatureUnit *usersettings.TemperatureUnit `json:"temperature_unit,omitempty"`
-	// PowerUnit holds the value of the "power_unit" field.
-	PowerUnit *usersettings.PowerUnit `json:"power_unit,omitempty"`
-	// TorqueUnit holds the value of the "torque_unit" field.
-	TorqueUnit *usersettings.TorqueUnit `json:"torque_unit,omitempty"`
+	// Mode holds the value of the "mode" field.
+	Mode usersettings.Mode `json:"mode,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserSettingsQuery when eager-loading is set.
 	Edges         UserSettingsEdges `json:"edges"`
@@ -71,7 +61,7 @@ func (*UserSettings) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case usersettings.FieldCurrencyCode, usersettings.FieldFuelVolumeUnit, usersettings.FieldDistanceUnit, usersettings.FieldFuelConsumptionUnit, usersettings.FieldTemperatureUnit, usersettings.FieldPowerUnit, usersettings.FieldTorqueUnit:
+		case usersettings.FieldCurrencyCode, usersettings.FieldMode:
 			values[i] = new(sql.NullString)
 		case usersettings.FieldCreateTime, usersettings.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -119,47 +109,11 @@ func (us *UserSettings) assignValues(columns []string, values []any) error {
 				us.CurrencyCode = new(string)
 				*us.CurrencyCode = value.String
 			}
-		case usersettings.FieldFuelVolumeUnit:
+		case usersettings.FieldMode:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field fuel_volume_unit", values[i])
+				return fmt.Errorf("unexpected type %T for field mode", values[i])
 			} else if value.Valid {
-				us.FuelVolumeUnit = new(usersettings.FuelVolumeUnit)
-				*us.FuelVolumeUnit = usersettings.FuelVolumeUnit(value.String)
-			}
-		case usersettings.FieldDistanceUnit:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field distance_unit", values[i])
-			} else if value.Valid {
-				us.DistanceUnit = new(usersettings.DistanceUnit)
-				*us.DistanceUnit = usersettings.DistanceUnit(value.String)
-			}
-		case usersettings.FieldFuelConsumptionUnit:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field fuel_consumption_unit", values[i])
-			} else if value.Valid {
-				us.FuelConsumptionUnit = new(usersettings.FuelConsumptionUnit)
-				*us.FuelConsumptionUnit = usersettings.FuelConsumptionUnit(value.String)
-			}
-		case usersettings.FieldTemperatureUnit:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field temperature_unit", values[i])
-			} else if value.Valid {
-				us.TemperatureUnit = new(usersettings.TemperatureUnit)
-				*us.TemperatureUnit = usersettings.TemperatureUnit(value.String)
-			}
-		case usersettings.FieldPowerUnit:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field power_unit", values[i])
-			} else if value.Valid {
-				us.PowerUnit = new(usersettings.PowerUnit)
-				*us.PowerUnit = usersettings.PowerUnit(value.String)
-			}
-		case usersettings.FieldTorqueUnit:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field torque_unit", values[i])
-			} else if value.Valid {
-				us.TorqueUnit = new(usersettings.TorqueUnit)
-				*us.TorqueUnit = usersettings.TorqueUnit(value.String)
+				us.Mode = usersettings.Mode(value.String)
 			}
 		case usersettings.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
@@ -220,35 +174,8 @@ func (us *UserSettings) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := us.FuelVolumeUnit; v != nil {
-		builder.WriteString("fuel_volume_unit=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := us.DistanceUnit; v != nil {
-		builder.WriteString("distance_unit=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := us.FuelConsumptionUnit; v != nil {
-		builder.WriteString("fuel_consumption_unit=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := us.TemperatureUnit; v != nil {
-		builder.WriteString("temperature_unit=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := us.PowerUnit; v != nil {
-		builder.WriteString("power_unit=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := us.TorqueUnit; v != nil {
-		builder.WriteString("torque_unit=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString("mode=")
+	builder.WriteString(fmt.Sprintf("%v", us.Mode))
 	builder.WriteByte(')')
 	return builder.String()
 }

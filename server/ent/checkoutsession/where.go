@@ -7,8 +7,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 	"github.com/google/uuid"
+	"github.com/theyoungwolf-dev/kortex/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.

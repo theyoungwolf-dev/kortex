@@ -9,11 +9,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/theyoungwolf-dev/kortex/ent/car"
-	"github.com/theyoungwolf-dev/kortex/ent/media"
-	"github.com/theyoungwolf-dev/kortex/ent/modproductoption"
-	"github.com/theyoungwolf-dev/kortex/ent/user"
 	"github.com/google/uuid"
+	"github.com/theyoungwolf-dev/kortex/ent/media"
+	"github.com/theyoungwolf-dev/kortex/ent/user"
 )
 
 // Media is the model entity for the Media schema.
@@ -31,33 +29,20 @@ type Media struct {
 	UpdateTime time.Time `json:"update_time,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MediaQuery when eager-loading is set.
-	Edges                    MediaEdges `json:"edges"`
-	car_media                *uuid.UUID
-	mod_product_option_media *uuid.UUID
-	user_media               *uuid.UUID
-	selectValues             sql.SelectValues
+	Edges        MediaEdges `json:"edges"`
+	user_media   *uuid.UUID
+	selectValues sql.SelectValues
 }
 
 // MediaEdges holds the relations/edges for other nodes in the graph.
 type MediaEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
-	// Car holds the value of the car edge.
-	Car *Car `json:"car,omitempty"`
-	// ModProductOption holds the value of the mod_product_option edge.
-	ModProductOption *ModProductOption `json:"mod_product_option,omitempty"`
-	// BuildLog holds the value of the build_log edge.
-	BuildLog []*BuildLog `json:"build_log,omitempty"`
-	// Albums holds the value of the albums edge.
-	Albums []*Album `json:"albums,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [1]bool
 	// totalCount holds the count of the edges above.
-	totalCount [5]map[string]int
-
-	namedBuildLog map[string][]*BuildLog
-	namedAlbums   map[string][]*Album
+	totalCount [1]map[string]int
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -71,46 +56,6 @@ func (e MediaEdges) UserOrErr() (*User, error) {
 	return nil, &NotLoadedError{edge: "user"}
 }
 
-// CarOrErr returns the Car value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e MediaEdges) CarOrErr() (*Car, error) {
-	if e.Car != nil {
-		return e.Car, nil
-	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: car.Label}
-	}
-	return nil, &NotLoadedError{edge: "car"}
-}
-
-// ModProductOptionOrErr returns the ModProductOption value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e MediaEdges) ModProductOptionOrErr() (*ModProductOption, error) {
-	if e.ModProductOption != nil {
-		return e.ModProductOption, nil
-	} else if e.loadedTypes[2] {
-		return nil, &NotFoundError{label: modproductoption.Label}
-	}
-	return nil, &NotLoadedError{edge: "mod_product_option"}
-}
-
-// BuildLogOrErr returns the BuildLog value or an error if the edge
-// was not loaded in eager-loading.
-func (e MediaEdges) BuildLogOrErr() ([]*BuildLog, error) {
-	if e.loadedTypes[3] {
-		return e.BuildLog, nil
-	}
-	return nil, &NotLoadedError{edge: "build_log"}
-}
-
-// AlbumsOrErr returns the Albums value or an error if the edge
-// was not loaded in eager-loading.
-func (e MediaEdges) AlbumsOrErr() ([]*Album, error) {
-	if e.loadedTypes[4] {
-		return e.Albums, nil
-	}
-	return nil, &NotLoadedError{edge: "albums"}
-}
-
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Media) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -122,11 +67,7 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullTime)
 		case media.FieldID:
 			values[i] = new(uuid.UUID)
-		case media.ForeignKeys[0]: // car_media
-			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
-		case media.ForeignKeys[1]: // mod_product_option_media
-			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
-		case media.ForeignKeys[2]: // user_media
+		case media.ForeignKeys[0]: // user_media
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			values[i] = new(sql.UnknownType)
@@ -177,20 +118,6 @@ func (m *Media) assignValues(columns []string, values []any) error {
 			}
 		case media.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field car_media", values[i])
-			} else if value.Valid {
-				m.car_media = new(uuid.UUID)
-				*m.car_media = *value.S.(*uuid.UUID)
-			}
-		case media.ForeignKeys[1]:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field mod_product_option_media", values[i])
-			} else if value.Valid {
-				m.mod_product_option_media = new(uuid.UUID)
-				*m.mod_product_option_media = *value.S.(*uuid.UUID)
-			}
-		case media.ForeignKeys[2]:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field user_media", values[i])
 			} else if value.Valid {
 				m.user_media = new(uuid.UUID)
@@ -212,26 +139,6 @@ func (m *Media) Value(name string) (ent.Value, error) {
 // QueryUser queries the "user" edge of the Media entity.
 func (m *Media) QueryUser() *UserQuery {
 	return NewMediaClient(m.config).QueryUser(m)
-}
-
-// QueryCar queries the "car" edge of the Media entity.
-func (m *Media) QueryCar() *CarQuery {
-	return NewMediaClient(m.config).QueryCar(m)
-}
-
-// QueryModProductOption queries the "mod_product_option" edge of the Media entity.
-func (m *Media) QueryModProductOption() *ModProductOptionQuery {
-	return NewMediaClient(m.config).QueryModProductOption(m)
-}
-
-// QueryBuildLog queries the "build_log" edge of the Media entity.
-func (m *Media) QueryBuildLog() *BuildLogQuery {
-	return NewMediaClient(m.config).QueryBuildLog(m)
-}
-
-// QueryAlbums queries the "albums" edge of the Media entity.
-func (m *Media) QueryAlbums() *AlbumQuery {
-	return NewMediaClient(m.config).QueryAlbums(m)
 }
 
 // Update returns a builder for updating this Media.
@@ -274,54 +181,6 @@ func (m *Media) String() string {
 	builder.WriteString(m.UpdateTime.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
-}
-
-// NamedBuildLog returns the BuildLog named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (m *Media) NamedBuildLog(name string) ([]*BuildLog, error) {
-	if m.Edges.namedBuildLog == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := m.Edges.namedBuildLog[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (m *Media) appendNamedBuildLog(name string, edges ...*BuildLog) {
-	if m.Edges.namedBuildLog == nil {
-		m.Edges.namedBuildLog = make(map[string][]*BuildLog)
-	}
-	if len(edges) == 0 {
-		m.Edges.namedBuildLog[name] = []*BuildLog{}
-	} else {
-		m.Edges.namedBuildLog[name] = append(m.Edges.namedBuildLog[name], edges...)
-	}
-}
-
-// NamedAlbums returns the Albums named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (m *Media) NamedAlbums(name string) ([]*Album, error) {
-	if m.Edges.namedAlbums == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := m.Edges.namedAlbums[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (m *Media) appendNamedAlbums(name string, edges ...*Album) {
-	if m.Edges.namedAlbums == nil {
-		m.Edges.namedAlbums = make(map[string][]*Album)
-	}
-	if len(edges) == 0 {
-		m.Edges.namedAlbums[name] = []*Album{}
-	} else {
-		m.Edges.namedAlbums[name] = append(m.Edges.namedAlbums[name], edges...)
-	}
 }
 
 // MediaSlice is a parsable slice of Media.
