@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install)",
+      "Bash(pnpm dev)",
+      "Bash(pnpm build)",
+      "Bash(pnpm lint*)",
+      "Bash(pnpm typecheck)",
+      "Bash(pnpm test*)",
+      "Bash(pnpm db:types)",
+      "Bash(pnpm db:generate)",
+      "Bash(pnpm exec tsc*)",
+      "Bash(npx supabase status)",
+      "Bash(npx supabase start)",
+      "Bash(npx supabase stop)",
+      "Bash(npx supabase migration list*)",
+      "Bash(npx supabase migration new*)",
+      "Bash(npx supabase gen types*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git branch*)",
+      "Bash(git switch*)",
+      "Bash(git checkout -b*)",
+      "Bash(rg*)",
+      "Bash(ls*)",
+      "Bash(cat supabase/migrations/*)",
+      "Read(./**)",
+      "Edit(./app/**)",
+      "Edit(./components/**)",
+      "Edit(./lib/**)",
+      "Edit(./drizzle/**)",
+      "Edit(./supabase/migrations/**)",
+      "Edit(./docs/**)",
+      "WebFetch(domain:supabase.com)",
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:nextjs.org)",
+      "WebFetch(domain:ui.shadcn.com)",
+      "WebFetch(domain:tanstack.com)",
+      "WebFetch(domain:docs.dndkit.com)",
+      "WebFetch(domain:tiptap.dev)",
+      "WebFetch(domain:orm.drizzle.team)"
+    ],
+    "ask": [
+      "Bash(npx supabase db reset*)",
+      "Bash(npx supabase db push*)",
+      "Bash(npx supabase link*)",
+      "Bash(npx supabase functions deploy*)",
+      "Bash(git commit*)",
+      "Bash(git push*)",
+      "Bash(gh pr create*)",
+      "Bash(pnpm add*)",
+      "Bash(pnpm remove*)",
+      "Bash(vercel*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./supabase/.env*)",
+      "Read(./.vercel/**)",
+      "Read(./**/*.pem)",
+      "Read(./**/*.key)",
+      "Edit(./.env)",
+      "Edit(./.env.*)",
+      "Edit(./lib/database.types.ts)",
+      "Edit(./node_modules/**)",
+      "Edit(./.next/**)",
+      "Bash(rm -rf*)",
+      "Bash(git reset --hard*)",
+      "Bash(git push --force*)",
+      "Bash(curl*)",
+      "Bash(psql*)",
+      "Bash(env)",
+      "Bash(printenv*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/format.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "enableAllProjectMcpServers": false,
+  "includeGitInstructions": true
+}
