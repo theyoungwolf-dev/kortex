@@ -56,19 +56,19 @@ Three independent scopes, each with its own unique index:
 ## Commands
 
 ```bash
-pnpm dev                  # Next dev server
-pnpm build                # production build
-pnpm lint                 # eslint
-pnpm typecheck            # tsc --noEmit
-pnpm test                 # vitest
+npm run dev                  # Next dev server
+npm run build                # production build
+npm run lint                 # eslint
+npm run typecheck            # tsc --noEmit
+npm run test                 # vitest
 
-supabase start            # local stack
-supabase db reset         # rebuild local DB from migrations + seed
-pnpm db:generate          # drizzle-kit generate -> supabase/migrations/
-pnpm db:types             # supabase gen types typescript > lib/database.types.ts
+supabase start               # local stack
+supabase db reset            # rebuild local DB from migrations + seed
+npm run db:generate          # drizzle-kit generate -> supabase/migrations/
+npm run db:types             # supabase gen types typescript > lib/database.types.ts
 ```
 
-After any migration, regenerate types (`pnpm db:types`) and run `pnpm typecheck`. A migration is not done until both pass.
+After any migration, regenerate types (`npm run db:types`) and run `npm run typecheck`. A migration is not done until both pass.
 
 ## Working style
 

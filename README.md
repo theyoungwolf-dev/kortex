@@ -119,7 +119,7 @@ npm run dev            # dev server
 npm run build          # production build
 npm run lint           # eslint
 npm run typecheck      # tsc --noEmit
-npm test               # vitest
+npm run test           # vitest
 
 npx supabase start     # start the local stack
 npx supabase stop      # stop it

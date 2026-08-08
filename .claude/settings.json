@@ -2,15 +2,15 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
-      "Bash(pnpm install)",
-      "Bash(pnpm dev)",
-      "Bash(pnpm build)",
-      "Bash(pnpm lint*)",
-      "Bash(pnpm typecheck)",
-      "Bash(pnpm test*)",
-      "Bash(pnpm db:types)",
-      "Bash(pnpm db:generate)",
-      "Bash(pnpm exec tsc*)",
+      "Bash(npm install)",
+      "Bash(npm run dev)",
+      "Bash(npm run build)",
+      "Bash(npm run lint*)",
+      "Bash(npm run typecheck)",
+      "Bash(npm run test*)",
+      "Bash(npm run db:types)",
+      "Bash(npm run db:generate)",
+      "Bash(npm run exec tsc*)",
       "Bash(npx supabase status)",
       "Bash(npx supabase start)",
       "Bash(npx supabase stop)",
@@ -51,8 +51,6 @@
       "Bash(git commit*)",
       "Bash(git push*)",
       "Bash(gh pr create*)",
-      "Bash(pnpm add*)",
-      "Bash(pnpm remove*)",
       "Bash(vercel*)"
     ],
     "deny": [
