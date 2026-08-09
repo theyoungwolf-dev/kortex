@@ -1,68 +1,613 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-  }
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+/* ===========================================================================
+   Kortex design system
+   ---------------------------------------------------------------------------
+   Derived from the design system. Every visual value in the app resolves
+   to a token declared here. Components must not carry arbitrary values.
+
+   Structure:
+     1. Raw channel values, per theme   -> :root / .dark
+     2. @theme (NOT inline)             -> theme-varying tokens (colour, shadow)
+     3. @theme inline                   -> theme-invariant tokens (type, radii)
+     4. Base layer                      -> element defaults
+     5. @utility                        -> repeated multi-property patterns
+
+   Rule of thumb for group 2 vs 3: if a contributor could ever want the value
+   to differ between light and dark, it belongs in group 2 and must be written
+   as `var(--raw-name)` so the indirection survives to runtime. `inline`
+   flattens that indirection, which is exactly why colour never uses it.
+   =========================================================================== */
+
+/* next-themes writes `class="dark"` on <html>. */
+@custom-variant dark (&:is(.dark *));
+
+/* ---------------------------------------------------------------------------
+   1. RAW CHANNEL VALUES
+   ---------------------------------------------------------------------------
+   Named after what they *are*, not what they are used for. Nothing outside
+   this file should reference a `--raw-*` name; use the semantic token from
+   group 2 instead. To retheme Kortex, edit only these two blocks.
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* -- Warm neutral surfaces. Hue ~82-85deg, chroma under 0.015. ----------- */
+  --raw-surface-app: oklch(94.7% 0.006 84.6); /* #EFEDE9 app backdrop      */
+  --raw-surface-sidebar: oklch(96.2% 0.006 84.6); /* #F4F2EE sidebar, header   */
+  --raw-surface-canvas: oklch(98.8% 0.003 84.6); /* #FCFBF9 cards, popovers   */
+  --raw-surface-raised: oklch(92.6% 0.01 81.8); /* #EAE6DF row hover         */
+  --raw-surface-raised-strong: oklch(89.6% 0.013 82.4); /* #E1DCD3 nested hover      */
+  --raw-surface-sunken: oklch(92.9% 0.009 84.6); /* #EAE7E1 inactive tab, chip*/
+
+  /* -- Hairlines. Four weights; anything between them is drift. ----------- */
+  --raw-line-soft: oklch(92% 0.01 81.8); /* #E8E4DD inside the sidebar */
+  --raw-line: oklch(90.2% 0.01 81.8); /* #E2DED7 default border     */
+  --raw-line-strong: oklch(85.3% 0.014 82.4); /* #D3CEC5 secondary button   */
+  --raw-line-separator: oklch(81% 0.015 80.7); /* #C6C0B6 breadcrumb slash   */
+
+  /* -- Ink ramp. ink-1..ink-5 are the depth taper; see group 5. ----------- */
+  --raw-ink-1: oklch(27.9% 0.007 67.5); /* #2B2825 foreground         */
+  --raw-ink-2: oklch(35.2% 0.012 72.4); /* #3F3A34 body copy          */
+  --raw-ink-3: oklch(40.5% 0.014 71.7); /* #4E4841                    */
+  --raw-ink-4: oklch(43.8% 0.014 71.7); /* #57514A prose muted        */
+  --raw-ink-5: oklch(46.7% 0.018 80.6); /* #5F594F chip ink           */
+  --raw-ink-muted: oklch(51% 0.015 75.3); /* #6B655D labels, meta       */
+  --raw-ink-faint: oklch(71.5% 0.018 79.3); /* #A9A297 expand chevrons    */
+
+  /* -- The one structural blue. Active node, primary action, focus ring.
+        It is never decoration; do not introduce a second accent. ---------- */
+  --raw-blue-solid: oklch(48.8% 0.13 265.1); /* #3B5BA9 */
+  --raw-blue-solid-hover: oklch(44.2% 0.109 263.9); /* #33508F */
+  --raw-blue-soft: oklch(94.6% 0.013 266.7); /* #E9EDF6 active tree row */
+  --raw-blue-soft-hover: oklch(93.3% 0.018 264.5); /* #E3E9F5 */
+  --raw-blue-tint: oklch(94.2% 0.016 266.3); /* #E7ECF7 avatar ground   */
+  --raw-blue-line: oklch(82.6% 0.045 266.8); /* #B9C6E4 drop target rule*/
+  --raw-blue-on-solid: oklch(98.8% 0.003 84.6); /* text on a blue fill     */
+
+  /* -- Publish state. One definition, consumed by components/ui/publish-state. */
+  --raw-state-draft: oklch(55.9% 0.016 74.3); /* #7A736A dashed icon     */
+  --raw-state-draft-fill: oklch(93.5% 0.009 84.6); /* #ECE9E3 DRAFT chip      */
+  --raw-state-published: oklch(49% 0.085 158.4); /* #2F6F4E solid icon      */
+  --raw-state-published-fill: oklch(94.2% 0.016 154.5); /* #E4EFE7 icon + chip fill*/
+  --raw-state-published-ink: oklch(42.4% 0.079 157.7); /* #215B3D LIVE chip text  */
+  --raw-state-hidden: oklch(62.2% 0.021 72.4); /* #8F8579 muted solid icon*/
+
+  /* -- Destructive. Trash, member removal, workspace deletion, invalid drop. */
+  --raw-red-solid: oklch(50% 0.126 32.9); /* #9E4331 */
+  --raw-red-solid-hover: oklch(45.4% 0.113 33); /* #8A3A2A */
+  --raw-red-ink: oklch(42.4% 0.102 34.9); /* #7C3625 */
+  --raw-red-soft: oklch(97% 0.009 34.3); /* #FBF3F1 */
+  --raw-red-line: oklch(88.9% 0.022 39.4); /* #E8D6D0 */
+  --raw-red-ring: oklch(63.4% 0.111 34.3); /* #C4705C invalid drop    */
+  --raw-red-tint: oklch(94.4% 0.016 36.5); /* #F7E9E5 invalid drop bg */
+  --raw-red-on-solid: oklch(98.8% 0.003 84.6);
+
+  /* -- The second avatar tone. Readers alternate blue / warm. ------------- */
+  --raw-warm-fill: oklch(92.4% 0.031 79.9); /* #F1E4CF */
+  --raw-warm-ink: oklch(50.3% 0.102 67.5); /* #8A5714 */
+
+  /* -- Shadow tint. Warm in light, neutral black in dark. ----------------- */
+  --raw-shadow-tint: 43 40 37;
+  --raw-shadow-e1: 0 1px 2px rgb(var(--raw-shadow-tint) / 0.05);
+  --raw-shadow-e2: 0 4px 14px -6px rgb(var(--raw-shadow-tint) / 0.22), 0 1px 2px rgb(var(--raw-shadow-tint) / 0.05);
+  --raw-shadow-e3: 0 16px 36px -18px rgb(var(--raw-shadow-tint) / 0.32), 0 1px 2px rgb(var(--raw-shadow-tint) / 0.05);
+  --raw-shadow-drag: 0 8px 22px -8px rgb(var(--raw-shadow-tint) / 0.28);
+  --raw-shadow-primary: 0 3px 10px -3px oklch(48.8% 0.13 265.1 / 0.6);
+}
+
+.dark {
+  --raw-surface-app: oklch(20.6% 0.005 67.5); /* #191715 given */
+  --raw-surface-sidebar: oklch(24% 0.006 78.2); /* #211F1C given */
+  --raw-surface-canvas: oklch(25.8% 0.007 67.5); /* #262320 given */
+  --raw-surface-raised: oklch(28% 0.008 78.2); /* derived       */
+  --raw-surface-raised-strong: oklch(32.5% 0.01 78.2); /* derived       */
+  --raw-surface-sunken: oklch(30.7% 0.012 78.1); /* #332F29 given */
+
+  --raw-line-soft: oklch(27% 0.009 73.5); /* derived       */
+  --raw-line: oklch(29.6% 0.011 73.5); /* #302C27 given */
+  --raw-line-strong: oklch(31.6% 0.01 73.5); /* #35312C given */
+  --raw-line-separator: oklch(45% 0.014 78); /* derived       */
+
+  --raw-ink-1: oklch(95.3% 0.007 80.7); /* #F2EFEA given */
+  --raw-ink-2: oklch(87.5% 0.012 79.8); /* #DAD5CD given */
+  --raw-ink-3: oklch(83.8% 0.013 79); /* derived       */
+  --raw-ink-4: oklch(80.4% 0.014 78.2); /* #C4BEB5 given */
+  --raw-ink-5: oklch(76% 0.015 77); /* derived       */
+  --raw-ink-muted: oklch(71.2% 0.015 74.4); /* #A8A198 given */
+  --raw-ink-faint: oklch(55% 0.014 77); /* derived       */
+
+  --raw-blue-solid: oklch(73.7% 0.091 265.9); /* #8FA9E4 given */
+  --raw-blue-solid-hover: oklch(80% 0.08 266); /* derived       */
+  --raw-blue-soft: oklch(30.2% 0.023 270.6); /* #2A2E3A given */
+  --raw-blue-soft-hover: oklch(34% 0.026 270); /* derived       */
+  --raw-blue-tint: oklch(30.4% 0.042 268.5); /* #262E44 given */
+  --raw-blue-line: oklch(37% 0.023 275); /* #3C3F4C given */
+  --raw-blue-on-solid: oklch(20.6% 0.005 67.5); /* dark ink on a light blue fill */
+
+  /* Dark 1c draws the draft icon and muted ink at the same value. */
+  --raw-state-draft: oklch(71.2% 0.015 74.4); /* #A8A198 given */
+  --raw-state-draft-fill: oklch(30.7% 0.012 78.1); /* derived       */
+  --raw-state-published: oklch(77% 0.096 157.1); /* #7FC79C given */
+  --raw-state-published-fill: oklch(29.4% 0.029 166.2); /* #1E3129 given */
+  --raw-state-published-ink: oklch(84% 0.1 157); /* derived - lifted so LIVE stays legible on its fill */
+  --raw-state-hidden: oklch(63.7% 0.017 77); /* #918A80 given */
+
+  --raw-red-solid: oklch(58% 0.135 33); /* derived */
+  --raw-red-solid-hover: oklch(63% 0.14 33); /* derived */
+  --raw-red-ink: oklch(74% 0.11 34); /* derived */
+  --raw-red-soft: oklch(26.5% 0.035 33); /* derived */
+  --raw-red-line: oklch(38% 0.055 35); /* derived */
+  --raw-red-ring: oklch(68% 0.105 34.5); /* derived */
+  --raw-red-tint: oklch(30% 0.045 34); /* derived */
+  --raw-red-on-solid: oklch(20.6% 0.005 67.5);
+
+  --raw-warm-fill: oklch(30% 0.045 75); /* derived */
+  --raw-warm-ink: oklch(82% 0.085 79); /* derived */
+
+  --raw-shadow-tint: 0 0 0;
+  --raw-shadow-e1: 0 1px 2px rgb(var(--raw-shadow-tint) / 0.32);
+  --raw-shadow-e2: 0 4px 14px -6px rgb(var(--raw-shadow-tint) / 0.5), 0 1px 2px rgb(var(--raw-shadow-tint) / 0.32);
+  --raw-shadow-e3: 0 16px 36px -18px rgb(var(--raw-shadow-tint) / 0.6), 0 1px 2px rgb(var(--raw-shadow-tint) / 0.32);
+  --raw-shadow-drag: 0 8px 22px -8px rgb(var(--raw-shadow-tint) / 0.55);
+  --raw-shadow-primary: 0 3px 10px -3px oklch(73.7% 0.091 265.9 / 0.45);
+}
+
+/* ---------------------------------------------------------------------------
+   2. THEME-VARYING TOKENS  (@theme, deliberately NOT inline)
+   ---------------------------------------------------------------------------
+   Every value here is `var(--raw-*)`. That indirection is what makes runtime
+   theme switching work: the utility emits `var(--color-x)`, which resolves to
+   `var(--raw-x)`, which .dark redefines. `@theme inline` would flatten the
+   chain and freeze whichever value was current at build time.
+
+   Names follow shadcn's semantic vocabulary wherever the two overlap, so a
+   generated shadcn component drops in already wearing the Kortex palette.
+   Note shadcn's convention: `muted` is a SURFACE, `muted-foreground` is ink.
+   --------------------------------------------------------------------------- */
+
+@theme {
+  /* -- shadcn semantic surface set ---------------------------------------- */
+  --color-background: var(--raw-surface-app);
+  --color-foreground: var(--raw-ink-1);
+  --color-card: var(--raw-surface-canvas);
+  --color-card-foreground: var(--raw-ink-1);
+  --color-popover: var(--raw-surface-canvas);
+  --color-popover-foreground: var(--raw-ink-1);
+  --color-muted: var(--raw-surface-raised);
+  --color-muted-foreground: var(--raw-ink-muted);
+  --color-accent: var(--raw-surface-raised);
+  --color-accent-foreground: var(--raw-ink-1);
+  --color-secondary: var(--raw-surface-sunken);
+  --color-secondary-foreground: var(--raw-ink-2);
+  --color-border: var(--raw-line);
+  --color-input: var(--raw-line-strong);
+  --color-ring: var(--raw-blue-solid);
+
+  /* -- Kortex surfaces the shadcn vocabulary has no name for -------------- */
+  --color-sidebar: var(--raw-surface-sidebar);
+  --color-canvas: var(--raw-surface-canvas);
+  --color-raised: var(--raw-surface-raised);
+  --color-raised-strong: var(--raw-surface-raised-strong);
+  --color-sunken: var(--raw-surface-sunken);
+  --color-border-soft: var(--raw-line-soft);
+  --color-border-strong: var(--raw-line-strong);
+  --color-separator: var(--raw-line-separator);
+
+  /* -- Ink ramp ----------------------------------------------------------- */
+  --color-ink: var(--raw-ink-1);
+  --color-ink-2: var(--raw-ink-2);
+  --color-ink-3: var(--raw-ink-3);
+  --color-ink-4: var(--raw-ink-4);
+  --color-ink-5: var(--raw-ink-5);
+  --color-faint: var(--raw-ink-faint);
+
+  /* -- Primary ------------------------------------------------------------ */
+  --color-primary: var(--raw-blue-solid);
+  --color-primary-foreground: var(--raw-blue-on-solid);
+  --color-primary-hover: var(--raw-blue-solid-hover);
+  --color-primary-soft: var(--raw-blue-soft);
+  --color-primary-soft-hover: var(--raw-blue-soft-hover);
+  --color-primary-tint: var(--raw-blue-tint);
+  --color-primary-line: var(--raw-blue-line);
+
+  /* -- Publish state. Change Hidden here and it changes everywhere. -------- */
+  --color-state-draft: var(--raw-state-draft);
+  --color-state-draft-fill: var(--raw-state-draft-fill);
+  --color-state-published: var(--raw-state-published);
+  --color-state-published-fill: var(--raw-state-published-fill);
+  --color-state-published-ink: var(--raw-state-published-ink);
+  --color-state-hidden: var(--raw-state-hidden);
+
+  /* -- Destructive -------------------------------------------------------- */
+  --color-destructive: var(--raw-red-solid);
+  --color-destructive-foreground: var(--raw-red-on-solid);
+  --color-danger-hover: var(--raw-red-solid-hover);
+  --color-danger-ink: var(--raw-red-ink);
+  --color-danger-soft: var(--raw-red-soft);
+  --color-danger-border: var(--raw-red-line);
+  --color-danger-line: var(--raw-red-ring);
+  --color-danger-tint: var(--raw-red-tint);
+
+  /* -- Avatar tones. Readers alternate between these two. ----------------- */
+  --color-avatar-cool: var(--raw-blue-tint);
+  --color-avatar-cool-ink: var(--raw-blue-solid);
+  --color-avatar-warm: var(--raw-warm-fill);
+  --color-avatar-warm-ink: var(--raw-warm-ink);
+
+  /* -- Elevation. e0 is the sidebar (no shadow, a border does the work). --- */
+  --shadow-e1: var(--raw-shadow-e1);
+  --shadow-e2: var(--raw-shadow-e2);
+  --shadow-e3: var(--raw-shadow-e3);
+  --shadow-drag: var(--raw-shadow-drag);
+  --shadow-primary: var(--raw-shadow-primary);
+}
+
+/* ---------------------------------------------------------------------------
+   3. THEME-INVARIANT TOKENS  (@theme inline)
+   ---------------------------------------------------------------------------
+   Type, spacing rhythm, radii, motion. None of these differ between themes,
+   so flattening them is safe and saves a level of indirection.
+   --------------------------------------------------------------------------- */
+
+@theme inline {
+  /* -- Families. Fraunces for titles, Public Sans for interface, Plex Mono
+        for eyebrows and data. Loaded as variable fonts in app/layout.tsx --
+        the depth taper uses 420/450/550/560/650, which a static family
+        would round away. ---------------------------------------------------- */
+  --font-sans: var(--font-public-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-mono: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, monospace;
+
+  /* -- Type scale. Role names, not t-shirt sizes: the design's 37 distinct
+        sizes collapse to these 15 by role. Paired line-heights are the
+        design's own; override only where a one-off genuinely differs. ------ */
+  --text-micro: 0.5938rem; /* 9.5px  avatar initials              */
+  --text-micro--line-height: 1;
+  --text-eyebrow: 0.6563rem; /* 10.5px mono section labels, chips   */
+  --text-eyebrow--line-height: 1;
+  --text-meta: 0.7188rem; /* 11.5px state words, dense timestamps*/
+  --text-meta--line-height: 1;
+  --text-label: 0.7813rem; /* 12.5px buttons, breadcrumbs, meta   */
+  --text-label--line-height: 1;
+  --text-ui: 0.8125rem; /* 13px   default control text         */
+  --text-ui--line-height: 1.3;
+  --text-item: 0.875rem; /* 14px   child-page list rows         */
+  --text-item--line-height: 1.3;
+  --text-prose-sm: 0.9063rem; /* 14.5px descriptions, secondary prose*/
+  --text-prose-sm--line-height: 1.6;
+  --text-body: 1rem; /* 16px   page content                 */
+  --text-body--line-height: 1.65;
+  --text-lead: 1.0625rem; /* 17px   marketing lead, mobile body  */
+  --text-lead--line-height: 1.6;
+  --text-h3: 1.375rem; /* 22px   Fraunces subhead             */
+  --text-h3--line-height: 1.2;
+  --text-h2: 1.5rem; /* 24px   Fraunces section heading     */
+  --text-h2--line-height: 1.25;
+  --text-title-sm: 1.875rem; /* 30px   page title, base + sm        */
+  --text-title-sm--line-height: 1.06;
+  --text-title-md: 2.25rem; /* 36px   page title, md + lg          */
+  --text-title-md--line-height: 1.06;
+  --text-title-lg: 2.75rem; /* 44px   page title, xl               */
+  --text-title-lg--line-height: 1.06;
+  --text-display: 3.875rem; /* 62px   marketing hero only          */
+  --text-display--line-height: 1.06;
+
+  /* -- Weight. Public Sans is variable; these are real values, not rounded. */
+  --font-weight-normal: 400;
+  --font-weight-book: 450;
+  --font-weight-medium: 500;
+  --font-weight-mid: 550;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 650;
+
+  /* -- Leading ------------------------------------------------------------ */
+  --leading-none: 1;
+  --leading-title: 1.06;
+  --leading-tight: 1.2;
+  --leading-snug: 1.3;
+  --leading-normal: 1.4;
+  --leading-relaxed: 1.5;
+  --leading-prose: 1.65;
+
+  /* -- Tracking. Five roles; everything in the design collapses to these. -- */
+  --tracking-title: -0.022em;
+  --tracking-heading: -0.014em;
+  --tracking-tight: -0.004em;
+  --tracking-chip: 0.07em;
+  --tracking-eyebrow: 0.1em;
+
+  /* -- Radii. `--radius` feeds shadcn's rounded-sm/md/lg/xl chain; the
+        semantic four are what Kortex components should actually reach for. - */
+  --radius: 0.375rem;
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-chip: 0.25rem; /* 4px  chips, icon buttons, code      */
+  --radius-control: 0.375rem; /* 6px  buttons, tree rows, inputs     */
+  --radius-card: 0.5rem; /* 8px  cards, tabs, banners           */
+  --radius-panel: 0.625rem; /* 10px dialogs, popovers, app frame   */
+  --radius-sheet: 1.125rem; /* 18px mobile bottom sheet            */
+
+  /* -- Motion. One easing for the whole product. -------------------------- */
+  --ease-kortex: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --duration-state: 120ms; /* hover, active, selection            */
+  --duration-expand: 180ms; /* tree expansion, drawer, sheet       */
+
+  --animate-pulse-soft: pulse-soft 1.4s var(--ease-kortex) infinite;
+
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 0.85;
+    }
   }
 }
 
+/* ---------------------------------------------------------------------------
+   TREE DEPTH TAPER
+   ---------------------------------------------------------------------------
+   Six sizes, six weights and six inks that only ever appear together, indexed
+   by depth. They are deliberately NOT Tailwind tokens: exposing eighteen
+   utilities would invite the copy-pasted class strings this system exists to
+   prevent. They are consumed by exactly one place, the `tree-row` utility.
+   --------------------------------------------------------------------------- */
+
+:root {
+  --tree-indent-base: 0.625rem; /* 10px */
+  --tree-indent-step: 0.9375rem; /* 15px, compressed to 12px below md */
+
+  --tree-size-1: 0.8438rem;
+  --tree-size-2: 0.8125rem;
+  --tree-size-3: 0.7969rem;
+  --tree-size-4: 0.7813rem;
+  --tree-size-5: 0.7656rem;
+  --tree-size-6: 0.75rem;
+
+  --tree-weight-1: 650;
+  --tree-weight-2: 560;
+  --tree-weight-3: 500;
+  --tree-weight-4: 450;
+  --tree-weight-5: 420;
+  --tree-weight-6: 400;
+
+  --tree-ink-1: var(--raw-ink-1);
+  --tree-ink-2: var(--raw-ink-1);
+  --tree-ink-3: var(--raw-ink-2);
+  --tree-ink-4: var(--raw-ink-3);
+  --tree-ink-5: var(--raw-ink-4);
+  --tree-ink-6: var(--raw-ink-muted);
+}
+
+/* ---------------------------------------------------------------------------
+   4. BASE LAYER
+   --------------------------------------------------------------------------- */
+
 @layer base {
   * {
-    @apply border-border;
+    border-color: var(--color-border);
   }
+
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--color-background);
+    color: var(--color-ink-2);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* One focus treatment for the whole product */
+  :focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--color-ring) 38%, transparent);
+    outline-offset: 2px;
+  }
+
+  /* Fraunces is a display face; it never sets interface text. */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background-color: var(--color-primary-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   5. PROJECT UTILITIES
+   ---------------------------------------------------------------------------
+   Multi-property visual patterns that repeat three or more times. Anything
+   that is a single property, or varies per instance, stays a Tailwind class.
+   --------------------------------------------------------------------------- */
+
+/* The sidebar tree row. Indentation is computed from --depth so six depth
+   levels need one rule rather than six padding classes; the taper is applied
+   by [data-depth] so the component ships no colour decisions in its TSX.
+   Depth 6 and beyond hold at level 6's type and keep indenting. */
+@utility tree-row {
+  --depth: 0;
+  display: flex;
+  align-items: center;
+  gap: --spacing(1.75);
+  width: 100%;
+  min-width: 0;
+  padding-block: --spacing(1.25);
+  padding-right: --spacing(2);
+  padding-left: calc(var(--tree-indent-base) + var(--depth) * var(--tree-indent-step));
+  border-radius: var(--radius-control);
+  text-align: left;
+  font-size: var(--tree-size-6);
+  font-weight: var(--tree-weight-6);
+  color: var(--tree-ink-6);
+  transition:
+    background-color var(--duration-state) var(--ease-kortex),
+    color var(--duration-state) var(--ease-kortex);
+
+  &[data-depth="0"] {
+    font-size: var(--tree-size-1);
+    font-weight: var(--tree-weight-1);
+    color: var(--tree-ink-1);
+    letter-spacing: var(--tracking-tight);
+  }
+  &[data-depth="1"] {
+    font-size: var(--tree-size-2);
+    font-weight: var(--tree-weight-2);
+    color: var(--tree-ink-2);
+  }
+  &[data-depth="2"] {
+    font-size: var(--tree-size-3);
+    font-weight: var(--tree-weight-3);
+    color: var(--tree-ink-3);
+  }
+  &[data-depth="3"] {
+    font-size: var(--tree-size-4);
+    font-weight: var(--tree-weight-4);
+    color: var(--tree-ink-4);
+  }
+  &[data-depth="4"] {
+    font-size: var(--tree-size-5);
+    font-weight: var(--tree-weight-5);
+    color: var(--tree-ink-5);
+  }
+
+  &:hover {
+    background-color: var(--color-raised);
+  }
+
+  /* Selection outranks the taper: weight and ink lift, size stays on-ramp. */
+  &[data-state="active"] {
+    background-color: var(--color-primary-soft);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-ink);
+  }
+  &[data-state="active"]:hover {
+    background-color: var(--color-primary-soft-hover);
+  }
+
+  /* Drag affordances. Lift is the node under the cursor; the two ring states
+     are the drop targets. All three read on the sidebar surface. */
+  &[data-drag="lifted"] {
+    background-color: var(--color-primary-soft);
+    box-shadow: var(--shadow-drag);
+  }
+  &[data-drag="into"] {
+    background-color: var(--color-primary-soft);
+    box-shadow: inset 0 0 0 1.5px var(--color-primary);
+  }
+  &[data-drag="invalid"] {
+    background-color: var(--color-danger-tint);
+    box-shadow: inset 0 0 0 1.5px var(--color-danger-line);
+  }
+
+  @media (width < 48rem) {
+    --tree-indent-step: 0.75rem; /* 12px, per the breakpoint contract */
+  }
+}
+
+/* The provisional outline on a draft page glyph. Tailwind has no
+   stroke-dasharray utility and the value is part of the publish-state
+   vocabulary, so it lives beside the tokens rather than in markup. */
+@utility glyph-dashed {
+  stroke-dasharray: 2.2 1.8;
+}
+
+/* The mono label that heads every section: sidebar groups, card sections,
+   tab strips, metadata eyebrows. */
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+/* The 1px vertical rule between metadata items. Used in the page meta row,
+   the collection header and the marketing footer. */
+@utility meta-divider {
+  display: block;
+  width: 1px;
+  height: --spacing(3.5);
+  flex: none;
+  background-color: var(--color-border);
+}
+
+/* Circular identity chip. Tone is chosen by the caller via data-tone so the
+   two-colour rotation lives here rather than in a ternary in every consumer. */
+@utility avatar-chip {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: calc(infinity* 1px);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  background-color: var(--color-avatar-cool);
+  color: var(--color-avatar-cool-ink);
+
+  &[data-tone="warm"] {
+    background-color: var(--color-avatar-warm);
+    color: var(--color-avatar-warm-ink);
+  }
+}
+
+/* Skeleton block. The design uses two shimmer amplitudes across four
+   durations; they are one effect and collapse to this. */
+@utility skeleton {
+  border-radius: var(--radius-control);
+  background-color: var(--color-raised);
+  animation: var(--animate-pulse-soft);
+}
+
+/* The filled portion of a progress bar. The percentage is the only value a
+   component may set inline, and it arrives as --progress (0-100). */
+@utility progress-fill {
+  height: 100%;
+  width: calc(var(--progress, 0) * 1%);
+  border-radius: calc(infinity* 1px);
+  background-color: var(--color-primary);
+  transition: width var(--duration-expand) var(--ease-kortex);
+}
+
+/* The navigation drawer below md: 88vw of the viewport, capped at the 340px
+   the breakpoint contract specifies from md upward. */
+@utility drawer-panel {
+  width: 88vw;
+  max-width: 21.25rem;
+}
+
+/* The reading column. Page view, collection view and marketing all centre
+   content on the same ramp: 100% - 40px, then 640, 700, 760. */
+@utility reading-column {
+  width: 100%;
+  max-width: 40rem;
+  margin-inline: auto;
+  padding-inline: --spacing(5);
+
+  @media (width >= 48rem) {
+    max-width: 43.75rem;
+    padding-inline: --spacing(8);
+  }
+  @media (width >= 80rem) {
+    max-width: 47.5rem;
   }
 }
