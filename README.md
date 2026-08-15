@@ -95,12 +95,14 @@ npx supabase db reset
 cp .env.example .env.local
 ```
 
-`supabase start` prints an API URL and an anon key. Put them in `.env.local`:
+`supabase start` prints an API URL and a set of keys. Put the **publishable** key in `.env.local`:
 
 ```dotenv
 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key from supabase start>
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<PUBLISHABLE_KEY from supabase start>
 ```
+
+> Getting this variable name wrong fails silently rather than loudly: `hasEnvVars` in `lib/utils.ts` goes false, `updateSession` returns early on every request, and the auth gate simply stops running.
 
 Then:
 
