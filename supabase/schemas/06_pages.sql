@@ -19,7 +19,7 @@ create table public.pages (
   last_edited_at     timestamptz not null default now(),
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now(),
-  deleted_at         timestamptz
+  deleted_at         timestamptz,
 
   constraint pages_title_length check (length(title) between 1 and 255),
   constraint pages_no_self_parent check (parent_id is null or parent_id <> id),

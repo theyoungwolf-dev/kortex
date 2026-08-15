@@ -39,6 +39,16 @@ as $$
     and m.user_id = (select auth.uid());
 $$;
 
+create or replace function public.is_workspace_admin(p_workspace_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select public.workspace_role_of(p_workspace_id) in ('owner', 'admin');
+$$;
+
 create or replace function public.is_workspace_owner(p_workspace_id uuid)
 returns boolean
 language sql

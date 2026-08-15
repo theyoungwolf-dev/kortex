@@ -30,7 +30,7 @@ create trigger attachments_set_scope
 -- -----------------------------------------------------------------------------
 
 create trigger pages_stamp_editor
-  before update of title, content, icon, cover_path on public.pages
+  before update of title, content on public.pages
   for each row execute function public.pages_stamp_editor();
 
 -- -----------------------------------------------------------------------------

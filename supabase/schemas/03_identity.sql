@@ -121,7 +121,7 @@ begin
   )
   values (
     v_collection_id, v_workspace_id, 'Welcome to Kortex',
-    public.initial_rank(), new.id, new.id, now()
+    public.first_rank(), new.id, new.id, now()
   );
 
   return new;

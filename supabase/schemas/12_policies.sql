@@ -8,7 +8,7 @@
 --     user request, because it bypasses everything on this page.
 --
 -- Note: FORCE ROW LEVEL SECURITY is deliberately *not* used. The helper
--- functions in `08_functions.sql` are SECURITY DEFINER and run as the table owner; forcing RLS
+-- functions in `10_helpers.sql` are SECURITY DEFINER and run as the table owner; forcing RLS
 -- would subject them to the very policies they exist to evaluate, which is the
 -- infinite recursion they were written to avoid.
 
