@@ -23,11 +23,11 @@ Also check that no query or view re-collates the column.
 
 Three scopes must each be uniquely constrained:
 
-| Table           | Scope                                   |
-| --------------- | --------------------------------------- |
-| `collections`   | `(workspace_id, owner_id, rank)`        |
-| `pages`         | `(collection_id, parent_id, rank)`      |
-| `page_stars`    | `(user_id, rank)`                       |
+| Table         | Scope                              |
+| ------------- | ---------------------------------- |
+| `collections` | `(workspace_id, private_to, rank)` |
+| `pages`       | `(collection_id, parent_id, rank)` |
+| `page_stars`  | `(user_id, rank)`                  |
 
 For the first two, the scope column is nullable, so the index requires `NULLS NOT DISTINCT` or root-level rows are entirely unconstrained. `collections` and `pages` are soft-deletable and their indexes need `WHERE deleted_at IS NULL`; `page_stars` has no `deleted_at` and must not carry that predicate.
 

@@ -16,7 +16,7 @@ You author Postgres migrations for Kortex. Correctness at the schema layer is th
 ## Hard rules
 
 - **Rank columns are `text collate "C"`.** No exceptions. Bytewise ordering must match JavaScript string comparison.
-- **Sibling-rank unique indexes use `NULLS NOT DISTINCT` and `WHERE deleted_at IS NULL`.** A nullable scope column (`pages.parent_id`, `collections.owner_id`) without `NULLS NOT DISTINCT` means no constraint at all for the NULL rows. `page_stars` is the exception: it has no `deleted_at`, so its unique constraint carries no predicate.
+- **Sibling-rank unique indexes use `NULLS NOT DISTINCT` and `WHERE deleted_at IS NULL`.** A nullable scope column (`pages.parent_id`, `collections.private_to`) without `NULLS NOT DISTINCT` means no constraint at all for the NULL rows. `page_stars` is the exception: it has no `deleted_at`, so its unique constraint carries no predicate.
 - **`pages_tree_sync` fires only on `UPDATE OF parent_id, published_at`.** `pages_recompute_subtree` writes only `ancestor_ids`, `depth`, `is_published_tree`. Never widen the trigger's column list; that is an infinite loop.
 - **RLS on every table holding user data**, and every `USING` clause includes `deleted_at IS NULL`.
 - **Wrap `auth.uid()` and helper calls in `(select ...)`** inside policies for InitPlan hoisting.

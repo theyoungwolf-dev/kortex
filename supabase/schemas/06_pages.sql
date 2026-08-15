@@ -2,7 +2,7 @@ create table public.pages (
   id                 uuid primary key default gen_random_uuid(),
   workspace_id       uuid not null references public.workspaces(id) on delete cascade,
   collection_id      uuid not null references public.collections(id) on delete cascade,
-  collection_owner_id uuid references public.profiles(id) on delete cascade,
+  collection_private_to uuid references public.profiles(id) on delete cascade,
   parent_id          uuid references public.pages(id) on delete cascade,
 
   title              text not null default 'Untitled',
@@ -30,8 +30,8 @@ comment on column public.pages.rank is
   'Lexorank string. MUST stay `text collate "C"` to match JS bytewise ordering.';
 comment on column public.pages.is_published_tree is
   'Maintained by trigger. True only when this page and every ancestor are published. A page with published_at set but is_published_tree false is the "Hidden" state.';
-comment on column public.pages.collection_owner_id is
-  'Denormalised from collections.owner_id so RLS avoids a join. Set by trigger; client values are ignored.';
+comment on column public.pages.collection_private_to is
+  'Denormalised from collections.private_to so RLS avoids a join. Set by trigger; client values are ignored.';
 
 -- Sibling ordering. NULLS NOT DISTINCT is required for root pages, where
 -- parent_id is null - otherwise root siblings escape the uniqueness check.

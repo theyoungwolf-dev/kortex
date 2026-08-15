@@ -125,7 +125,7 @@ create policy collections_select_live on public.collections
   using (
     deleted_at is null
     and public.is_workspace_member(workspace_id)
-    and (owner_id is null or owner_id = (select auth.uid()))
+    and (private_to is null or private_to = (select auth.uid()))
   );
 
 create policy collections_select_trash on public.collections
@@ -134,9 +134,9 @@ create policy collections_select_trash on public.collections
     deleted_at is not null
     and public.is_workspace_member(workspace_id)
     and (
-      owner_id = (select auth.uid())
+      private_to = (select auth.uid())
       or created_by = (select auth.uid())
-      or (owner_id is null and public.is_workspace_admin(workspace_id))
+      or (private_to is null and public.is_workspace_admin(workspace_id))
     )
   );
 
@@ -145,7 +145,7 @@ create policy collections_insert on public.collections
   with check (
     public.can_write_in_workspace(workspace_id)
     and created_by = (select auth.uid())
-    and (owner_id is null or owner_id = (select auth.uid()))
+    and (private_to is null or private_to = (select auth.uid()))
   );
 
 -- Shared collections are collaboratively editable; private ones are not.
@@ -155,11 +155,11 @@ create policy collections_update on public.collections
   for update to authenticated
   using (
     public.can_write_in_workspace(workspace_id)
-    and (owner_id is null or owner_id = (select auth.uid()))
+    and (private_to is null or private_to = (select auth.uid()))
   )
   with check (
     public.can_write_in_workspace(workspace_id)
-    and (owner_id is null or owner_id = (select auth.uid()))
+    and (private_to is null or private_to = (select auth.uid()))
   );
 
 create policy collections_delete on public.collections
@@ -167,7 +167,7 @@ create policy collections_delete on public.collections
   using (
     public.is_workspace_member(workspace_id)
     and (
-      owner_id = (select auth.uid())
+      private_to = (select auth.uid())
       or created_by = (select auth.uid())
       or public.is_workspace_admin(workspace_id)
     )
@@ -188,7 +188,7 @@ create policy pages_select_live on public.pages
   using (
     deleted_at is null
     and public.is_workspace_member(workspace_id)
-    and (collection_owner_id is null or collection_owner_id = (select auth.uid()))
+    and (collection_private_to is null or collection_private_to = (select auth.uid()))
     and (is_published_tree or created_by = (select auth.uid()))
   );
 
@@ -200,14 +200,14 @@ create policy pages_select_trash on public.pages
     and (created_by = (select auth.uid()) or public.is_workspace_admin(workspace_id))
   );
 
--- workspace_id and collection_owner_id are stamped by pages_set_scope before
+-- workspace_id and collection_private_to are stamped by pages_set_scope before
 -- this runs, so the values checked here are derived, not client-supplied.
 create policy pages_insert on public.pages
   for insert to authenticated
   with check (
     public.can_write_in_workspace(workspace_id)
     and created_by = (select auth.uid())
-    and (collection_owner_id is null or collection_owner_id = (select auth.uid()))
+    and (collection_private_to is null or collection_private_to = (select auth.uid()))
   );
 
 create policy pages_update on public.pages
@@ -215,12 +215,12 @@ create policy pages_update on public.pages
   using (
     deleted_at is null
     and public.can_write_in_workspace(workspace_id)
-    and (collection_owner_id is null or collection_owner_id = (select auth.uid()))
+    and (collection_private_to is null or collection_private_to = (select auth.uid()))
     and (is_published_tree or created_by = (select auth.uid()))
   )
   with check (
     public.can_write_in_workspace(workspace_id)
-    and (collection_owner_id is null or collection_owner_id = (select auth.uid()))
+    and (collection_private_to is null or collection_private_to = (select auth.uid()))
   );
 
 create policy pages_delete on public.pages

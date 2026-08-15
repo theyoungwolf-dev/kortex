@@ -32,11 +32,11 @@ Three independent scopes, each with its own unique index:
 
 | Scope                       | Table         | Uniqueness                         |
 | --------------------------- | ------------- | ---------------------------------- |
-| Collections within an owner | `collections` | `(workspace_id, owner_id, rank)`   |
+| Collections within an owner | `collections` | `(workspace_id, private_to, rank)` |
 | Pages within a parent       | `pages`       | `(collection_id, parent_id, rank)` |
 | Starred pages within a user | `page_stars`  | `(user_id, rank)`                  |
 
-`collections.owner_id` is a nullable FK to `profiles` - null means the collection belongs to the workspace, non-null means it is personal to that user. There is no `owner_kind` enum and no `owner_member_id`; ownership is read off the nullability.
+`collections.private_to` is a nullable FK to `profiles` - null means the collection belongs to the workspace, non-null means it is personal to that user. There is no `owner_kind` enum and no `owner_member_id`; ownership is read off the nullability.
 
 - Create **prepends**: new items appear at the top of their list.
 - Reorder is expressed as `(itemId, newParentId, prevId | null)`. The server resolves `prevRank` and the next-adjacent sibling rank, then computes between them.

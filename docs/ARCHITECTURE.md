@@ -169,7 +169,7 @@ create table workspace_members (
 create table collections (
   id           uuid primary key default gen_random_uuid(),
   workspace_id uuid not null references workspaces(id) on delete cascade,
-  owner_id     uuid references profiles(id) on delete cascade,
+  private_to     uuid references profiles(id) on delete cascade,
   name         text not null default 'Untitled',
   icon         text,                   -- emoji grapheme
   rank         text collate "C" not null,
@@ -178,21 +178,21 @@ create table collections (
 );
 
 create unique index collections_scope_rank_key
-  on collections (workspace_id, owner_id, rank)
+  on collections (workspace_id, private_to, rank)
   nulls not distinct
   where deleted_at is null;
 ```
 
-Ownership is two-valued and carried by **nullability alone**. There is no `owner_kind` enum and no `owner_member_id`: `owner_id is null` means the collection belongs to the workspace, and a non-null `owner_id` means it is personal to that profile. One nullable column replaces an enum plus a discriminated FK plus the check constraint keeping them consistent, and it is what the RLS policies test.
+Ownership is two-valued and carried by **nullability alone**. There is no `owner_kind` enum and no `owner_member_id`: `private_to is null` means the collection belongs to the workspace, and a non-null `private_to` means it is personal to that profile. One nullable column replaces an enum plus a discriminated FK plus the check constraint keeping them consistent, and it is what the RLS policies test.
 
-| Sidebar section       | Filter                           |
-| --------------------- | -------------------------------- |
-| My Collections        | `owner_id = (select auth.uid())` |
-| Workspace Collections | `owner_id is null`               |
+| Sidebar section       | Filter                             |
+| --------------------- | ---------------------------------- |
+| My Collections        | `private_to = (select auth.uid())` |
+| Workspace Collections | `private_to is null`               |
 
 Membership is not the only way in: `workspace_invitations` stores a **hash** of the invite token, never the token itself, so a database leak cannot reconstruct a working invite link. `create_workspace_invitation()` returns the raw token exactly once, and `accept_workspace_invitation()` is the single sanctioned path to a membership row - an invitee is not yet a member, so no policy could let them insert one.
 
-> **`NULLS NOT DISTINCT` (Postgres 15+) is load-bearing.** Postgres normally treats `NULL` values as distinct in a unique index, so a plain unique index on `(workspace_id, owner_id, rank)` would place no constraint at all on workspace-owned collections, whose `owner_id` is null. The same applies to root pages in §4.2. Without this clause you would need two separate partial indexes per table; with it, one index covers both cases.
+> **`NULLS NOT DISTINCT` (Postgres 15+) is load-bearing.** Postgres normally treats `NULL` values as distinct in a unique index, so a plain unique index on `(workspace_id, private_to, rank)` would place no constraint at all on workspace-owned collections, whose `private_to` is null. The same applies to root pages in §4.2. Without this clause you would need two separate partial indexes per table; with it, one index covers both cases.
 
 ### 4.2 Pages
 
@@ -201,7 +201,7 @@ create table pages (
   id                  uuid primary key default gen_random_uuid(),
   workspace_id        uuid not null references workspaces(id) on delete cascade,
   collection_id       uuid not null references collections(id) on delete cascade,
-  collection_owner_id uuid references profiles(id) on delete cascade,
+  collection_private_to uuid references profiles(id) on delete cascade,
   parent_id           uuid references pages(id) on delete cascade,
 
   title               text not null default 'Untitled',
@@ -231,7 +231,7 @@ create index pages_level_idx on pages (collection_id, parent_id, rank)
 create index pages_ancestors_idx on pages using gin (ancestor_ids);
 ```
 
-Both `workspace_id` and `collection_owner_id` are denormalized from the collection so RLS policies can filter without a join - `collection_owner_id` is what lets a single policy express "this page is in a private collection that isn't mine" without touching `collections`. Neither is trusted from the client: the `pages_set_scope` BEFORE trigger derives both from `collection_id`, so the `WITH CHECK` clause always sees corrected values and a client cannot smuggle in a workspace it has no membership in.
+Both `workspace_id` and `collection_private_to` are denormalized from the collection so RLS policies can filter without a join - `collection_private_to` is what lets a single policy express "this page is in a private collection that isn't mine" without touching `collections`. Neither is trusted from the client: the `pages_set_scope` BEFORE trigger derives both from `collection_id`, so the `WITH CHECK` clause always sees corrected values and a client cannot smuggle in a workspace it has no membership in.
 
 `depth` is a **generated column**, not trigger-maintained state - it falls out of `ancestor_ids` and cannot drift from it.
 
@@ -441,7 +441,7 @@ new.id = any((select ancestor_ids from pages where id = new.parent_id))
 
 | Scope                       | Unique index                       |
 | --------------------------- | ---------------------------------- |
-| Collections within an owner | `(workspace_id, owner_id, rank)`   |
+| Collections within an owner | `(workspace_id, private_to, rank)` |
 | Pages within a parent       | `(collection_id, parent_id, rank)` |
 | Starred pages within a user | `(user_id, rank)`                  |
 
@@ -589,18 +589,18 @@ There is no per-page "starred rank" column and no join-ordered page query.
 
 ### Direct PostgREST
 
-| Operation                   | Call                                                                                                        |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| List collections by section | `.from('collections').select().eq('workspace_id',…)` then `.is('owner_id', null)` or `.eq('owner_id', uid)` |
-| List sibling pages          | `.from('pages').select().eq('collection_id',…).is('parent_id',…)`                                           |
-| Get a page                  | `.from('pages').select('*, collection:collections(id,name)').eq('id',…).single()`                           |
-| Create                      | `.insert({ …, rank: computedRank })`                                                                        |
-| Rename / autosave           | `.update({ title })` / `.update({ content })`                                                               |
-| Publish / unpublish         | `.update({ published_at: now \| null })` - trigger cascades                                                 |
-| Soft delete                 | `.update({ deleted_at: now })`                                                                              |
-| Star / unstar               | `.insert()` / `.delete()` on `page_stars`                                                                   |
-| Record a view               | `rpc('record_page_view', { p_page_id })` - a single upsert, bumps `view_count`                              |
-| Favourites list             | `.from('page_stars').select('rank, page:pages(*)')`                                                         |
+| Operation                   | Call                                                                                                            |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| List collections by section | `.from('collections').select().eq('workspace_id',…)` then `.is('private_to', null)` or `.eq('private_to', uid)` |
+| List sibling pages          | `.from('pages').select().eq('collection_id',…).is('parent_id',…)`                                               |
+| Get a page                  | `.from('pages').select('*, collection:collections(id,name)').eq('id',…).single()`                               |
+| Create                      | `.insert({ …, rank: computedRank })`                                                                            |
+| Rename / autosave           | `.update({ title })` / `.update({ content })`                                                                   |
+| Publish / unpublish         | `.update({ published_at: now \| null })` - trigger cascades                                                     |
+| Soft delete                 | `.update({ deleted_at: now })`                                                                                  |
+| Star / unstar               | `.insert()` / `.delete()` on `page_stars`                                                                       |
+| Record a view               | `rpc('record_page_view', { p_page_id })` - a single upsert, bumps `view_count`                                  |
+| Favourites list             | `.from('page_stars').select('rank, page:pages(*)')`                                                             |
 
 ### Route Handlers
 

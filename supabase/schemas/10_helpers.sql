@@ -102,7 +102,7 @@ as $$
     where p.id = p_page_id
       and p.deleted_at is null
       and public.is_workspace_member(p.workspace_id)
-      and (p.collection_owner_id is null or p.collection_owner_id = (select auth.uid()))
+      and (p.collection_private_to is null or p.collection_private_to = (select auth.uid()))
       and (p.is_published_tree or p.created_by = (select auth.uid()))
   );
 $$;
@@ -120,7 +120,7 @@ as $$
     where p.id = p_page_id
       and p.deleted_at is null
       and public.can_write_in_workspace(p.workspace_id)
-      and (p.collection_owner_id is null or p.collection_owner_id = (select auth.uid()))
+      and (p.collection_private_to is null or p.collection_private_to = (select auth.uid()))
       and (p.is_published_tree or p.created_by = (select auth.uid()))
   );
 $$;
@@ -210,7 +210,7 @@ begin
   end if;
 
   new.workspace_id        := v_collection.workspace_id;
-  new.collection_owner_id := v_collection.owner_id;
+  new.collection_private_to := v_collection.private_to;
 
   if new.parent_id is null then
     new.ancestor_ids      := '{}'::uuid[];
@@ -284,7 +284,7 @@ begin
   if new.deleted_at is distinct from old.deleted_at then
     if (select auth.uid()) is not null
        and not (old.created_by = (select auth.uid())
-                or old.owner_id = (select auth.uid())
+                or old.private_to = (select auth.uid())
                 or public.is_workspace_admin(old.workspace_id))
     then
       raise exception 'only the collection author, its owner, or a workspace admin can trash it'
@@ -292,8 +292,8 @@ begin
     end if;
   end if;
 
-  if new.workspace_id <> old.workspace_id or new.owner_id is distinct from old.owner_id then
-    raise exception 'workspace_id and owner_id are immutable on collections'
+  if new.workspace_id <> old.workspace_id or new.private_to is distinct from old.private_to then
+    raise exception 'workspace_id and private_to are immutable on collections'
       using errcode = '23514';
   end if;
 
@@ -374,7 +374,7 @@ begin
 
   -- Source permission
   if not public.can_write_in_workspace(v_page.workspace_id)
-     or (v_page.collection_owner_id is not null and v_page.collection_owner_id <> v_uid)
+     or (v_page.collection_private_to is not null and v_page.collection_private_to <> v_uid)
   then
     raise exception 'not permitted to move this page' using errcode = '42501';
   end if;
@@ -389,7 +389,7 @@ begin
   end if;
 
   if not public.can_write_in_workspace(v_target.workspace_id)
-     or (v_target.owner_id is not null and v_target.owner_id <> v_uid)
+     or (v_target.private_to is not null and v_target.private_to <> v_uid)
   then
     raise exception 'not permitted to write to the destination collection'
       using errcode = '42501';
@@ -413,7 +413,7 @@ begin
 
   -- The AFTER trigger has already fixed ancestor_ids / is_published_tree for the
   -- subtree. Descendants still carry the old collection, so re-stamp them; this
-  -- fires pages_set_scope (correcting workspace_id and collection_owner_id) but
+  -- fires pages_set_scope (correcting workspace_id and collection_private_to) but
   -- not pages_tree_sync, since collection_id is not in that trigger's column list.
   update public.pages d
   set collection_id = p_collection_id

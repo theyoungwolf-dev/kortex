@@ -37,7 +37,7 @@ case "$file_path" in
       echo "kortex: a 'rank text' column in $file_path is missing COLLATE \"C\" - CLAUDE.md invariant 1" >&2
     fi
     if grep -qiE 'create[[:space:]]+unique[[:space:]]+index' "$file_path" \
-       && grep -qiE 'parent_id|owner_id' "$file_path" \
+       && grep -qiE 'parent_id|private_to' "$file_path" \
        && ! grep -qi 'nulls not distinct' "$file_path"; then
       echo "kortex: unique index over a nullable scope column in $file_path may need NULLS NOT DISTINCT - CLAUDE.md invariant 2" >&2
     fi

@@ -112,7 +112,7 @@ begin
   )
   returning id into v_workspace_id;
 
-  insert into public.collections (workspace_id, owner_id, name, icon, rank, created_by)
+  insert into public.collections (workspace_id, private_to, name, icon, rank, created_by)
   values (v_workspace_id, new.id, 'Getting started', '📘', public.first_rank(), new.id)
   returning id into v_collection_id;
 

@@ -1,7 +1,7 @@
 create table public.collections (
   id              uuid primary key default gen_random_uuid(),
   workspace_id    uuid not null references public.workspaces(id) on delete cascade,
-  owner_id        uuid references public.profiles(id) on delete cascade,
+  private_to      uuid references public.profiles(id) on delete cascade,
   name            text not null default 'Untitled',
   description     text,
   icon            text,
@@ -23,18 +23,18 @@ comment on column public.collections.rank is
   'Lexorank string. MUST stay `text collate "C"` to match JS bytewise ordering.';
 
 -- NULLS NOT DISTINCT is required: without it, two shared collections
--- (owner_id IS NULL) could take the same rank in the same workspace.
+-- (private_to IS NULL) could take the same rank in the same workspace.
 create unique index collections_scope_rank_key
-  on public.collections (workspace_id, owner_id, rank)
+  on public.collections (workspace_id, private_to, rank)
   nulls not distinct
   where deleted_at is null;
  
 create index collections_workspace_idx
-  on public.collections (workspace_id, owner_id, rank)
+  on public.collections (workspace_id, private_to, rank)
   where deleted_at is null;
  
-create index collections_owner_idx on public.collections (owner_id)
-  where owner_id is not null;
+create index collections_private_tox on public.collections (private_to)
+  where private_to is not null;
  
 create trigger collections_set_updated_at
   before update on public.collections

@@ -6,8 +6,6 @@ SET check_function_bodies = false;
 
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public REVOKE MAINTAIN, REFERENCES, TRIGGER, TRUNCATE ON TABLES FROM anon;
 
-CREATE EXTENSION citext WITH SCHEMA extensions;
-
 CREATE TYPE public.workspace_role AS ENUM (
   'owner',
   'admin',
@@ -129,7 +127,7 @@ CREATE FUNCTION public.can_read_page (
     where p.id = p_page_id
       and p.deleted_at is null
       and public.is_workspace_member(p.workspace_id)
-      and (p.collection_owner_id is null or p.collection_owner_id = (select auth.uid()))
+      and (p.collection_private_to is null or p.collection_private_to = (select auth.uid()))
       and (p.is_published_tree or p.created_by = (select auth.uid()))
   );
 $function$;
@@ -169,7 +167,7 @@ CREATE FUNCTION public.can_write_page (
     where p.id = p_page_id
       and p.deleted_at is null
       and public.can_write_in_workspace(p.workspace_id)
-      and (p.collection_owner_id is null or p.collection_owner_id = (select auth.uid()))
+      and (p.collection_private_to is null or p.collection_private_to = (select auth.uid()))
       and (p.is_published_tree or p.created_by = (select auth.uid()))
   );
 $function$;
@@ -208,7 +206,7 @@ begin
   if new.deleted_at is distinct from old.deleted_at then
     if (select auth.uid()) is not null
        and not (old.created_by = (select auth.uid())
-                or old.owner_id = (select auth.uid())
+                or old.private_to = (select auth.uid())
                 or public.is_workspace_admin(old.workspace_id))
     then
       raise exception 'only the collection author, its owner, or a workspace admin can trash it'
@@ -216,8 +214,8 @@ begin
     end if;
   end if;
 
-  if new.workspace_id <> old.workspace_id or new.owner_id is distinct from old.owner_id then
-    raise exception 'workspace_id and owner_id are immutable on collections'
+  if new.workspace_id <> old.workspace_id or new.private_to is distinct from old.private_to then
+    raise exception 'workspace_id and private_to are immutable on collections'
       using errcode = '23514';
   end if;
 
@@ -371,7 +369,7 @@ begin
   )
   returning id into v_workspace_id;
 
-  insert into public.collections (workspace_id, owner_id, name, icon, rank, created_by)
+  insert into public.collections (workspace_id, private_to, name, icon, rank, created_by)
   values (v_workspace_id, new.id, 'Getting started', '📘', public.first_rank(), new.id)
   returning id into v_collection_id;
 
@@ -555,7 +553,7 @@ begin
   end if;
 
   new.workspace_id        := v_collection.workspace_id;
-  new.collection_owner_id := v_collection.owner_id;
+  new.collection_private_to := v_collection.private_to;
 
   if new.parent_id is null then
     new.ancestor_ids      := '{}'::uuid[];
@@ -805,7 +803,7 @@ CREATE POLICY attachments_update ON public.attachments
 CREATE TABLE public.collections (
   id           uuid                     DEFAULT gen_random_uuid() NOT NULL,
   workspace_id uuid                     NOT NULL,
-  owner_id     uuid,
+  private_to   uuid,
   name         text                     DEFAULT 'Untitled'::text NOT NULL,
   description  text,
   icon         text,
@@ -837,14 +835,14 @@ GRANT ALL ON public.collections TO authenticated;
 
 GRANT MAINTAIN, REFERENCES, TRIGGER, TRUNCATE ON public.collections TO service_role;
 
-CREATE UNIQUE INDEX collections_scope_rank_key ON public.collections (workspace_id, owner_id, rank)
+CREATE UNIQUE INDEX collections_scope_rank_key ON public.collections (workspace_id, private_to, rank)
   WHERE deleted_at IS NULL;
 
-CREATE INDEX collections_workspace_idx ON public.collections (workspace_id, owner_id, rank)
+CREATE INDEX collections_workspace_idx ON public.collections (workspace_id, private_to, rank)
   WHERE deleted_at IS NULL;
 
-CREATE INDEX collections_owner_idx ON public.collections (owner_id)
-  WHERE owner_id IS NOT NULL;
+CREATE INDEX collections_private_tox ON public.collections (private_to)
+  WHERE private_to IS NOT NULL;
 
 CREATE TRIGGER collections_cascade_trash
   AFTER UPDATE OF deleted_at ON public.collections
@@ -866,31 +864,31 @@ CREATE POLICY collections_delete ON public.collections
   FOR DELETE
   TO authenticated
   USING
-    ((public.is_workspace_member(workspace_id) AND ((owner_id = ( SELECT auth.uid() AS uid)) OR (created_by = ( SELECT auth.uid() AS uid)) OR
+    ((public.is_workspace_member(workspace_id) AND ((private_to = ( SELECT auth.uid() AS uid)) OR (created_by = ( SELECT auth.uid() AS uid)) OR
     public.is_workspace_admin(workspace_id))));
 
 CREATE POLICY collections_insert ON public.collections
   FOR INSERT
   TO authenticated
-  WITH CHECK ((public.can_write_in_workspace(workspace_id) AND (created_by = ( SELECT auth.uid() AS uid)) AND ((owner_id IS NULL) OR (owner_id = ( SELECT auth.uid() AS uid)))));
+  WITH CHECK ((public.can_write_in_workspace(workspace_id) AND (created_by = ( SELECT auth.uid() AS uid)) AND ((private_to IS NULL) OR (private_to = ( SELECT auth.uid() AS uid)))));
 
 CREATE POLICY collections_select_live ON public.collections
   FOR SELECT
   TO authenticated
-  USING (((deleted_at IS NULL) AND public.is_workspace_member(workspace_id) AND ((owner_id IS NULL) OR (owner_id = ( SELECT auth.uid() AS uid)))));
+  USING (((deleted_at IS NULL) AND public.is_workspace_member(workspace_id) AND ((private_to IS NULL) OR (private_to = ( SELECT auth.uid() AS uid)))));
 
 CREATE POLICY collections_select_trash ON public.collections
   FOR SELECT
   TO authenticated
   USING (((deleted_at IS
     NOT NULL) AND public.is_workspace_member(workspace_id) AND
-    ((owner_id = ( SELECT auth.uid() AS uid)) OR (created_by = ( SELECT auth.uid() AS uid)) OR ((owner_id IS NULL) AND public.is_workspace_admin(workspace_id)))));
+    ((private_to = ( SELECT auth.uid() AS uid)) OR (created_by = ( SELECT auth.uid() AS uid)) OR ((private_to IS NULL) AND public.is_workspace_admin(workspace_id)))));
 
 CREATE POLICY collections_update ON public.collections
   FOR UPDATE
   TO authenticated
-  USING ((public.can_write_in_workspace(workspace_id) AND ((owner_id IS NULL) OR (owner_id = ( SELECT auth.uid() AS uid)))))
-  WITH CHECK ((public.can_write_in_workspace(workspace_id) AND ((owner_id IS NULL) OR (owner_id = ( SELECT auth.uid() AS uid)))));
+  USING ((public.can_write_in_workspace(workspace_id) AND ((private_to IS NULL) OR (private_to = ( SELECT auth.uid() AS uid)))))
+  WITH CHECK ((public.can_write_in_workspace(workspace_id) AND ((private_to IS NULL) OR (private_to = ( SELECT auth.uid() AS uid)))));
 
 CREATE TABLE public.page_stars (
   user_id    uuid                     NOT NULL,
@@ -977,24 +975,24 @@ CREATE POLICY page_views_update ON public.page_views
   WITH CHECK ((user_id = ( SELECT auth.uid() AS uid)));
 
 CREATE TABLE public.pages (
-  id                  uuid                     DEFAULT gen_random_uuid() NOT NULL,
-  workspace_id        uuid                     NOT NULL,
-  collection_id       uuid                     NOT NULL,
-  collection_owner_id uuid,
-  parent_id           uuid,
-  title               text                     DEFAULT 'Untitled'::text NOT NULL,
-  content             jsonb                    DEFAULT '{}'::jsonb NOT NULL,
-  published_at        timestamp with time zone,
-  rank                text                     COLLATE "C" NOT NULL,
-  depth               integer                  GENERATED ALWAYS AS (COALESCE(array_length(ancestor_ids, 1), 0)) STORED,
-  ancestor_ids        uuid[]                   DEFAULT '{}'::uuid[] NOT NULL,
-  is_published_tree   boolean                  DEFAULT false NOT NULL,
-  created_by          uuid                     NOT NULL,
-  last_edited_by      uuid,
-  last_edited_at      timestamp with time zone DEFAULT now() NOT NULL,
-  created_at          timestamp with time zone DEFAULT now() NOT NULL,
-  updated_at          timestamp with time zone DEFAULT now() NOT NULL,
-  deleted_at          timestamp with time zone
+  id                    uuid                     DEFAULT gen_random_uuid() NOT NULL,
+  workspace_id          uuid                     NOT NULL,
+  collection_id         uuid                     NOT NULL,
+  collection_private_to uuid,
+  parent_id             uuid,
+  title                 text                     DEFAULT 'Untitled'::text NOT NULL,
+  content               jsonb                    DEFAULT '{}'::jsonb NOT NULL,
+  published_at          timestamp with time zone,
+  rank                  text                     COLLATE "C" NOT NULL,
+  depth                 integer                  GENERATED ALWAYS AS (COALESCE(array_length(ancestor_ids, 1), 0)) STORED,
+  ancestor_ids          uuid[]                   DEFAULT '{}'::uuid[] NOT NULL,
+  is_published_tree     boolean                  DEFAULT false NOT NULL,
+  created_by            uuid                     NOT NULL,
+  last_edited_by        uuid,
+  last_edited_at        timestamp with time zone DEFAULT now() NOT NULL,
+  created_at            timestamp with time zone DEFAULT now() NOT NULL,
+  updated_at            timestamp with time zone DEFAULT now() NOT NULL,
+  deleted_at            timestamp with time zone
 );
 
 CREATE FUNCTION public.move_page (
@@ -1025,7 +1023,7 @@ begin
 
   -- Source permission
   if not public.can_write_in_workspace(v_page.workspace_id)
-     or (v_page.collection_owner_id is not null and v_page.collection_owner_id <> v_uid)
+     or (v_page.collection_private_to is not null and v_page.collection_private_to <> v_uid)
   then
     raise exception 'not permitted to move this page' using errcode = '42501';
   end if;
@@ -1040,7 +1038,7 @@ begin
   end if;
 
   if not public.can_write_in_workspace(v_target.workspace_id)
-     or (v_target.owner_id is not null and v_target.owner_id <> v_uid)
+     or (v_target.private_to is not null and v_target.private_to <> v_uid)
   then
     raise exception 'not permitted to write to the destination collection'
       using errcode = '42501';
@@ -1064,7 +1062,7 @@ begin
 
   -- The AFTER trigger has already fixed ancestor_ids / is_published_tree for the
   -- subtree. Descendants still carry the old collection, so re-stamp them; this
-  -- fires pages_set_scope (correcting workspace_id and collection_owner_id) but
+  -- fires pages_set_scope (correcting workspace_id and collection_private_to) but
   -- not pages_tree_sync, since collection_id is not in that trigger's column list.
   update public.pages d
   set collection_id = p_collection_id
@@ -1081,7 +1079,7 @@ REVOKE ALL ON FUNCTION public.move_page(uuid, uuid, uuid, text) FROM PUBLIC;
 
 GRANT ALL ON FUNCTION public.move_page(uuid, uuid, uuid, text) TO authenticated;
 
-COMMENT ON COLUMN public.pages.collection_owner_id IS 'Denormalised from collections.owner_id so RLS avoids a join. Set by trigger; client values are ignored.';
+COMMENT ON COLUMN public.pages.collection_private_to IS 'Denormalised from collections.private_to so RLS avoids a join. Set by trigger; client values are ignored.';
 
 COMMENT ON COLUMN public.pages.rank IS 'Lexorank string. MUST stay `text collate "C"` to match JS bytewise ordering.';
 
@@ -1176,14 +1174,14 @@ CREATE POLICY pages_insert ON public.pages
   TO authenticated
   WITH
     CHECK
-    ((public.can_write_in_workspace(workspace_id) AND (created_by = ( SELECT auth.uid() AS uid)) AND ((collection_owner_id IS NULL) OR (collection_owner_id = ( SELECT auth.uid() AS
-    uid)))));
+    ((public.can_write_in_workspace(workspace_id) AND (created_by = ( SELECT auth.uid() AS uid)) AND ((collection_private_to IS NULL) OR (collection_private_to = ( SELECT
+    auth.uid() AS uid)))));
 
 CREATE POLICY pages_select_live ON public.pages
   FOR SELECT
   TO authenticated
   USING
-    (((deleted_at IS NULL) AND public.is_workspace_member(workspace_id) AND ((collection_owner_id IS NULL) OR (collection_owner_id = ( SELECT auth.uid() AS uid))) AND
+    (((deleted_at IS NULL) AND public.is_workspace_member(workspace_id) AND ((collection_private_to IS NULL) OR (collection_private_to = ( SELECT auth.uid() AS uid))) AND
     (is_published_tree OR (created_by = ( SELECT auth.uid() AS uid)))));
 
 CREATE POLICY pages_select_trash ON public.pages
@@ -1195,9 +1193,9 @@ CREATE POLICY pages_update ON public.pages
   FOR UPDATE
   TO authenticated
   USING
-    (((deleted_at IS NULL) AND public.can_write_in_workspace(workspace_id) AND ((collection_owner_id IS NULL) OR (collection_owner_id = ( SELECT auth.uid() AS uid))) AND
+    (((deleted_at IS NULL) AND public.can_write_in_workspace(workspace_id) AND ((collection_private_to IS NULL) OR (collection_private_to = ( SELECT auth.uid() AS uid))) AND
     (is_published_tree OR (created_by = ( SELECT auth.uid() AS uid)))))
-  WITH CHECK ((public.can_write_in_workspace(workspace_id) AND ((collection_owner_id IS NULL) OR (collection_owner_id = ( SELECT auth.uid() AS uid)))));
+  WITH CHECK ((public.can_write_in_workspace(workspace_id) AND ((collection_private_to IS NULL) OR (collection_private_to = ( SELECT auth.uid() AS uid)))));
 
 CREATE TABLE public.profiles (
   id           uuid                     NOT NULL,
@@ -1239,7 +1237,7 @@ ALTER TABLE public.collections
   ADD CONSTRAINT collections_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.profiles(id) ON DELETE RESTRICT;
 
 ALTER TABLE public.collections
-  ADD CONSTRAINT collections_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+  ADD CONSTRAINT collections_private_to_fkey FOREIGN KEY (private_to) REFERENCES public.profiles(id) ON DELETE CASCADE;
 
 ALTER TABLE public.page_stars
   ADD CONSTRAINT page_stars_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
@@ -1248,7 +1246,7 @@ ALTER TABLE public.page_views
   ADD CONSTRAINT page_views_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
 
 ALTER TABLE public.pages
-  ADD CONSTRAINT pages_collection_owner_id_fkey FOREIGN KEY (collection_owner_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+  ADD CONSTRAINT pages_collection_private_to_fkey FOREIGN KEY (collection_private_to) REFERENCES public.profiles(id) ON DELETE CASCADE;
 
 ALTER TABLE public.pages
   ADD CONSTRAINT pages_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.profiles(id) ON DELETE RESTRICT;
@@ -1543,6 +1541,7 @@ CREATE POLICY workspaces_update ON public.workspaces
   TO authenticated
   USING (public.is_workspace_admin(id))
   WITH CHECK (public.is_workspace_admin(id));
+
 -- =============================================================================
 -- HAND-WRITTEN TAIL
 -- =============================================================================
@@ -1559,13 +1558,13 @@ CREATE POLICY workspaces_update ON public.workspaces
 -- 1. NULLS NOT DISTINCT
 -- -----------------------------------------------------------------------------
 -- Without this clause the null side of each scope is unconstrained: shared
--- collections (owner_id null) and root pages (parent_id null) would silently
+-- collections (private_to null) and root pages (parent_id null) would silently
 -- collide on rank. See CLAUDE.md invariant 2.
 
 DROP INDEX IF EXISTS public.collections_scope_rank_key;
 
 CREATE UNIQUE INDEX collections_scope_rank_key
-  ON public.collections (workspace_id, owner_id, rank)
+  ON public.collections (workspace_id, private_to, rank)
   NULLS NOT DISTINCT
   WHERE deleted_at IS NULL;
 
