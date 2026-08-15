@@ -63,7 +63,7 @@ Three things shape the design:
 | UI              | Tailwind CSS, shadcn/ui                                                          |
 | Database & auth | Supabase (Postgres, RLS, Auth, Storage)                                          |
 | Data access     | `supabase-js` over PostgREST                                                     |
-| Schema          | Drizzle, generating SQL migrations                                               |
+| Schema          | Declarative SQL in `supabase/schemas/`, diffed into migrations                   |
 | Client state    | TanStack Query                                                                   |
 | Editor          | Tiptap                                                                           |
 | Drag & drop     | dnd-kit                                                                          |
@@ -124,7 +124,8 @@ npm run test           # vitest
 npx supabase start     # start the local stack
 npx supabase stop      # stop it
 npx supabase db reset  # rebuild the database from migrations + seed
-npm run db:generate    # generate a migration from drizzle/schema.ts
+npm run db:diff <name> # generate a migration from supabase/schemas/
+npx supabase db diff   # drift check: schemas/ vs migrations/; must print "No schema changes found"
 npm run db:types       # regenerate lib/database.types.ts
 ```
 
@@ -140,10 +141,10 @@ lib/
   queries/           typed query builders
   rank/              ordering - the only importer of the lexorank package
   database.types.ts  generated; never edited by hand
-drizzle/schema.ts    schema source of truth
 supabase/
+  schemas/           declarative SQL - the source of truth; NN_ prefixes are execution order
   migrations/        the SQL that actually ships
-  seed.sql           demo data
+  seed.sql           DML only: the three storage buckets
 docs/ARCHITECTURE.md the design of record
 ```
 

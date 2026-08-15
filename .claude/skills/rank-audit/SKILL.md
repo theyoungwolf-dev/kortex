@@ -25,11 +25,18 @@ Three scopes must each be uniquely constrained:
 
 | Table           | Scope                                   |
 | --------------- | --------------------------------------- |
-| `collections`   | `(workspace_id, owner_member_id, rank)` |
+| `collections`   | `(workspace_id, owner_id, rank)`        |
 | `pages`         | `(collection_id, parent_id, rank)`      |
-| `starred_pages` | `(user_id, rank)`                       |
+| `page_stars`    | `(user_id, rank)`                       |
 
-For the first two, the scope column is nullable, so the index requires `NULLS NOT DISTINCT` or root-level rows are entirely unconstrained. All three need `WHERE deleted_at IS NULL` where the table is soft-deletable.
+For the first two, the scope column is nullable, so the index requires `NULLS NOT DISTINCT` or root-level rows are entirely unconstrained. `collections` and `pages` are soft-deletable and their indexes need `WHERE deleted_at IS NULL`; `page_stars` has no `deleted_at` and must not carry that predicate.
+
+`NULLS NOT DISTINCT` is the property `supabase db diff` compares but cannot emit, so verify it against the database rather than by reading the migration:
+
+```
+docker exec supabase_db_kortex psql -U postgres -d postgres -c \
+  "select indexrelid::regclass, indnullsnotdistinct from pg_index where indexrelid::regclass::text in ('collections_scope_rank_key','pages_sibling_rank_key');"
+```
 
 ## 3. The `lib/rank` wrapper boundary
 

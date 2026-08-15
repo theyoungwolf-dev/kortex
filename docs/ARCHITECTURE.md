@@ -39,22 +39,22 @@ This document is the design of record. It covers the data model, the authorizati
 
 ## 2. Stack
 
-| Layer                   | Choice                                                   |
-| ----------------------- | -------------------------------------------------------- |
-| Framework               | Next.js, App Router                                      |
-| Language                | TypeScript                                               |
-| UI                      | Tailwind + shadcn/ui                                     |
-| Database, auth, storage | Supabase (Postgres)                                      |
-| Data access             | `supabase-js` over PostgREST                             |
-| Schema authoring        | Drizzle (`drizzle/schema.ts`), generating SQL migrations |
-| Server logic            | Next.js Route Handlers                                   |
-| Client cache            | TanStack Query                                           |
-| Drag and drop           | `@dnd-kit/core` + `@dnd-kit/sortable`                    |
-| Editor                  | Tiptap                                                   |
-| Ordering                | `@theyoungwolf/lexorank`, wrapped behind `lib/rank/`     |
-| URL state               | `nuqs`                                                   |
-| i18n                    | `next-intl`                                              |
-| Package manager         | npm                                                      |
+| Layer                   | Choice                                                        |
+| ----------------------- | ------------------------------------------------------------- |
+| Framework               | Next.js, App Router                                           |
+| Language                | TypeScript                                                    |
+| UI                      | Tailwind + shadcn/ui                                          |
+| Database, auth, storage | Supabase (Postgres)                                           |
+| Data access             | `supabase-js` over PostgREST                                  |
+| Schema authoring        | Declarative SQL (`supabase/schemas/`), diffed into migrations |
+| Server logic            | Next.js Route Handlers                                        |
+| Client cache            | TanStack Query                                                |
+| Drag and drop           | `@dnd-kit/core` + `@dnd-kit/sortable`                         |
+| Editor                  | Tiptap                                                        |
+| Ordering                | `@theyoungwolf/lexorank`, wrapped behind `lib/rank/`          |
+| URL state               | `nuqs`                                                        |
+| i18n                    | `next-intl`                                                   |
+| Package manager         | npm                                                           |
 
 Three landmines that will silently corrupt ordering or leak drafts if missed: **text collation on rank columns** (§4.2), **`NULLS NOT DISTINCT` on sibling unique indexes** (§4.1), and **the narrow trigger definition in the visibility subsystem** (§6). Read those closely.
 
@@ -84,11 +84,11 @@ The deciding factor is the access pattern. The sidebar loads lazily - each node 
 
 This is a preference decision with modest technical weight, not a correctness one. It is recorded here so it isn't relitigated casually, not because the alternative is wrong.
 
-### 3.2 Drizzle for schema authoring, no ORM at runtime
+### 3.2 Declarative SQL for schema authoring, no ORM at all
 
 ```
-drizzle/schema.ts          ← single source of truth, reviewable in PRs
-  ↓ drizzle-kit generate
+supabase/schemas/*.sql     ← single source of truth, reviewable in PRs
+  ↓ supabase db diff -f <name>
 supabase/migrations/*.sql  ← what ships; hand-editable and owned by us
   ↓ supabase migration up
 Postgres
@@ -96,154 +96,199 @@ Postgres
 lib/database.types.ts      ← consumed by supabase-js at runtime
 ```
 
-**Runtime queries go through `supabase-js`, never Drizzle.** A Drizzle client connects directly to Postgres and authenticates as a database role rather than as the end user, which means RLS does not apply and every authorization rule would have to be reimplemented in TypeScript. Two authorization systems will drift. Routing all runtime access through PostgREST makes RLS the single place authorization lives - safer, and far easier for contributors to audit.
+**Runtime queries go through `supabase-js`, never an ORM client.** An ORM client connects directly to Postgres and authenticates as a database role rather than as the end user, which means RLS does not apply and every authorization rule would have to be reimplemented in TypeScript. Two authorization systems will drift. Routing all runtime access through PostgREST makes RLS the single place authorization lives - safer, and far easier for contributors to audit. This part of the decision is not a preference; it is what makes §5 sound.
 
-Drizzle earns its place at authoring time: a typed `schema.ts` gives contributors an at-a-glance model, catches typos, and generates migrations. Prisma is the weaker fit here specifically because it cannot express partial indexes, `NULLS NOT DISTINCT`, or column collations - all three of which this schema requires.
+**Why no ORM at authoring time either.** Kortex originally carried Drizzle for this job, on the theory that a typed `schema.ts` gives contributors an at-a-glance model and generates migrations for free. It was removed, because the schema needs exactly the constructs the DSL cannot express:
 
-**Generated SQL is a draft, not an output.** `drizzle-kit generate` routinely drops collations, partial-index predicates, and `NULLS NOT DISTINCT`. Every generated migration must be read and corrected before it ships.
+| Construct                                                | Why it is needed                                   | Drizzle                                                                                                                                                          |
+| -------------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rank text collate "C"`                                  | §4.2 - bytewise ordering must match JavaScript     | `text()` takes only `{ enum }`, and drizzle-kit never emits `COLLATE`                                                                                            |
+| `nulls not distinct` **with** `where deleted_at is null` | §4.1 - one index covering null and non-null scopes | `nullsNotDistinct()` exists only on `unique()` constraints, which cannot be partial; `uniqueIndex()` has `where` but no `nullsNotDistinct`. Mutually unreachable |
+| `pages_tree_sync` and its plpgsql                        | §6 - the whole visibility subsystem                | Not modelled at all                                                                                                                                              |
+
+Those are precisely the three landmines named in §2. Prisma is a worse fit for the same reasons and then some. The deeper problem is that **drizzle-kit diffs `schema.ts` against its own JSON snapshot, never against the database** - so a hand-added `COLLATE "C"` is invisible to it forever, the snapshot becomes a false model of production, and nothing can detect the drift.
+
+**Generated SQL is a draft, not an output.** This is still true, and it is the honest cost of the current approach. Every generated migration must be read and corrected before it ships. What changed is that the source of truth stays correct regardless, and drift is now _detectable_:
+
+> **`supabase db diff` on a clean tree must print "No schema changes found."** That is the check that the migrations and `supabase/schemas/` actually agree. A snapshot-based tool cannot make this promise.
+
+**What the diff actually compares.** Both `supabase/schemas/` and `supabase/migrations/` are applied to throwaway shadow databases and their catalogs compared. The running local database is not a side of the comparison - editing it by hand changes nothing about the result, and a clean diff does not certify that your local database matches either directory. `--local` opts into comparing migrations against the live local database.
+
+**What must always be hand-written into migrations**, because the diff never emits it:
+
+- `NULLS NOT DISTINCT` on the two sibling-rank indexes (§4.1, §4.2). The engine compares the property but cannot emit it, so a lost clause surfaces as a proposed `DROP INDEX` + `CREATE UNIQUE INDEX` on a sibling-rank index. Regenerating emits the same defective DDL; hand-editing is the only fix.
+- Everything in the `storage` schema, including the object policies of §10. Objects there are invisible in **both** directions - not emitted, not diffed, not reported as drift, and `-s storage` does not re-enable them. The shadow database makes the reason visible: applying a `create table` in that schema fails with `permission denied for schema storage`, because `storage` belongs to `supabase_admin` and its tables to `supabase_storage_admin`. Those schemas are upgraded by the platform on its own schedule, so a differ that tracked them would report every Storage release as drift and could generate migrations that rewrite platform tables. Policies you author there are collateral damage of that exclusion.
+- `REVOKE`s against `anon`. The diff emits `REVOKE ... FROM PUBLIC` but treats anything derived from default privileges as a no-op.
+- Any DML - notably the bucket rows themselves, which live in `supabase/seed.sql`.
+
+A trigger attached to `auth.users` is **not** subject to this: `on_auth_user_created` is emitted on creation and its removal is detected as drift. The blind spot is specific to `storage`, not to every Supabase-managed schema.
+
+Because storage is invisible to the drift check, changes to `supabase/schemas/11_storage.sql` have to be verified against the database directly - `select policyname, cmd from pg_policies where schemaname = 'storage'`.
 
 ---
 
 ## 4. Data model
 
-### 4.1 Tenancy and collections
+> **`supabase/schemas/*.sql` is the source of truth for the exact DDL.** The SQL below is abridged to the columns that carry design weight - it explains _why_ the shape is what it is, and it is not a substitute for reading the schema files. Where the two disagree, the schema files are right and this section is a bug.
+
+### 4.1 Identity, tenancy, collections
+
+`profiles` is the public mirror of `auth.users`, which RLS cannot expose to clients. Every user-facing foreign key points at `profiles`, never at `auth.users`, so display name and avatar are readable under policy. Rows are created by the `handle_new_user` trigger on signup, which also provisions a personal workspace, an `owner` membership, a starter collection and a published welcome page.
 
 ```sql
-create table workspaces (
-  id          uuid primary key default gen_random_uuid(),
-  slug        citext not null unique,
-  name        text not null,
-  created_at  timestamptz not null default now()
+create table profiles (
+  id           uuid primary key references auth.users(id) on delete cascade,
+  username     text not null,          -- unique, lowercase, 3-32 chars
+  display_name text,
+  avatar_path  text,                   -- object path in the `avatars` bucket, never a URL
+  ...                                  -- bio, job_title, company, location, website, pronouns
+  timezone     text not null default 'UTC',
+  locale       text not null default 'en'
 );
 
-create type member_role as enum ('owner', 'admin', 'member', 'viewer');
+create type workspace_role as enum ('owner', 'admin', 'member', 'guest');
+
+create table workspaces (
+  id          uuid primary key default gen_random_uuid(),
+  slug        text not null,           -- unique index; lowercase + format enforced by check
+  name        text not null default 'Untitled workspace',
+  logo_path   text,                    -- object path in the `workspace-logos` bucket
+  is_personal boolean not null default false,
+  created_by  uuid not null references profiles(id) on delete restrict,
+  deleted_at  timestamptz
+);
 
 create table workspace_members (
-  id            uuid primary key default gen_random_uuid(),
-  workspace_id  uuid not null references workspaces(id) on delete cascade,
-  user_id       uuid not null references auth.users(id) on delete cascade,
-  role          member_role not null default 'member',
-  created_at    timestamptz not null default now(),
+  id           uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references workspaces(id) on delete cascade,
+  user_id      uuid not null references profiles(id) on delete cascade,
+  role         workspace_role not null default 'member',
   unique (workspace_id, user_id)
 );
 
-create type owner_kind as enum ('personal', 'workspace');
-
 create table collections (
-  id              uuid primary key default gen_random_uuid(),
-  workspace_id    uuid not null references workspaces(id) on delete cascade,
-  owner_kind      owner_kind not null,
-  owner_member_id uuid references workspace_members(id) on delete cascade,
-  name            text not null default 'Untitled',
-  description     text,
-  icon            text,                       -- emoji grapheme
-  rank            text collate "C" not null,
-  created_at      timestamptz not null default now(),
-  updated_at      timestamptz not null default now(),
-  deleted_at      timestamptz,
-  constraint owner_member_iff_personal
-    check ((owner_kind = 'personal') = (owner_member_id is not null))
+  id           uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references workspaces(id) on delete cascade,
+  owner_id     uuid references profiles(id) on delete cascade,
+  name         text not null default 'Untitled',
+  icon         text,                   -- emoji grapheme
+  rank         text collate "C" not null,
+  created_by   uuid not null references profiles(id) on delete restrict,
+  deleted_at   timestamptz
 );
 
-create unique index collections_sibling_rank
-  on collections (workspace_id, owner_member_id, rank)
+create unique index collections_scope_rank_key
+  on collections (workspace_id, owner_id, rank)
   nulls not distinct
   where deleted_at is null;
 ```
 
-Ownership is deliberately two-valued. A collection is either personal to one member or shared across the workspace; there is no polymorphic owner type. This maps directly onto the sidebar:
+Ownership is two-valued and carried by **nullability alone**. There is no `owner_kind` enum and no `owner_member_id`: `owner_id is null` means the collection belongs to the workspace, and a non-null `owner_id` means it is personal to that profile. One nullable column replaces an enum plus a discriminated FK plus the check constraint keeping them consistent, and it is what the RLS policies test.
 
-| Sidebar section       | Filter                                                         |
-| --------------------- | -------------------------------------------------------------- |
-| My Collections        | `owner_kind = 'personal' AND owner_member_id = <my member id>` |
-| Workspace Collections | `owner_kind = 'workspace'`                                     |
+| Sidebar section       | Filter                           |
+| --------------------- | -------------------------------- |
+| My Collections        | `owner_id = (select auth.uid())` |
+| Workspace Collections | `owner_id is null`               |
 
-> **`NULLS NOT DISTINCT` (Postgres 15+) is load-bearing.** Postgres normally treats `NULL` values as distinct in a unique index, so a plain unique index on `(workspace_id, owner_member_id, rank)` would place no constraint at all on workspace-owned collections, whose `owner_member_id` is null. The same applies to root pages in §4.2. Without this clause you would need two separate partial indexes per table; with it, one index covers both cases.
+Membership is not the only way in: `workspace_invitations` stores a **hash** of the invite token, never the token itself, so a database leak cannot reconstruct a working invite link. `create_workspace_invitation()` returns the raw token exactly once, and `accept_workspace_invitation()` is the single sanctioned path to a membership row - an invitee is not yet a member, so no policy could let them insert one.
+
+> **`NULLS NOT DISTINCT` (Postgres 15+) is load-bearing.** Postgres normally treats `NULL` values as distinct in a unique index, so a plain unique index on `(workspace_id, owner_id, rank)` would place no constraint at all on workspace-owned collections, whose `owner_id` is null. The same applies to root pages in §4.2. Without this clause you would need two separate partial indexes per table; with it, one index covers both cases.
 
 ### 4.2 Pages
 
 ```sql
 create table pages (
-  id                 uuid primary key default gen_random_uuid(),
-  workspace_id       uuid not null references workspaces(id) on delete cascade,
-  collection_id      uuid not null references collections(id) on delete cascade,
-  parent_id          uuid references pages(id) on delete cascade,
+  id                  uuid primary key default gen_random_uuid(),
+  workspace_id        uuid not null references workspaces(id) on delete cascade,
+  collection_id       uuid not null references collections(id) on delete cascade,
+  collection_owner_id uuid references profiles(id) on delete cascade,
+  parent_id           uuid references pages(id) on delete cascade,
 
-  title              text not null default 'Untitled',
-  content            jsonb not null default '{}'::jsonb,
-  published_at       timestamptz,
+  title               text not null default 'Untitled',
+  content             jsonb not null default '{}'::jsonb,
+  published_at        timestamptz,
 
-  rank               text collate "C" not null,
+  rank                text collate "C" not null,
 
   -- trigger-maintained tree state; see §6
-  depth              int not null default 0,
-  ancestor_ids       uuid[] not null default '{}',
-  is_published_tree  boolean not null default false,
+  depth               int generated always as (coalesce(array_length(ancestor_ids, 1), 0)) stored,
+  ancestor_ids        uuid[] not null default '{}',
+  is_published_tree   boolean not null default false,
 
-  created_by         uuid not null references auth.users(id),
-  last_edited_by     uuid references auth.users(id),
-  last_edited_at     timestamptz not null default now(),
-  created_at         timestamptz not null default now(),
-  updated_at         timestamptz not null default now(),
-  deleted_at         timestamptz
+  created_by          uuid not null references profiles(id) on delete restrict,
+  last_edited_by      uuid references profiles(id) on delete set null,
+  last_edited_at      timestamptz not null default now(),
+  deleted_at          timestamptz
 );
 
-create unique index pages_sibling_rank
+create unique index pages_sibling_rank_key
   on pages (collection_id, parent_id, rank)
   nulls not distinct
   where deleted_at is null;
 
-create index pages_sibling_list on pages (collection_id, parent_id, rank)
+create index pages_level_idx on pages (collection_id, parent_id, rank)
   where deleted_at is null;
-create index pages_ancestors on pages using gin (ancestor_ids);
-create index pages_workspace_visible on pages (workspace_id, is_published_tree)
-  where deleted_at is null;
+create index pages_ancestors_idx on pages using gin (ancestor_ids);
 ```
 
-`workspace_id` is denormalized from the collection so RLS policies can filter without a join.
+Both `workspace_id` and `collection_owner_id` are denormalized from the collection so RLS policies can filter without a join - `collection_owner_id` is what lets a single policy express "this page is in a private collection that isn't mine" without touching `collections`. Neither is trusted from the client: the `pages_set_scope` BEFORE trigger derives both from `collection_id`, so the `WITH CHECK` clause always sees corrected values and a client cannot smuggle in a workspace it has no membership in.
+
+`depth` is a **generated column**, not trigger-maintained state - it falls out of `ancestor_ids` and cannot drift from it.
 
 > **`collate "C"` on every rank column is not optional.** Supabase databases default to a locale-aware collation, typically `en_US.UTF-8`, under which `ORDER BY rank` does _not_ sort bytewise - punctuation and case carry different weights. Lexorank values are compared with plain `<` in JavaScript, which _is_ bytewise. Mismatch means Postgres and the client disagree about which of two ranks is smaller, and the symptom is a list that looks right immediately after a drag and reshuffles on refresh. `COLLATE "C"` forces bytewise comparison and keeps both sides in agreement.
 
 ### 4.3 Stars, views, attachments
 
 ```sql
-create table starred_pages (
-  user_id    uuid not null references auth.users(id) on delete cascade,
+create table page_stars (
+  user_id    uuid not null references profiles(id) on delete cascade,
   page_id    uuid not null references pages(id) on delete cascade,
   rank       text collate "C" not null,
-  created_at timestamptz not null default now(),
-  primary key (user_id, page_id)
+  primary key (user_id, page_id),
+  constraint page_stars_user_rank_key unique (user_id, rank)
 );
-create unique index starred_pages_user_rank on starred_pages (user_id, rank);
 
 create table page_views (
-  page_id    uuid not null references pages(id) on delete cascade,
-  user_id    uuid not null references auth.users(id) on delete cascade,
-  viewed_at  timestamptz not null default now(),
-  view_count int not null default 1,
-  primary key (page_id, user_id)
+  user_id         uuid not null references profiles(id) on delete cascade,
+  page_id         uuid not null references pages(id) on delete cascade,
+  view_count      int not null default 1,
+  first_viewed_at timestamptz not null default now(),
+  viewed_at       timestamptz not null default now(),
+  primary key (user_id, page_id)
 );
 
-create table page_attachments (
+create table attachments (
   id           uuid primary key default gen_random_uuid(),
-  page_id      uuid not null references pages(id) on delete cascade,
   workspace_id uuid not null references workspaces(id) on delete cascade,
-  storage_path text not null,                -- key in the `page-media` bucket
+  page_id      uuid references pages(id) on delete cascade,   -- nullable: editor staging
+  bucket_id    text not null default 'attachments',
+  storage_path text not null,
+  file_name    text not null,
   mime_type    text not null,
   size_bytes   bigint not null,
-  created_by   uuid not null references auth.users(id),
-  created_at   timestamptz not null default now()
+  width        int,
+  height       int,
+  uploaded_by  uuid not null references profiles(id) on delete restrict
 );
 ```
 
+The tables are `page_stars` and `attachments` - not `starred_pages` or `page_attachments`. Three details carry design weight:
+
+- `page_stars` has **no `deleted_at`**. Unstarring is a real delete, so its unique index carries no soft-delete predicate; it is the one rank scope that does not.
+- `attachments.page_id` is **nullable**. The editor uploads before the node is committed, so an orphan row is a legitimate state; policies grant the uploader access to their own orphans, and `attachments_set_scope` stamps `workspace_id` from the page once one is attached.
+- Deleting an `attachments` row deletes the object from the bucket via the `attachments_delete_object` trigger, so a page cascade does not leave bytes behind.
+
 ### 4.4 Soft delete
 
-Every user-facing table carries `deleted_at`, which powers a 30-day Trash.
+`workspaces`, `collections` and `pages` carry `deleted_at`, which powers a 30-day Trash. The join tables (`page_stars`, `page_views`, `attachments`) do not - their rows are cheap to recreate and are hard-deleted.
 
-- Deleting is `update ... set deleted_at = now()`, cascading to descendants via `ancestor_ids @> array[id]`.
-- Every RLS `USING` clause includes `deleted_at is null`.
-- Every unique index includes `where deleted_at is null`, so a deleted row never holds a rank slot hostage.
-- A `pg_cron` job purges rows past the retention window.
+- Deleting is `update ... set deleted_at = now()`.
+- Every RLS `USING` clause on a soft-deletable table includes `deleted_at is null`. Each also has a second `SELECT` policy for the trash view, `OR`'d with the live one, so clients filter `deleted_at=is.null` normally and `deleted_at=not.is.null` on the Trash screen.
+- Every unique index on those tables includes `where deleted_at is null`, so a deleted row never holds a rank slot hostage.
+- **Trash permission is enforced in a trigger, not a policy.** Trashing is an `UPDATE`, so the ordinary update policy would let any member bin a shared collection. `collections_guard_trash` and `pages_guard_trash` see `OLD` and `NEW` together and narrow the destructive half to the author, the owner, or a workspace admin.
+- Trashing a collection cascades to its live pages through `collections_cascade_trash`, and restoring it brings back exactly the pages that went down with it (matched on the same `deleted_at` timestamp).
+
+Two pieces are specified but **not yet implemented**: cascading a soft delete down a page subtree via `ancestor_ids @> array[id]`, and the `pg_cron` job that purges rows past the retention window. Neither exists in `supabase/schemas/` today.
 
 ---
 
@@ -375,7 +420,18 @@ No RPC is required for publishing.
 
 ### Cycle guard
 
-Drag-and-drop makes it easy to attempt dropping a page into its own descendant. A `BEFORE UPDATE` trigger rejects `new.parent_id = new.id` or `new.parent_id = any(new.ancestor_ids)`.
+Drag-and-drop makes it easy to attempt dropping a page into its own descendant. A `BEFORE UPDATE` trigger rejects the move.
+
+The check must look at **the target parent's ancestor chain**, not at `new.ancestor_ids`:
+
+```sql
+-- reject if the page is its own parent
+new.parent_id = new.id
+-- or if the page appears among its NEW parent's ancestors
+new.id = any((select ancestor_ids from pages where id = new.parent_id))
+```
+
+> **Not `new.parent_id = any(new.ancestor_ids)`.** That formulation is wrong in both directions. This is a `BEFORE` trigger, so `new.ancestor_ids` still holds the row's _old_ chain - it has not been recomputed yet. Moving a page under its own descendant therefore passes the test (a descendant is never an ancestor), while reparenting a page onto its own grandparent - a perfectly ordinary drag - is rejected. The guard has to ask "am I among my new parent's ancestors", which is the question that actually describes a cycle.
 
 ---
 
@@ -383,11 +439,11 @@ Drag-and-drop makes it easy to attempt dropping a page into its own descendant. 
 
 ### 7.1 Scopes and algorithm
 
-| Scope                       | Unique index                            |
-| --------------------------- | --------------------------------------- |
-| Collections within an owner | `(workspace_id, owner_member_id, rank)` |
-| Pages within a parent       | `(collection_id, parent_id, rank)`      |
-| Starred pages within a user | `(user_id, rank)`                       |
+| Scope                       | Unique index                       |
+| --------------------------- | ---------------------------------- |
+| Collections within an owner | `(workspace_id, owner_id, rank)`   |
+| Pages within a parent       | `(collection_id, parent_id, rank)` |
+| Starred pages within a user | `(user_id, rank)`                  |
 
 **Create** prepends: read the current first sibling's rank and compute a rank before it, or the initial rank if the list is empty.
 
@@ -520,7 +576,7 @@ Because each user's favourites carry their own rank on the join table, the favou
 
 ```ts
 supabase
-  .from("starred_pages")
+  .from("page_stars")
   .select("rank, page:pages(id, title, published_at, is_published_tree, collection_id, parent_id)")
   .order("rank", { ascending: true });
 ```
@@ -533,18 +589,18 @@ There is no per-page "starred rank" column and no join-ordered page query.
 
 ### Direct PostgREST
 
-| Operation                   | Call                                                                              |
-| --------------------------- | --------------------------------------------------------------------------------- |
-| List collections by section | `.from('collections').select().eq('workspace_id',…).eq('owner_kind',…)`           |
-| List sibling pages          | `.from('pages').select().eq('collection_id',…).is('parent_id',…)`                 |
-| Get a page                  | `.from('pages').select('*, collection:collections(id,name)').eq('id',…).single()` |
-| Create                      | `.insert({ …, rank: computedRank })`                                              |
-| Rename / autosave           | `.update({ title })` / `.update({ content })`                                     |
-| Publish / unpublish         | `.update({ published_at: now \| null })` - trigger cascades                       |
-| Soft delete                 | `.update({ deleted_at: now })`                                                    |
-| Star / unstar               | `.insert()` / `.delete()` on `starred_pages`                                      |
-| Record a view               | `.from('page_views').upsert({…}, { onConflict: 'page_id,user_id' })`              |
-| Favourites list             | `.from('starred_pages').select('rank, page:pages(*)')`                            |
+| Operation                   | Call                                                                                                        |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| List collections by section | `.from('collections').select().eq('workspace_id',…)` then `.is('owner_id', null)` or `.eq('owner_id', uid)` |
+| List sibling pages          | `.from('pages').select().eq('collection_id',…).is('parent_id',…)`                                           |
+| Get a page                  | `.from('pages').select('*, collection:collections(id,name)').eq('id',…).single()`                           |
+| Create                      | `.insert({ …, rank: computedRank })`                                                                        |
+| Rename / autosave           | `.update({ title })` / `.update({ content })`                                                               |
+| Publish / unpublish         | `.update({ published_at: now \| null })` - trigger cascades                                                 |
+| Soft delete                 | `.update({ deleted_at: now })`                                                                              |
+| Star / unstar               | `.insert()` / `.delete()` on `page_stars`                                                                   |
+| Record a view               | `rpc('record_page_view', { p_page_id })` - a single upsert, bumps `view_count`                              |
+| Favourites list             | `.from('page_stars').select('rank, page:pages(*)')`                                                         |
 
 ### Route Handlers
 
@@ -673,33 +729,41 @@ The slash-command menu uses Tiptap's `Suggestion` plugin with a shadcn `<Command
 
 **Upload**
 
-1. The client requests `POST /api/uploads/sign`. The server validates workspace membership and returns a signed upload URL for `page-media/{workspace_id}/{page_id}/{uuid}.{ext}`.
+1. The client requests `POST /api/uploads/sign`. The server validates workspace membership and returns a signed upload URL for `attachments/{workspace_id}/{page_id}/{uuid}-{filename}`.
 2. The client uploads directly to Storage.
 3. The client inserts a Tiptap image node with `attrs: { path }` - **a storage path, never a URL**. A URL saved into the document would expire.
-4. The server records a `page_attachments` row.
+4. The server records an `attachments` row.
 
 **Read**, in the page's Server Component:
 
 1. Walk the content collecting every image `path`.
-2. One batched `storage.from('page-media').createSignedUrls(paths, 3600)`.
+2. One batched `storage.from('attachments').createSignedUrls(paths, 3600)`.
 3. Inject `src` into a copy of the content handed to the editor.
 4. Strip `src` before saving. Only `path` is authoritative.
 
-The bucket is private. Storage policies mirror the pages policy through the `{workspace_id}/` path prefix.
+The `attachments` bucket is private; `avatars` and `workspace-logos` are public-read and owner-writable. Storage policies authorize by reading the **first folder segment** of the object name, so the path conventions are load-bearing:
+
+```
+avatars/          <user_id>/<filename>
+workspace-logos/  <workspace_id>/<filename>
+attachments/      <workspace_id>/<page_id>/<uuid>-<filename>
+```
+
+A malformed path fails closed: `safe_uuid()` returns null rather than raising, and `is_workspace_member(null)` is false. Attachment access is authorized at **workspace** granularity, not per page - a signed URL is only ever handed out by a caller that already passed the page-level check on `public.attachments`, and a per-object page lookup would put a join on the hot path of every download.
 
 ---
 
 ## 11. SaaS layer
 
-| Concern   | Approach                                                                                                                                          |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Auth      | Supabase Auth - email OTP plus GitHub and Google OAuth                                                                                            |
-| Signup    | Trigger on `auth.users` insert creates a personal workspace, an `owner` membership, and a seeded welcome collection                               |
-| Invites   | `workspace_invites` (email, role, token, expires_at); accepting inserts a `workspace_members` row                                                 |
-| Roles     | `owner / admin / member / viewer`, enforced in RLS through a `has_role(ws, min_role)` helper                                                      |
-| Billing   | Stripe Checkout and Customer Portal; a webhook Route Handler writes `subscriptions`; plan limits enforced in RLS `WITH CHECK`                     |
-| Search    | Postgres FTS over `title` plus `jsonb_to_tsvector(content)`, as a generated `tsvector` column with a GIN index. `pgvector` semantic search later. |
-| Analytics | `page_views` already supports per-page read analytics - worth surfacing in the UI as a differentiator                                             |
+| Concern   | Approach                                                                                                                                                                |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Auth      | Supabase Auth - email OTP plus GitHub and Google OAuth                                                                                                                  |
+| Signup    | `handle_new_user` on `auth.users` insert creates a profile, a personal workspace, an `owner` membership, a starter collection and a published welcome page              |
+| Invites   | `workspace_invitations` stores a token **hash**; `create_workspace_invitation()` returns the raw token once, `accept_workspace_invitation()` inserts the membership row |
+| Roles     | `owner / admin / member / guest` (the `workspace_role` enum), enforced in RLS through the `10_helpers.sql` predicates                                                   |
+| Billing   | Stripe Checkout and Customer Portal; a webhook Route Handler writes `subscriptions`; plan limits enforced in RLS `WITH CHECK`                                           |
+| Search    | Postgres FTS over `title` plus `jsonb_to_tsvector(content)`, as a generated `tsvector` column with a GIN index. `pgvector` semantic search later.                       |
+| Analytics | `page_views` already supports per-page read analytics - worth surfacing in the UI as a differentiator                                                                   |
 
 Billing code lives in the repository behind a `BILLING_ENABLED` flag so self-hosters are never blocked by Stripe.
 
@@ -722,7 +786,8 @@ These are two different problems and conflating them is the common mistake.
 ```bash
 npx supabase start        # full local stack
 npx supabase db reset     # rebuild from migrations + seed
-npm run db:generate       # drizzle-kit generate -> supabase/migrations/
+npm run db:diff <name>    # supabase/schemas/ -> a new migration
+npx supabase db diff      # drift check; must print "No schema changes found"
 npm run db:types          # regenerate lib/database.types.ts
 ```
 
@@ -744,7 +809,7 @@ What this means for Kortex:
 
 - **MinIO is not needed for local development.** `supabase start` provides working Storage on the file backend. Adding MinIO to the dev loop costs a container and buys nothing.
 - **Treat the backend as deployment configuration.** MinIO's community edition has entered maintenance mode and the upstream direction is backend agnosticism, with a RustFS override already available. Document `STORAGE_BACKEND` and its companions in `.env.example` and let operators choose. Never let a specific backend leak into application code.
-- **Application code stays identical either way.** Kortex always calls `storage.from('page-media').createSignedUrl(path, ttl)`. It has no knowledge of what is underneath, and that property is worth protecting in review.
+- **Application code stays identical either way.** Kortex always calls `storage.from('attachments').createSignedUrl(path, ttl)`. It has no knowledge of what is underneath, and that property is worth protecting in review.
 - **Two different S3 concepts.** The S3 _protocol endpoint_ at `/storage/v1/s3` lets tools like `rclone` talk to a Storage instance and works with any backend, including plain file storage. The S3 _backend_ is where bytes land. They are independent; people conflate them constantly.
 - **macOS bind mounts are a known trap.** Docker Desktop bind mounts lack extended-attribute support and hit permission problems that can stop Storage working. Use a named Docker volume instead. Bake this into the self-host Compose from the start - it is the first issue Mac-using operators will report.
 
@@ -783,10 +848,10 @@ kortex/
 │   ├── rank/                   the only importer of @theyoungwolf/lexorank
 │   ├── visibility.ts           isPublished / isHidden derivations
 │   └── database.types.ts       generated - never hand-edited
-├── drizzle/schema.ts
 ├── supabase/
-│   ├── migrations/
-│   ├── seed.sql
+│   ├── schemas/                declarative SQL - the source of truth; NN_ prefixes are execution order
+│   ├── migrations/             generated by db diff, then hand-corrected
+│   ├── seed.sql                DML only: the three storage buckets
 │   └── config.toml
 ├── self-host/
 │   ├── docker-compose.yml
