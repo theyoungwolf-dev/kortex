@@ -629,6 +629,10 @@ export type Database = {
         Args: { p_seed: string; p_user_id: string }
         Returns: string
       }
+      generate_workspace_slug: {
+        Args: { p_exclude_id?: string; p_name: string }
+        Returns: string
+      }
       is_workspace_admin: { Args: { p_workspace_id: string }; Returns: boolean }
       is_workspace_member: {
         Args: { p_workspace_id: string }
@@ -671,7 +675,33 @@ export type Database = {
       }
       pages_recompute_subtree: { Args: { p_root: string }; Returns: undefined }
       record_page_view: { Args: { p_page_id: string }; Returns: undefined }
+      rename_workspace: {
+        Args: { p_name: string; p_slug?: string; p_workspace_id: string }
+        Returns: {
+          created_at: string
+          created_by: string
+          deleted_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_personal: boolean
+          logo_path: string | null
+          name: string
+          slug: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "workspaces"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       safe_uuid: { Args: { p_text: string }; Returns: string }
+      seed_workspace_content: {
+        Args: { p_user_id: string; p_workspace_id: string }
+        Returns: undefined
+      }
       shares_workspace_with: { Args: { p_user_id: string }; Returns: boolean }
       workspace_role_of: {
         Args: { p_workspace_id: string }
