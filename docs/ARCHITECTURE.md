@@ -475,12 +475,16 @@ The handler builds its Supabase client from the **caller's access token**, not t
 
 ```ts
 // lib/supabase/route.ts
-export function createRouteClient() {
-  const cookieStore = cookies();
+export function createRouteClient(request: NextRequest) {
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, // NOT service_role
-    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } },
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, // NOT service_role
+    {
+      cookies: {
+        getAll: () => request.cookies.getAll(),
+        setAll: () => {}, // proxy.ts owns refresh; its matcher must cover /api/*
+      },
+    },
   );
 }
 ```
