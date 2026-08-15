@@ -149,10 +149,125 @@ create trigger workspaces_seat_owner
 
 
 -- -----------------------------------------------------------------------------
+-- generate_workspace_slug
+-- -----------------------------------------------------------------------------
+-- Shared by create_workspace and rename_workspace so the two paths cannot
+-- drift. p_exclude_id keeps a rename from colliding with the row being renamed
+-- - without it, renaming a workspace to the slug it already holds would look
+-- like a collision and pick up a pointless entropy suffix.
+--
+-- SECURITY DEFINER is required for correctness here, not for permissions.
+-- `workspaces.slug` is unique across the whole table, but workspaces_select only
+-- shows a caller the workspaces they belong to. Under INVOKER the existence
+-- probe below silently misses every slug owned by somebody else, the check
+-- passes, and the write then fails on the unique index with a raw 23505 - the
+-- classic "RLS returns emptiness, not errors" trap.
+--
+-- The widened visibility is bounded to exactly that: the function takes a name
+-- and returns a slug. It exposes whether a slug is taken, which attempting to
+-- claim one already reveals, and nothing about any workspace's contents.
+
+create or replace function public.generate_workspace_slug(
+  p_name       text,
+  p_exclude_id uuid default null
+)
+returns text
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare
+  v_slug text;
+begin
+  v_slug := regexp_replace(lower(coalesce(p_name, '')), '[^a-z0-9]+', '-', 'g');
+  v_slug := regexp_replace(v_slug, '^-+|-+$', '', 'g');
+  v_slug := left(nullif(v_slug, ''), 40);
+
+  if v_slug is null or length(v_slug) < 3 then
+    v_slug := 'workspace';
+  end if;
+
+  if exists (
+    select 1
+    from public.workspaces w
+    where w.slug = v_slug
+      and (p_exclude_id is null or w.id <> p_exclude_id)
+  ) then
+    v_slug := v_slug || '-' || substr(replace(gen_random_uuid()::text, '-', ''), 1, 6);
+  end if;
+
+  return v_slug;
+end;
+$$;
+
+-- Both create_workspace and rename_workspace are SECURITY INVOKER, so EXECUTE on
+-- everything they call is checked against the caller. `authenticated` therefore
+-- needs it on the helpers too; RLS, not the grant, is what stops a caller using
+-- them somewhere they have no business writing.
+revoke execute on function public.generate_workspace_slug(text, uuid) from public, anon;
+grant execute on function public.generate_workspace_slug(text, uuid) to authenticated;
+
+-- -----------------------------------------------------------------------------
+-- seed_workspace_content
+-- -----------------------------------------------------------------------------
+-- The starter collection and welcome page every workspace begins with. Called
+-- from two places with different privilege contexts, and correct in both:
+--
+--   handle_new_user   - runs SECURITY DEFINER as the table owner, so RLS is
+--                       bypassed (policies are enabled but not FORCEd) and
+--                       auth.uid() is null; the caller passes the new user id.
+--   create_workspace  - runs as the authenticated caller, who already holds an
+--                       owner seat by this point (workspaces_seat_owner is an
+--                       AFTER INSERT trigger), so collections_insert and
+--                       pages_insert both pass.
+--
+-- The collection is private to the creator, matching the original signup
+-- behaviour. Making starter content workspace-visible is a product decision,
+-- not a refactor - change it deliberately if you want it.
+
+create or replace function public.seed_workspace_content(
+  p_workspace_id uuid,
+  p_user_id      uuid
+)
+returns void
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  v_collection_id uuid;
+begin
+  insert into public.collections (workspace_id, private_to, name, icon, rank, created_by)
+  values (p_workspace_id, p_user_id, 'Getting started', '📘', public.first_rank(), p_user_id)
+  returning id into v_collection_id;
+
+  insert into public.pages (
+    collection_id, workspace_id, title, rank, created_by, last_edited_by, published_at
+  )
+  values (
+    v_collection_id, p_workspace_id, 'Welcome to Kortex',
+    public.first_rank(), p_user_id, p_user_id, now()
+  );
+end;
+$$;
+
+revoke execute on function public.seed_workspace_content(uuid, uuid) from public, anon;
+grant execute on function public.seed_workspace_content(uuid, uuid) to authenticated;
+
+-- -----------------------------------------------------------------------------
 -- create_workspace
 -- -----------------------------------------------------------------------------
 -- Convenience wrapper: slug collisions are resolved server-side rather than by
 -- optimistic retry from the client. SECURITY INVOKER, so RLS still applies.
+
+-- The insert deliberately does NOT use `returning *`. RETURNING is evaluated
+-- during the INSERT statement, so it is subject to workspaces_select - which
+-- requires membership - while the owner seat is created by workspaces_seat_owner,
+-- an AFTER INSERT trigger that has not fired yet. The row is therefore inserted
+-- with a pre-generated id and read back in a later statement, by which point the
+-- seat exists and the SELECT policy passes. Reaching for SECURITY DEFINER here
+-- would "fix" the error by removing the check instead of satisfying it.
 
 create or replace function public.create_workspace(p_name text, p_slug text default null)
 returns public.workspaces
@@ -161,30 +276,90 @@ security invoker
 set search_path = ''
 as $$
 declare
-  v_slug text;
-  v_ws   public.workspaces%rowtype;
+  v_uid uuid := (select auth.uid());
+  v_id  uuid := gen_random_uuid();
+  v_ws  public.workspaces%rowtype;
 begin
-  v_slug := regexp_replace(lower(coalesce(p_slug, p_name)), '[^a-z0-9]+', '-', 'g');
-  v_slug := regexp_replace(v_slug, '^-+|-+$', '', 'g');
-  v_slug := left(nullif(v_slug, ''), 40);
-
-  if v_slug is null or length(v_slug) < 3 then
-    v_slug := 'workspace';
+  if v_uid is null then
+    raise exception 'not authenticated' using errcode = '28000';
   end if;
 
-  if exists (select 1 from public.workspaces w where w.slug = v_slug) then
-    v_slug := v_slug || '-' || substr(replace(gen_random_uuid()::text, '-', ''), 1, 6);
-  end if;
+  insert into public.workspaces (id, name, slug, created_by)
+  values (v_id, p_name, public.generate_workspace_slug(coalesce(p_slug, p_name)), v_uid);
 
-  insert into public.workspaces (name, slug, created_by)
-  values (p_name, v_slug, (select auth.uid()))
-  returning * into v_ws;
+  perform public.seed_workspace_content(v_id, v_uid);
+
+  select * into v_ws from public.workspaces w where w.id = v_id;
 
   return v_ws;
 end;
 $$;
 
 grant execute on function public.create_workspace(text, text) to authenticated;
+
+-- -----------------------------------------------------------------------------
+-- rename_workspace
+-- -----------------------------------------------------------------------------
+-- Onboarding step 2: the signup trigger has already created a workspace named
+-- "<username>'s workspace"; this is where the user names it for real.
+--
+-- An RPC rather than a plain PostgREST update because naming is a check-then-act
+-- against a uniquely-indexed column: the slug has to be derived, tested for
+-- collision, and written without another session claiming it in between. That
+-- is the "single transaction is genuinely required" case CLAUDE.md allows.
+--
+-- SECURITY INVOKER, so the workspaces_update policy (admin only) still decides
+-- who may do it. A caller who is not an admin - or names a workspace that does
+-- not exist - updates zero rows, which is reported as a permission error rather
+-- than passing silently.
+
+create or replace function public.rename_workspace(
+  p_workspace_id uuid,
+  p_name         text,
+  p_slug         text default null
+)
+returns public.workspaces
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  v_ws public.workspaces%rowtype;
+begin
+  if coalesce(trim(p_name), '') = '' then
+    raise exception 'a workspace needs a name' using errcode = '23514';
+  end if;
+
+  begin
+    update public.workspaces w
+    set name = trim(p_name),
+        slug = public.generate_workspace_slug(coalesce(p_slug, p_name), p_workspace_id)
+    where w.id = p_workspace_id
+      and w.deleted_at is null
+    returning * into v_ws;
+  exception
+    when unique_violation then
+      -- Two callers claiming the same name at once. Same strategy as a rank
+      -- collision: append entropy and retry exactly once, rather than looping.
+      update public.workspaces w
+      set name = trim(p_name),
+          slug = left(public.generate_workspace_slug(coalesce(p_slug, p_name), p_workspace_id), 40)
+                 || '-' || substr(replace(gen_random_uuid()::text, '-', ''), 1, 6)
+      where w.id = p_workspace_id
+        and w.deleted_at is null
+      returning * into v_ws;
+  end;
+
+  if not found then
+    raise exception 'not permitted to rename this workspace' using errcode = '42501';
+  end if;
+
+  return v_ws;
+end;
+$$;
+
+revoke execute on function public.rename_workspace(uuid, text, text) from public, anon;
+grant execute on function public.rename_workspace(uuid, text, text) to authenticated;
 
 -- -----------------------------------------------------------------------------
 -- create_workspace_invitation

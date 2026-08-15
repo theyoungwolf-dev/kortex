@@ -83,7 +83,6 @@ as $$
 declare
   v_username     text;
   v_workspace_id uuid;
-  v_collection_id uuid;
 begin
   v_username := public.generate_username(
     coalesce(
@@ -112,17 +111,9 @@ begin
   )
   returning id into v_workspace_id;
 
-  insert into public.collections (workspace_id, private_to, name, icon, rank, created_by)
-  values (v_workspace_id, new.id, 'Getting started', '📘', public.first_rank(), new.id)
-  returning id into v_collection_id;
-
-  insert into public.pages (
-    collection_id, workspace_id, title, rank, created_by, last_edited_by, published_at
-  )
-  values (
-    v_collection_id, v_workspace_id, 'Welcome to Kortex',
-    public.first_rank(), new.id, new.id, now()
-  );
+  -- Shared with create_workspace (04_workspaces.sql), so every workspace begins
+  -- with the same starter content rather than only the first one.
+  perform public.seed_workspace_content(v_workspace_id, new.id);
 
   return new;
 end;
