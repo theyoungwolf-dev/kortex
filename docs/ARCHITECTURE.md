@@ -4,6 +4,8 @@ Kortex is an open-source, multi-tenant knowledge base. A workspace contains coll
 
 This document is the design of record. It covers the data model, the authorization model, the two subsystems that carry the most risk (ranking and publish visibility), the API surface, the frontend architecture, and the local-development and self-hosting story.
 
+Its companion is `LIB.md`, which documents the `lib/` implementation of everything below: the PostgREST select syntax and embedding hints, the four Supabase client factories and why identity lives in the client object, the isomorphic query layer, and the server-to-client cache contract. Where this document says what the system is, that one says how it is built and which mistakes are silent.
+
 ---
 
 ## 1. Domain model
@@ -666,6 +668,8 @@ Server/client split:
 
 ### 9.2 Data layer
 
+Implemented in `lib/queries/` and `lib/query/`; see `LIB.md` §6 for the isomorphic query layer and §7 for the dehydrate/hydrate contract these keys hang on.
+
 ```ts
 const keys = {
   collections: (ws: string, kind: OwnerKind) => ["collections", ws, kind] as const,
@@ -860,7 +864,9 @@ kortex/
 ├── self-host/
 │   ├── docker-compose.yml
 │   └── README.md
-└── docs/ARCHITECTURE.md
+└── docs/
+    ├── ARCHITECTURE.md          the design of record - this file
+    └── LIB.md                   the lib/ layer: PostgREST, clients, cache contract
 ```
 
 ---

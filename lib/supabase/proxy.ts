@@ -1,6 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import type { Database } from "@/lib/database.types";
 import { hasEnvVars } from "../utils";
+
+// The matcher in `proxy.ts` deliberately covers `/api/*`. Route Handlers build
+// their client with a no-op `setAll` (see `lib/supabase/route.ts`), so this is
+// the only thing that rotates an expiring access token for them. Narrowing the
+// matcher to exclude `/api` makes long-lived sessions fail intermittently in
+// handlers, with no obvious cause.
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -15,7 +22,7 @@ export async function updateSession(request: NextRequest) {
 
   // With Fluid compute, don't put this client in a global environment
   // variable. Always create a new one on each request.
-  const supabase = createServerClient(
+  const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
@@ -47,15 +54,23 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  if (
-    request.nextUrl.pathname !== "/" &&
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  // Surfaces that must stay reachable signed out: the marketing page, the
+  // auth screens, and the Supabase callback route. Everything else lives
+  // under /w/<workspace> and requires a session.
+  //
+  // `/new-workspace` is deliberately NOT here: it is onboarding step 2 and
+  // operates on a workspace the signup trigger already created, so it needs
+  // the session that step 1 issued.
+  const publicPaths = ["/", "/login", "/sign-up", "/check-email", "/error", "/auth"];
+  const isPublic = publicPaths.some(
+    (path) =>
+      request.nextUrl.pathname === path ||
+      (path !== "/" && request.nextUrl.pathname.startsWith(path)),
+  );
+
+  if (!user && !isPublic) {
     const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
+    url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 

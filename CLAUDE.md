@@ -2,7 +2,7 @@
 
 Open-source, multi-tenant knowledge base. Collections contain a tree of pages; pages hold Tiptap JSON, are drag-reorderable, and are individually publishable.
 
-Full design rationale lives in `docs/ARCHITECTURE.md`. Read it before any schema, ranking, or visibility work. This file is the short version plus the rules that are easy to break.
+Full design rationale lives in `docs/ARCHITECTURE.md`. Read it before any schema, ranking, or visibility work. `docs/LIB.md` is its companion for `lib/`: the PostgREST, RLS, and TanStack Query background behind every file there, plus the invariants that fail silently when broken. Read it before touching `lib/`. This file is the short version plus the rules that are easy to break.
 
 ## Stack
 
@@ -75,7 +75,7 @@ Do not "fix" the storage blind spot by moving the policies into `seed.sql`. Seed
 ## Conventions
 
 - Server Components fetch; Client Components own interaction. The sidebar tree is a Client Component; page/collection panes are Server Components.
-- TanStack Query keys: `['pages', collectionId, parentId ?? 'root']`, `['page', id]`, `['collections', workspaceId, ownerKind]`, `['starred', userId]`. The sibling key must match the rank uniqueness scope exactly.
+- TanStack Query keys: `['pages', collectionId, parentId ?? 'root']`, `['page', id]`, `['collections', workspaceId, ownerKind]`, `['starred', userId]`. The sibling key must match the rank uniqueness scope exactly (`docs/LIB.md` §7.6 shows what breaks when it does not).
 - Optimistic mutations follow `onMutate` (cancel, snapshot, patch) → `onError` (restore) → `onSettled` (invalidate).
 - Tree children load lazily - `enabled: isExpanded`. Never eagerly fetch a whole tree.
 - Autosave debounces: title 500 ms, content 700 ms. Patches carry `updated_at` for optimistic-concurrency; zero rows updated means a conflict, so refetch and warn.
@@ -126,6 +126,7 @@ The drift check itself needs no reset, since the live database is not a side of 
 ## Working style
 
 - Read `docs/ARCHITECTURE.md` before proposing schema or authorization changes.
+- Read `docs/LIB.md` before touching `lib/`, and check the change against its §11 invariant list. Query keys, select strings, and server-side client construction all have failure modes that raise nothing: a silent refetch, a stale badge, or one tenant's rows served to another.
 - Prefer plain PostgREST calls. Add an RPC only when a single transaction is genuinely required, and say why in the migration comment.
 - When touching RLS, state which policy changed and what a non-member, a member, and an author can each now see.
 - Reference files from the previous Go/Mantine implementation may appear in conversation. They are context for _intent_ only - do not port their patterns (GORM scopes, Relay cursors, Apollo cache surgery, River jobs) into this codebase.
